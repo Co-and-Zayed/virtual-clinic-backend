@@ -14,8 +14,11 @@ mongoose.set("strictQuery", false);
 // Port Number
 const port = 3000 || process.env.PORT;
 
+// Util Imports
+const { upload } = require("./utils/uploadFile");
+
 // Route Imports
-const { getRoute } = require("./routes/test");
+const { getRoute, fileUploadRoute} = require("./routes/test");
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
@@ -28,8 +31,20 @@ mongoose.connect(process.env.MONGO_URI)
         console.log(`Error occured: ${err}`);
     });
 
-// Register The Routes Here
 /*
+
+Register The Routes Here
+
 /<route-prefix>/<route based on REST convention> 
+
 */
 app.get("/test", getRoute);
+
+/*
+    the request should include the image field in this format: 
+    {
+        image: File()
+    }
+*/
+
+app.post("/upload", upload.single('image'), fileUploadRoute);
