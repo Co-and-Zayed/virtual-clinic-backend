@@ -1,0 +1,32 @@
+const express = require("express");
+const app = express();
+const cors = require("cors");
+require("dotenv").config();
+const mongoose  = require("mongoose");
+
+// Middleware 
+app.use(express.json());
+app.use(cors());
+
+// Mongoose Setup
+mongoose.set("strictQuery", false);
+
+// Port Number
+const port = 3000 || process.env.PORT;
+
+// Route Imports
+const { getRoute } = require("./routes/test");
+
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log("Database Setup Correctly");
+        app.listen(port, () => {
+            console.log(`Server running on port: ${port}`);
+        });
+    })
+    .catch((err) => {
+        console.log(`Error occured: ${err}`);
+    });
+
+// Register The Routes Here
+app.get("/", getRoute);
