@@ -2,7 +2,6 @@ const AWS = require("aws-sdk");
 require("dotenv").config();
 const multer = require('multer');
 const fs = require("fs");
-const path = require('path');
 
 AWS.config.update({
     accessKeyId: process.env.S3_ACCESS_KEY_ID,        // Your AWS Access Key ID

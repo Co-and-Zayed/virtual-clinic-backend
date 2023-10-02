@@ -5,7 +5,9 @@ const getRoute = (req, res) => {
 };
 
 const fileUploadRoute = (req, res) => {
+    
     const { originalname, buffer } = req.file;
+
     uploadFile(originalname, buffer, () => {
         return res.status(200).json({ message: 'File Uploaded Successfully' });
     }, () => {
