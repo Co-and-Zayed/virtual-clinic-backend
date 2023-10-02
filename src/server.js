@@ -29,4 +29,7 @@ mongoose.connect(process.env.MONGO_URI)
     });
 
 // Register The Routes Here
-app.get("/", getRoute);
+/*
+/<route-prefix>/<route based on REST convention> 
+*/
+app.get("/test", getRoute);

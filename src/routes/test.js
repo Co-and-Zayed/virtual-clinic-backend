@@ -1,7 +1,6 @@
 
 const getRoute = (req, res) => {
-    console.log("Hena");
-    return res.json({message: 'Success'});
+    return res.status(200).json({message: 'Success'});
 };
 
 module.exports = { getRoute }
