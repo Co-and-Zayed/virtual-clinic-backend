@@ -6,6 +6,8 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const refreshTokensModel = require("./models/refreshTokensModel");
 const userModel = require("./models/userModel");
+const doctorRoutes = require("./routes/doctor");
+
 
 // Middleware
 app.use(express.json());
@@ -54,9 +56,14 @@ function authenticateToken(req, res, next) {
 
 Register The Routes Here
 
+
 /<route-prefix>/<route based on REST convention> 
 
 */
+
+app.use("/doctor", doctorRoutes);
+
+
 app.get("/test", getRoute);
 // expects a JSON body with name, email, and type fields
 app.post("/registerUser", registerUser);
