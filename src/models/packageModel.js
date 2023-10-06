@@ -7,22 +7,22 @@ const packageSchema = new Schema({
         required : true
     },
     // price per year
-    pricePerYear: {
+    price_per_year: {
         type: Number,
         required : true
     },
     // % discount for doctor sessions
-    doctorSessionDiscount: {
+    doctor_session_discount: {
         type: Number,
         required : true
     },
     // % discount for medicine
-    medicineDiscount: {
+    medicine_discount: {
         type: Number,
         required : true
     },
     // % discount for family members' subscriptions
-    familyDiscount: {
+    family_discount: {
         type: Number,
         required : true
     },

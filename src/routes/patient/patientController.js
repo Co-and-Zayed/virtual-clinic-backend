@@ -26,7 +26,7 @@ const getDoctors = async (req, res) => {
     // If the patient has a health package
     if (patientPackageId) {
       const patientPackage = Package.findOne({ _id: patientPackageId });
-      discount = patientPackage.doctorSessionDiscount;
+      discount = patientPackage.doctor_session_discount;
     }
 
     const doctors = await Doctor.find();
@@ -46,8 +46,8 @@ const getDoctors = async (req, res) => {
   }
 };
 
-//GET doctors by searching name and/or specialty
-const getDoctorsByNameSpecialty = async (req, res) => {
+//GET doctors by searching name and/or speciality
+const getDoctorsByNameSpeciality = async (req, res) => {
   try {
     // Check if name and specialty are provided
     let params = {};
@@ -66,4 +66,4 @@ const getDoctorsByNameSpecialty = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors, getDoctorsByNameSpecialty };
+module.exports = { getDoctors, getDoctorsByNameSpeciality };
