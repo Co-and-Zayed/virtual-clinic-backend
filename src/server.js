@@ -31,7 +31,7 @@ const { upload } = require("./utils/uploadFile");
 const { getRoute, fileUploadRoute } = require("./routes/test");
 
 const { registerUser, loginUser } = require("./routes/userController");
-const { deleteRefreshToken, handleRefreshToken } = require("./routes/auth");
+const { deleteRefreshToken, handleRefreshToken } = require("./routes/authController");
 const { createAppointment, getAppointments, updateAppointment, deleteAppointment} = require("./routes/appointmentController");
 const { addFamilyMember, getFamilyMembers } = require("./routes/familyMemberController");
 
