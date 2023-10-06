@@ -1,22 +1,8 @@
 // #Task route solution
 const userModel = require("../models/userModel");
-const { default: mongoose } = require("mongoose");
-const { createUserTokens } = require("./auth");
+const { createUserTokens } = require("./authController");
 
-const loginUser = async (req, res) => {
-  const { token } = req.body;
-  const user = await getUser(token);
-  if (user) {
-    res.status(200).json({
-      user: user,
-      tokens: await createUserTokens({ email: email, issuedAt: new Date() }),
-    });
-  } else {
-    res.status(400).json({ message: "User not found" });
-  }
-};
-
-const getUser = async (token) => {
+const findUser = async (token) => {
   try {
     // Find a user by the provided email
     const user = await userModel.findOne({ token });
@@ -26,6 +12,19 @@ const getUser = async (token) => {
     return null;
   } catch (error) {
     res.json({ message: "Error finding the user" });
+  }
+};
+
+const loginUser = async (req, res) => {
+  const { token } = req.body;
+  const user = await findUser(token);
+  if (user) {
+    res.status(200).json({
+      user: user,
+      tokens: await createUserTokens({ email: email, issuedAt: new Date() }),
+    });
+  } else {
+    res.status(400).json({ message: "User not found" });
   }
 };
 
