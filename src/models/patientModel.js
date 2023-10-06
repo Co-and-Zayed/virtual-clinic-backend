@@ -43,6 +43,11 @@ const patientSchema = new Schema({
         type: String,
         required: true
     },
+    // health package
+    healthPackage: {
+        type: Schema.Types.ObjectId,
+        ref: "Package",
+    },
 })
 
 // Define a virtual property to compute the 'age' based on 'date_of_birth'.

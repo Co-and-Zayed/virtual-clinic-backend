@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const refreshTokensModel = require("./models/refreshTokensModel");
 const userModel = require("./models/userModel");
 const doctorRoutes = require("./routes/doctor");
+const patientRoutes = require("./routes/patient/patient");
 
 
 // Middleware
@@ -62,6 +63,7 @@ Register The Routes Here
 */
 
 app.use("/doctor", doctorRoutes);
+app.use("/patient", patientRoutes);
 
 
 app.get("/test", getRoute);
