@@ -51,6 +51,7 @@ patientSchema.virtual("age").get(function () {
   const date_of_birth = this.date_of_birth;
   const age = today.getFullYear() - date_of_birth.getFullYear();
 
+
   // Adjust age if the birthday has not occurred this year yet.
   const monthDiff = today.getMonth() - date_of_birth.getMonth();
   if (
