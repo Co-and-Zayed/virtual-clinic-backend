@@ -24,6 +24,7 @@ const { upload } = require("./utils/uploadFile");
 const { getRoute, fileUploadRoute } = require("./routes/test");
 const { registerUser, loginUser } = require("./routes/userController");
 const { deleteRefreshToken, handleRefreshToken } = require("./routes/auth");
+const  prescriptionsRoutes = require("./routes/prescriptions");
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -57,6 +58,7 @@ Register The Routes Here
 /<route-prefix>/<route based on REST convention> 
 
 */
+
 app.get("/test", getRoute);
 // expects a JSON body with name, email, and type fields
 app.post("/registerUser", registerUser);
@@ -93,6 +95,8 @@ app.get("/allRefreshTokens", async (req, res) => {
   const tokens = await refreshTokensModel.find();
   res.json(tokens);
 });
+
+app.use("/prescriptions",prescriptionsRoutes);
 
 /*
     the request should include the image field in this format: 
