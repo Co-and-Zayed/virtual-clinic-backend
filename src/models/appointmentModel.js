@@ -3,25 +3,33 @@ const Schema = mongoose.Schema;
 
 const appointmentSchema = new Schema(
   {
-    patient: {
-      type: String,
-      required: true,
+    patientEmail: {
+        type: String,
+        required: true,
     },
-    doctor: {
-      type: String,
-      required: true,
+    doctorEmail: {
+        type: String,
+        required: true,
     },
     date: {
-      type: Date,
-      required: true,
+        type: Date,
+        required: true,
     },
+    // time:{
+    //     type: String,
+    //     required: true,
+    // },
     status: {
       type: String,
-      enum: ["UPCOMING", "CANCELED", "ATTENDED"], //is something is postponed, it will remain upcoming
+      enum: ["UPCOMING", "CANCELLED", "COMPLETED"],
+      required: true,
     },
   },
-  { timestamps: true }
 );
+// Deirive time from date
+appointmentSchema.virtual("time").get(function () {
+  return this.date.toLocaleTimeString();
+});
 
 const appointmentModel = mongoose.model("Appointment", appointmentSchema);
 module.exports = appointmentModel;
