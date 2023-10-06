@@ -95,6 +95,10 @@ app.get("/allRefreshTokens", async (req, res) => {
   const tokens = await refreshTokensModel.find();
   res.json(tokens);
 });
+app.get("/deleteRefreshTokens", async (req, res) => {
+  const tokens = await refreshTokensModel.deleteMany({});
+  res.json(tokens);
+});
 
 app.use("/prescriptions",prescriptionsRoutes);
 
