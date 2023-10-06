@@ -22,7 +22,7 @@ const doctorSchema = new Schema({
         type: String,
         required : true
     },
-    dob:  {
+    date_of_birth:  {
         type: Date,
         required : true
     },
@@ -41,10 +41,10 @@ const doctorSchema = new Schema({
 }
 )
 
-// Define a virtual property to compute the 'age' based on 'dob'.
+// Define a virtual property to compute the 'age' based on 'date_of_birth'.
 doctorSchema.virtual('age').get(function () {
     const today = new Date();
-    const dob = this.dob;
+    const dob = this.date_of_birth;
     const age = today.getFullYear() - dob.getFullYear();
   
     // Adjust age if the birthday has not occurred this year yet.
