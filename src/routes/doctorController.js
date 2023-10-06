@@ -32,4 +32,6 @@ const getUpcomingAptmnts = async (req, res) => {}
 
 
 //PATCH email, hourly rate, affiliation
-const editSettings = async (req, res) => {} 
+const editSettings = async (req, res) => {}
+
+module.exports = { getPatientInfo, getPatients, getPatientsByName, getUpcomingAptmnts, editSettings }
