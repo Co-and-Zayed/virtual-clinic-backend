@@ -16,7 +16,7 @@ const findUser = async (token) => {
 };
 
 const loginUser = async (req, res) => {
-  const { token } = req.body;
+  const { email, token } = req.body;
   const user = await findUser(token);
   if (user) {
     res.status(200).json({

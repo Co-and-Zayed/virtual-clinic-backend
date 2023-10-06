@@ -21,7 +21,7 @@ router.get("/allRefreshTokens", async (req, res) => {
 /*****  TEST ROUTES *****/
 
 // GET: Testing JWT authentication (for testing purposes)
-router.get("/testingToken", authenticateToken, (req, res) => {
+router.post("/testingToken", authenticateToken, (req, res) => {
   res.json({ message: "Token is valid" });
 });
 
@@ -30,3 +30,5 @@ router.get("/deleteRefreshTokens", async (req, res) => {
   const tokens = await refreshTokensModel.deleteMany({});
   res.json(tokens);
 });
+
+module.exports = router;

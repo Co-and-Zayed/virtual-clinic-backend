@@ -6,6 +6,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const doctorRoutes = require("./routes/doctor");
 const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 // Middleware
 app.use(express.json());
@@ -51,8 +52,9 @@ Register The Routes Here
 
 app.use("/doctor", doctorRoutes);
 app.use("/userAPI", userRoutes);
+app.use("/authAPI", authRoutes);
 
-app.get("/test", getRoute);
+// app.get("/test", getRoute);
 /*
     the request should include the image field in this format: 
     {
