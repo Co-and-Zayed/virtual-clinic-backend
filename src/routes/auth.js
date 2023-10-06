@@ -8,7 +8,7 @@ const refreshTokensModel = require("../models/refreshTokensModel");
 app.use(express.json());
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "30s" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1m" });
 }
 
 // created using user = { email: string, issuedAt: Date }
@@ -52,6 +52,7 @@ async function handleRefreshToken(req, res) {
 
 async function deleteRefreshToken(req, res) {
   const { email } = req.body;
+
   // TODO: remove from database
   try {
     // Find and delete the token associated with the provided email
