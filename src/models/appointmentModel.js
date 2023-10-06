@@ -2,16 +2,18 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const appointmentSchema = new Schema({
+    //patient email
     patient: {
         type: String,
         required : true
     },
+    //doctor email
     doctor: {
         type: String,
         required : true
     },
     date : {
-        type: date,
+        type: Date,
         required : true
     },
     status : {

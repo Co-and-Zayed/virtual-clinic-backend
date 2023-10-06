@@ -30,3 +30,4 @@ router.get("/deleteRefreshTokens", async (req, res) => {
   const tokens = await refreshTokensModel.deleteMany({});
   res.json(tokens);
 });
+module.exports = router
