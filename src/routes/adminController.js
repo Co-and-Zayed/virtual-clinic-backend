@@ -115,10 +115,20 @@ async function createUserTokens(user) {
   }
 }
 
+const viewDoctors = async (req, res) => {
+  try {
+    const allDoctors = await doctorModel.find().select("-password");
+    res.status(200).json(allDoctors);
+  } catch (err) {
+    res.status(400).json({ message: "Error occured", err: err });
+  }
+};
+
 module.exports = {
   loginAdmin,
   createAdmin,
   deletePatient,
   deleteDoctor,
   deleteAdmin,
+  viewDoctors,
 };
