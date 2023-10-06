@@ -70,18 +70,15 @@ async function deleteRefreshToken(req, res) {
 async function authenticateToken(req, res, next) {
   const { email } = req.body;
   const tokenRecord = await refreshTokensModel.findOne({ email });
-  console.log("CHECKPOINT 1", tokenRecord, req.body);
   if (!tokenRecord) return res.sendStatus(401);
-  console.log("CHECKPOINT 2");
 
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (token == null) return res.sendStatus(401);
-  console.log("CHECKPOINT 3");
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     console.log(err);
-    if (err) return res.sendStatus(403);
+    if (err) return handleRefreshToken(req, res);
     req.user = user;
     next();
   });
@@ -92,4 +89,5 @@ module.exports = {
   handleRefreshToken,
   deleteRefreshToken,
   authenticateToken,
+  generateAccessToken,
 };

@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const doctorRoutes = require("./routes/doctor");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const packageRoutes = require("./routes/packageRoutes");
 
 // Middleware
 app.use(express.json());
@@ -23,11 +25,6 @@ const { upload } = require("./utils/uploadFile");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
-const { registerUser, loginUser } = require("./routes/userController");
-const {
-  deleteRefreshToken,
-  handleRefreshToken,
-} = require("./routes/authController");
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -53,6 +50,7 @@ Register The Routes Here
 app.use("/doctor", doctorRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
+app.use("/adminAPI", adminRoutes);
 
 // app.get("/test", getRoute);
 /*
