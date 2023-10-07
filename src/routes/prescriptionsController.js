@@ -6,7 +6,7 @@ const getAllPrescriptions = async (req, res) => {
     const prescriptions = await prescriptionsModel.find({});
     res.status(200).json(prescriptions);
   } catch (err) {
-    res.status(400).json({ message: "Error in getting all the prescriptions" });
+    res.status(500).json({ message: "Error in getting all the prescriptions" });
   }
 };
 
@@ -16,23 +16,26 @@ const getSinglePrescription = async (req, res) => {
     const prescription = await prescriptionsModel.findById(req.params.id);
     res.status(200).json(prescription);
   } catch (err) {
-    res.status(400).json({ message: "Prescription not found" });
+    res.status(500).json({ message: "Prescription not found" });
   }
 };
 
 //create a prescription
 const createPrescription = async (req, res) => {
   const prescription = new prescriptionsModel({
-    patient: req.body.patient,
-    doctor: req.body.doctor,
+    patientEmail: req.body.patientEmail,
+    patientName: req.body.patientName,
+    doctorEmail: req.body.doctorEmail,
+    doctorName: req.body.doctorName,
     date: Date.now(),
     filled: req.body.filled,
+    medicines: req.body.medicines,
   });
   try {
     const newPrescription = await prescription.save();
     res.status(200).json(newPrescription);
   } catch (err) {
-    res.status(400).json({ message: "Error creating a prescription" });
+    res.status(500).json({ message: "Error creating a prescription" });
   }
 };
 
@@ -48,7 +51,7 @@ const updatePrescription = async (req, res) => {
     );
     res.status(200).json(updatedPrescription);
   } catch (err) {
-    res.status(400).json({ message: "Error updating prescription" });
+    res.status(500).json({ message: "Error updating prescription" });
   }
 };
 
@@ -59,7 +62,7 @@ const deletePrescription = async (req, res) => {
     const deletedPrescription = await prescriptionsModel.findByIdAndDelete(id);
     res.status(200).json(deletedPrescription);
   } catch (err) {
-    res.status(400).json({ message: "Error deleting prescription" });
+    res.status(500).json({ message: "Error deleting prescription" });
   }
 };
 
