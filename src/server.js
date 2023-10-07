@@ -24,7 +24,7 @@ const { upload } = require("./utils/uploadFile");
 const { getRoute, fileUploadRoute } = require("./routes/test");
 const { registerUser, loginUser } = require("./routes/userController");
 const { deleteRefreshToken, handleRefreshToken } = require("./routes/auth");
-const  prescriptionsRoutes = require("./routes/prescriptions");
+const  prescriptionsRoutes = require("./routes/prescriptionsRoutes");
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -100,7 +100,7 @@ app.get("/deleteRefreshTokens", async (req, res) => {
   res.json(tokens);
 });
 
-app.use("/prescriptions",prescriptionsRoutes);
+app.use("/prescriptionAPI",prescriptionsRoutes);
 
 /*
     the request should include the image field in this format: 
