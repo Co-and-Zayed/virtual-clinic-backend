@@ -42,6 +42,13 @@ const {
   getFamilyMembers,
 } = require("./routes/familyMemberController");
 
+
+const {
+  getDoctordetails
+} = require("./routes/patientController");
+
+
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
@@ -88,3 +95,8 @@ app.delete("/deleteAppointment/:id", deleteAppointment);
 // Family Member Routes
 app.post("/addFamilyMember", addFamilyMember);
 app.get("/getFamilyMembers", getFamilyMembers);
+
+
+//patient routes
+
+app.post("/getDoctordetails", getDoctordetails);
