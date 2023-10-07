@@ -16,6 +16,19 @@ const getPatientInfo = async (req, res) => {
     }
 }
 
+const viewSettings = async (req, res) => {
+  // we will be getting the ID by selecting the name
+  
+  const _id = req.body._id;
+  try{
+     const doctor = await doctorModel.findById(_id);
+     res.status(200).json(doctor)
+  }
+  catch(err){
+      res.status(400).json({error:err.message});
+  }
+}
+
 
 
 //GET list of all patients 
@@ -94,4 +107,4 @@ const editSettings = async (req, res) => {
   }
 }
 
-module.exports = { getPatientInfo, getPatients, getPatientsByName, getUpcomingAptmnts, editSettings }
+module.exports = { getPatientInfo, getPatients, getPatientsByName, getUpcomingAptmnts, editSettings, viewSettings }

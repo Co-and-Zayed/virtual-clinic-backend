@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getPatientInfo, getPatients, getPatientsByName, getUpcomingAptmnts, editSettings } = require('./doctorController')
+const { getPatientInfo, getPatients, getPatientsByName, getUpcomingAptmnts, editSettings, viewSettings } = require('./doctorController')
 
 //get a patient's information and health records given patient ID
 router.post("/getPatientInfo", getPatientInfo);
@@ -14,6 +14,8 @@ router.post("/getPatientsByName", getPatientsByName);
 
 //GET patients based on upcomimg appointments
 router.post("/getUpcomingAptmnts", getUpcomingAptmnts);
+
+router.post("/viewSettings", viewSettings);
 
 //PATCH email, hourly rate, affiliation
 
