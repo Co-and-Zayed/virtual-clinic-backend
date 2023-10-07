@@ -38,7 +38,27 @@ const getPatients = async (req, res) => {
 }
 
 
+//GET patients based on upcomimg appointments
+const getUpcomingAptmnts = async (req, res) => {
+    
+    try{
+        const doctor = req.body.doctor; 
 
+        // Find all upcoming appointments with the specified doctor's email
+        const upcomingAppointments = await appointmentModel.find({
+          doctor: doctor,
+          status: 'UPCOMING'
+        });
+        const patientEmails = upcomingAppointments.map(appointment => appointment.patient);
+
+        const patients = await patientModel.find({ email: { $in: patientEmails } });
+        res.status(200).json(patients);
+     } 
+     catch (error) {
+       console.error(error);
+       res.status(400).json({ message: 'Server error' });
+     }
+} 
 
 
 //GET patients by searching name find({name : req.body.name})
@@ -56,25 +76,7 @@ const getPatientsByName = async (req, res) => {
 
 
 
-//GET patients based on upcomimg appointments
-const getUpcomingAptmnts = async (req, res) => {
-    
-    try{
-        const doctor = req.body.doctor; 
 
-        // Find all upcoming appointments with the specified doctor's email
-        const upcomingAppointments = await appointmentModel.find({
-          doctor: doctor,
-          status: 'UPCOMING'
-        });
-    
-        res.status(200).json(upcomingAppointments);
-     } 
-     catch (error) {
-       console.error(error);
-       res.status(400).json({ message: 'Server error' });
-     }
-} 
 
 
 //PATCH email, hourly rate, affiliation
