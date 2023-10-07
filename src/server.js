@@ -9,6 +9,7 @@ const refreshTokensModel = require("./models/refreshTokensModel");
 const userModel = require("./models/userModel");
 const appointmentModel = require("./models/appointmentModel");
 const doctorRoutes = require("./routes/doctor");
+const patientRoutes =require ("./routes/patient")
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
@@ -63,6 +64,7 @@ Register The Routes Here
 */
 
 app.use("/doctor", doctorRoutes);
+app.use("/patient",patientRoutes)
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
 app.use("/adminAPI", adminRoutes);
