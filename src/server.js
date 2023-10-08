@@ -32,6 +32,8 @@ const { getRoute, fileUploadRoute } = require("./routes/test");
 
 const { registerUser, loginUser } = require("./routes/userController");
 const { deleteRefreshToken, handleRefreshToken } = require("./routes/auth");
+
+const  prescriptionsRoutes = require("./routes/prescriptionsRoutes");
 const { createAppointment, getAppointments, updateAppointment, deleteAppointment} = require("./routes/appointmentController");
 const { addFamilyMember, getFamilyMembers } = require("./routes/familyMemberController");
 
@@ -57,12 +59,13 @@ Register The Routes Here
 
 */
 
+app.get("/test", getRoute);
 app.use("/doctor", doctorRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
 app.use("/adminAPI", adminRoutes);
+app.use("/prescriptionAPI",prescriptionsRoutes);
 
-// app.get("/test", getRoute);
 /*
     the request should include the image field in this format: 
     {
