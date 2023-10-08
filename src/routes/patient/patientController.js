@@ -52,10 +52,10 @@ const getDoctorsByNameSpeciality = async (req, res) => {
     // Check if name and specialty are provided
     let params = {};
     if (req.body.name) {
-      params.name = req.body.name;
+      params.name = new RegExp(req.body.name, 'i');
     }
     if (req.body.specialty) {
-      params.specialty = req.body.specialty;
+      params.specialty = new RegExp(req.body.specialty, 'i');
     }
 
     const doctors = await Doctor.find(params);
