@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const refreshTokensModel = require("../models/refreshTokensModel");
+const refreshTokensModel = require("../../models/refreshTokensModel");
 
 function generateAccessToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1m" });

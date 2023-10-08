@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const adminModel = require("../models/adminModel");
+const adminModel = require("../../models/adminModel");
 const {
   createPackage,
   deletePackage,
   updatePackage,
   getPackages,
-} = require("./packageController");
+} = require("../package/packageController");
 const {
   loginAdmin,
   createAdmin,

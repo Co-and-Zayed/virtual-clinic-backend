@@ -1,5 +1,5 @@
 require("dotenv").config();
-const packageModel = require("../models/packageModel");
+const packageModel = require("../../models/packageModel");
 
 const getPackages = async (req, res) => {
   try {

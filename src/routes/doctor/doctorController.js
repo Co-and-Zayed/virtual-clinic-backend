@@ -1,7 +1,7 @@
 
-const appointmentModel = require("../models/appointmentModel");
-const doctorModel = require("../models/doctorModel");
-const patientModel = require("../models/patientModel");
+const appointmentModel = require("../../models/appointmentModel");
+const doctorModel = require("../../models/doctorModel");
+const patientModel = require("../../models/patientModel");
 
 //GET a patient's information and health records
 const getPatientInfo = async (req, res) => {

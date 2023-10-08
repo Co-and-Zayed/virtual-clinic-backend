@@ -5,12 +5,12 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-const doctorRoutes = require("./routes/doctor");
+const doctorRoutes = require("./routes/doctor/doctor");
 const patientRoutes = require("./routes/patient/patient");
-const userRoutes = require("./routes/userRoutes");
-const authRoutes = require("./routes/authRoutes");
-const adminRoutes = require("./routes/adminRoutes");
-const packageRoutes = require("./routes/packageRoutes");
+const userRoutes = require("./routes/user/userRoutes");
+const authRoutes = require("./routes/auth/authRoutes");
+const adminRoutes = require("./routes/admin/adminRoutes");
+const packageRoutes = require("./routes/package/packageRoutes");
 const dropdownRoutes = require("./routes/dropdown/dropdown");
 
 // Middleware
@@ -28,12 +28,12 @@ const { upload } = require("./utils/uploadFile");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
-const { registerUser, loginUser } = require("./routes/userController");
+const { registerUser, loginUser } = require("./routes/user/userController");
 const {
   deleteRefreshToken,
   handleRefreshToken,
-} = require("./routes/authController");
-const prescriptionsRoutes = require("./routes/prescriptionsRoutes");
+} = require("./routes/auth/authController");
+const prescriptionsRoutes = require("./routes/prescriptions/prescriptionsRoutes");
 
 mongoose
   .connect(process.env.MONGO_URI)

@@ -15,12 +15,12 @@ const {
     getAppointments,
     updateAppointment,
     deleteAppointment,
-} = require("../appointmentController")
+} = require("../appointment/appointmentController")
 
 const{
     addFamilyMember,
     getFamilyMembers,
-} = require("../familyMemberController");
+} = require("./familyMemberController");
 
 // Appointment Routes
 router.post("/createAppointment", createAppointment);

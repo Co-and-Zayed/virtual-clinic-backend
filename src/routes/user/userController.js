@@ -1,7 +1,7 @@
-const userModel = require("../models/userModel");
-const { createUserTokens } = require("./authController");
-const doctorModel = require("../models/doctorModel");
-const patientModel = require("../models/patientModel");
+const userModel = require("../../models/userModel");
+const { createUserTokens } = require("../auth/authController");
+const doctorModel = require("../../models/doctorModel");
+const patientModel = require("../../models/patientModel");
 
 const findUser = async (email) => {
   try {

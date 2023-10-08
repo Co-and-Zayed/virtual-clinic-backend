@@ -1,6 +1,6 @@
-const appointmentModel = require("../models/appointmentModel");
+const appointmentModel = require("../../models/appointmentModel");
 const { default: mongoose } = require("mongoose");
-const familyMembersModel = require("../models/familyMemberModel");
+const familyMembersModel = require("../../models/familyMemberModel");
 
 const addFamilyMember = async (req, res) => {
     const {name, nationalID, age, gender, relationship, patientEmail} = req.body;
