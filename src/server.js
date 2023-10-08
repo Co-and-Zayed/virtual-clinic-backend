@@ -15,7 +15,7 @@ const patientRoutesOld =require ("./routes/patient")
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-const patientRoutes = require("./routes/patientRoutes");
+// const patientRoutes = require("./routes/patientRoutes");
 const packageRoutes = require("./routes/packageRoutes");
 
 
