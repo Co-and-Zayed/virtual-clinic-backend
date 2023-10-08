@@ -1,3 +1,4 @@
+
 const appointmentModel = require("../models/appointmentModel");
 const doctorModel = require("../models/doctorModel");
 const patientModel = require("../models/patientModel");
@@ -80,6 +81,7 @@ const getPatientsByName = async (req, res) => {
 };
 
 //PATCH email, hourly rate, affiliation
+
 const editSettings = async (req, res) => {
   const _id = req.body._id;
   try {

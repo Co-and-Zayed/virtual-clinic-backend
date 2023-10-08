@@ -9,11 +9,15 @@ const refreshTokensModel = require("./models/refreshTokensModel");
 const userModel = require("./models/userModel");
 const appointmentModel = require("./models/appointmentModel");
 const doctorRoutes = require("./routes/doctor");
+
+const patientRoutes = require("./routes/patient/patient");
+const patientRoutesOld =require ("./routes/patient")
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const patientRoutes = require("./routes/patientRoutes");
 const packageRoutes = require("./routes/packageRoutes");
+
 
 // Middleware
 app.use(express.json());
@@ -36,6 +40,16 @@ const {
   handleRefreshToken,
 } = require("./routes/authController");
 const prescriptionsRoutes = require("./routes/prescriptionsRoutes");
+
+
+const {
+  getDoctordetails
+} = require("./routes/patientController");
+
+
+
+
+
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -60,6 +74,7 @@ Register The Routes Here
 
 app.get("/test", getRoute);
 app.use("/doctor", doctorRoutes);
+app.use("/patient", patientRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
 app.use("/patientAPI", patientRoutes);
