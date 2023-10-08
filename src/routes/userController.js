@@ -2,10 +2,10 @@
 const userModel = require("../models/userModel");
 const { createUserTokens } = require("./authController");
 
-const findUser = async (token) => {
+const findUser = async (email) => {
   try {
     // Find a user by the provided email
-    const user = await userModel.findOne({ token });
+    const user = await userModel.findOne({ email });
     if (user) {
       return user;
     }
@@ -16,8 +16,8 @@ const findUser = async (token) => {
 };
 
 const loginUser = async (req, res) => {
-  const { token } = req.body;
-  const user = await findUser(token);
+  const { email, token } = req.body;
+  const user = await findUser(email);
   if (user) {
     res.status(200).json({
       user: user,

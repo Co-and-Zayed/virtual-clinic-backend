@@ -4,8 +4,16 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const mongoose = require("mongoose");
+
+const refreshTokensModel = require("./models/refreshTokensModel");
+const userModel = require("./models/userModel");
+const appointmentModel = require("./models/appointmentModel");
 const doctorRoutes = require("./routes/doctor");
 const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const patientRoutes= require("./routes/patientRoutes")
+const packageRoutes = require("./routes/packageRoutes");
 
 // Middleware
 app.use(express.json());
@@ -22,11 +30,10 @@ const { upload } = require("./utils/uploadFile");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
-const { registerUser, loginUser } = require("./routes/userController");
-const {
-  deleteRefreshToken,
-  handleRefreshToken,
-} = require("./routes/authController");
+
+const { createAppointment, getAppointments, updateAppointment, deleteAppointment} = require("./routes/appointmentController");
+const { addFamilyMember, getFamilyMembers } = require("./routes/familyMemberController");
+
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -51,8 +58,12 @@ Register The Routes Here
 
 app.use("/doctor", doctorRoutes);
 app.use("/userAPI", userRoutes);
+app.use("/authAPI", authRoutes);
+app.use("/patientAPI",patientRoutes)
+app.use("/adminAPI", adminRoutes);
 
-app.get("/test", getRoute);
+
+// app.get("/test", getRoute);
 /*
     the request should include the image field in this format: 
     {

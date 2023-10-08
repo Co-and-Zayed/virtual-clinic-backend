@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { registerUser, loginUser } = require("./userController");
+const userModel = require("../models/userModel");
 
 // POST: Create a new user
 router.post("/registerUser", registerUser);
@@ -31,4 +32,5 @@ router.get("/deleteAllUsers", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-module.exports = router
+
+module.exports = router;
