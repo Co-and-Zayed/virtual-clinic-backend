@@ -2,10 +2,12 @@ const doctorModel = require('../models/doctorModel');
 
 const getDoctordetails = async (req, res) => {
     // view doctor details by selecting the name.
-    const id=req.body.id;
+    const name=req.body.name;
     
     try{
-       const doctor = await doctorModel.findById(id);
+       const doctor = await doctorModel.find({name: name})
+       
+       
        res.status(200).json(doctor)
     }
     catch(err){

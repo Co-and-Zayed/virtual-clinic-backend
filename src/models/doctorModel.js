@@ -40,7 +40,7 @@ const doctorSchema = new Schema({
   },
 });
 
-// Define a virtual property to compute the 'age' based on 'date_of_birth'.
+//Define a virtual property to compute the 'age' based on 'date_of_birth'.
 doctorSchema.virtual("age").get(function () {
   const today = new Date();
   const date_of_birth = this.date_of_birth;

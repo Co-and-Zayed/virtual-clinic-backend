@@ -49,6 +49,9 @@ const {
 
 
 
+
+
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
@@ -97,6 +100,10 @@ app.post("/addFamilyMember", addFamilyMember);
 app.get("/getFamilyMembers", getFamilyMembers);
 
 
+
+
+
+
 //patient routes
 
-app.post("/getDoctordetails", getDoctordetails);
+app.get("/getDoctordetails", getDoctordetails);

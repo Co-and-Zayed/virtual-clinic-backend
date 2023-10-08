@@ -1,4 +1,14 @@
-const Doctor = require('../models/doctorModel')
+const doctorModel = require('../models/doctorModel')
+
+const { default: mongoose } = require("mongoose");
+
+
+
+
+
+
+
+
 
 //GET a patient's information and health records
 const getPatientInfo = async (req, res) => {}
@@ -7,6 +17,24 @@ const getPatientInfo = async (req, res) => {}
 
 //GET list of all patients 
 const getPatients = async (req, res) => {}
+
+
+
+
+
+
+ 
+ 
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -34,4 +62,7 @@ const getUpcomingAptmnts = async (req, res) => {}
 //PATCH email, hourly rate, affiliation
 const editSettings = async (req, res) => {}
 
+
+
+//remove the create after test.
 module.exports = { getPatientInfo, getPatients, getPatientsByName, getUpcomingAptmnts, editSettings }
