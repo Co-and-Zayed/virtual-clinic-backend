@@ -4,8 +4,15 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const mongoose = require("mongoose");
+
 const refreshTokensModel = require("./models/refreshTokensModel");
 const userModel = require("./models/userModel");
+const appointmentModel = require("./models/appointmentModel");
+const doctorRoutes = require("./routes/doctor");
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const packageRoutes = require("./routes/packageRoutes");
 
 // Middleware
 app.use(express.json());
@@ -22,9 +29,14 @@ const { upload } = require("./utils/uploadFile");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
+
 const { registerUser, loginUser } = require("./routes/userController");
 const { deleteRefreshToken, handleRefreshToken } = require("./routes/auth");
+
 const  prescriptionsRoutes = require("./routes/prescriptionsRoutes");
+const { createAppointment, getAppointments, updateAppointment, deleteAppointment} = require("./routes/appointmentController");
+const { addFamilyMember, getFamilyMembers } = require("./routes/familyMemberController");
+
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -38,68 +50,20 @@ mongoose
     console.log(`Error occured: ${err}`);
   });
 
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    console.log(err);
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}
-
 /*
 
 Register The Routes Here
+
 
 /<route-prefix>/<route based on REST convention> 
 
 */
 
 app.get("/test", getRoute);
-// expects a JSON body with name, email, and type fields
-app.post("/registerUser", registerUser);
-app.post("/login", loginUser);
-app.get("/getUsers", async (req, res) => {
-  const users = await userModel.find();
-  res.json(users);
-});
-
-app.get("/deleteAllUsers", async (req, res) => {
-  try {
-    // Delete all records in the RefreshToken collection
-    const result = await userModel.deleteMany({});
-    if (result.deletedCount > 0) {
-      res.status(200).json({ message: "All users deleted successfully" });
-    } else {
-      res.status(404).json({ message: "No users found to delete" });
-    }
-  } catch (error) {
-    console.error("Error deleting users:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-app.get("/testingToken", authenticateToken, (req, res) => {
-  res.json({ message: "Token is valid" });
-});
-
-// Auth Routes
-app.delete("/logout", deleteRefreshToken);
-// expects a JSON body with token field
-app.post("/regenerateToken", handleRefreshToken);
-app.get("/allRefreshTokens", async (req, res) => {
-  const tokens = await refreshTokensModel.find();
-  res.json(tokens);
-});
-app.get("/deleteRefreshTokens", async (req, res) => {
-  const tokens = await refreshTokensModel.deleteMany({});
-  res.json(tokens);
-});
-
+app.use("/doctor", doctorRoutes);
+app.use("/userAPI", userRoutes);
+app.use("/authAPI", authRoutes);
+app.use("/adminAPI", adminRoutes);
 app.use("/prescriptionAPI",prescriptionsRoutes);
 
 /*
@@ -110,3 +74,13 @@ app.use("/prescriptionAPI",prescriptionsRoutes);
 */
 
 app.post("/upload", upload.single("image"), fileUploadRoute);
+
+// Appointment Routesz
+app.post("/createAppointment", createAppointment);
+app.post("/getAppointments/:userType", getAppointments);
+app.put("/updateAppointment/:id", updateAppointment);
+app.delete("/deleteAppointment/:id", deleteAppointment);
+
+// Family Member Routes
+app.post("/addFamilyMember", addFamilyMember);
+app.get("/getFamilyMembers", getFamilyMembers);
