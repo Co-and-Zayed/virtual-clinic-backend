@@ -37,6 +37,17 @@ const { createAppointment, getAppointments, updateAppointment, deleteAppointment
 const { addFamilyMember, getFamilyMembers } = require("./routes/familyMemberController");
 
 
+const {
+  createAppointment,
+  getAppointments,
+  updateAppointment,
+  deleteAppointment,
+} = require("./routes/appointmentController");
+const {
+  addFamilyMember,
+  getFamilyMembers,
+} = require("./routes/familyMemberController");
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
@@ -74,3 +85,13 @@ app.use("/prescriptionAPI",prescriptionsRoutes);
 */
 
 app.post("/upload", upload.single("image"), fileUploadRoute);
+
+// Appointment Routesz
+app.post("/createAppointment", createAppointment);
+app.post("/getAppointments/:userType", getAppointments);
+app.put("/updateAppointment/:id", updateAppointment);
+app.delete("/deleteAppointment/:id", deleteAppointment);
+
+// Family Member Routes
+app.post("/addFamilyMember", addFamilyMember);
+app.get("/getFamilyMembers", getFamilyMembers);

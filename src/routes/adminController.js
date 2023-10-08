@@ -59,6 +59,7 @@ const deleteDoctor = async (req, res) => {
 
 const deleteAdmin = async (req, res) => {
   const { username } = req.body;
+  console.log("USERNAME:", username);
   try {
     await adminModel.deleteMany({ username });
     await refreshTokensModel.deleteMany({ username });
@@ -88,7 +89,7 @@ const createAdmin = async (req, res) => {
     const newUser = await user.save();
     res.status(201).json(newUser);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.json({ message: err.message, status: 409 });
   }
 };
 
@@ -119,6 +120,14 @@ const viewDoctors = async (req, res) => {
   try {
     const allDoctors = await doctorModel.find().select("-password");
     res.status(200).json(allDoctors);
+  } catch (err) {
+    res.status(400).json({ message: "Error occured", err: err });
+  }
+};
+const viewPatients = async (req, res) => {
+  try {
+    const allPatients = await patientModel.find().select("-password");
+    res.status(200).json(allPatients);
   } catch (err) {
     res.status(400).json({ message: "Error occured", err: err });
   }
