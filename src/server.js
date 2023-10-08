@@ -12,6 +12,7 @@ const doctorRoutes = require("./routes/doctor");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const patientRoutes= require("./routes/patientRoutes")
 const packageRoutes = require("./routes/packageRoutes");
 
 // Middleware
@@ -29,10 +30,8 @@ const { upload } = require("./utils/uploadFile");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
-
 const { registerUser, loginUser } = require("./routes/userController");
 const { deleteRefreshToken, handleRefreshToken } = require("./routes/auth");
-
 const  prescriptionsRoutes = require("./routes/prescriptionsRoutes");
 const { createAppointment, getAppointments, updateAppointment, deleteAppointment} = require("./routes/appointmentController");
 const { addFamilyMember, getFamilyMembers } = require("./routes/familyMemberController");
@@ -63,6 +62,7 @@ app.get("/test", getRoute);
 app.use("/doctor", doctorRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
+app.use("/patientAPI",patientRoutes)
 app.use("/adminAPI", adminRoutes);
 app.use("/prescriptionAPI",prescriptionsRoutes);
 
@@ -74,13 +74,3 @@ app.use("/prescriptionAPI",prescriptionsRoutes);
 */
 
 app.post("/upload", upload.single("image"), fileUploadRoute);
-
-// Appointment Routesz
-app.post("/createAppointment", createAppointment);
-app.post("/getAppointments/:userType", getAppointments);
-app.put("/updateAppointment/:id", updateAppointment);
-app.delete("/deleteAppointment/:id", deleteAppointment);
-
-// Family Member Routes
-app.post("/addFamilyMember", addFamilyMember);
-app.get("/getFamilyMembers", getFamilyMembers);
