@@ -9,11 +9,14 @@ const refreshTokensModel = require("./models/refreshTokensModel");
 const userModel = require("./models/userModel");
 const appointmentModel = require("./models/appointmentModel");
 const doctorRoutes = require("./routes/doctor");
-const patientRoutes =require ("./routes/patient")
+
+const patientRoutes = require("./routes/patient/patient");
+const patientRoutesOld =require ("./routes/patient")
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const packageRoutes = require("./routes/packageRoutes");
+
 
 // Middleware
 app.use(express.json());
@@ -74,7 +77,7 @@ Register The Routes Here
 */
 
 app.use("/doctor", doctorRoutes);
-app.use("/patient",patientRoutes)
+app.use("/patient", patientRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
 app.use("/adminAPI", adminRoutes);
@@ -88,22 +91,3 @@ app.use("/adminAPI", adminRoutes);
 */
 
 app.post("/upload", upload.single("image"), fileUploadRoute);
-
-// Appointment Routesz
-app.post("/createAppointment", createAppointment);
-app.post("/getAppointments/:userType", getAppointments);
-app.put("/updateAppointment/:id", updateAppointment);
-app.delete("/deleteAppointment/:id", deleteAppointment);
-
-// Family Member Routes
-app.post("/addFamilyMember", addFamilyMember);
-app.get("/getFamilyMembers", getFamilyMembers);
-
-
-
-
-
-
-//patient routes
-
-app.get("/getDoctordetails", getDoctordetails);

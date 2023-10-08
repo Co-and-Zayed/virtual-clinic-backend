@@ -2,28 +2,33 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const packageSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  sessionDiscount: {
-    type: Number, // Double for sessionDiscount
-    required: true,
-  },
-  medicineDiscount: {
-    type: Number, // Double for medicineDiscount
-    required: true,
-  },
-  familyDiscount: {
-    type: Number, // Double for familyDiscount
-    required: true,
-  },
-});
+    type: {
+        type: String,
+        required : true,
+        unique: true,
+    },
+    // price per year
+    price_per_year: {
+        type: Number,
+        required : true
+    },
+    // % discount for doctor sessions
+    doctor_session_discount: {
+        type: Number,
+        required : true
+    },
+    // % discount for medicine
+    medicine_discount: {
+        type: Number,
+        required : true
+    },
+    // % discount for family members' subscriptions
+    family_discount: {
+        type: Number,
+        required : true
+    },
+    
+})
 
 const packageModel = mongoose.model("Package", packageSchema);
 module.exports = packageModel;
