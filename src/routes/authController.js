@@ -1,23 +1,18 @@
 require("dotenv").config();
-
 const express = require("express");
-const app = express();
 const jwt = require("jsonwebtoken");
 const refreshTokensModel = require("../models/refreshTokensModel");
 
-app.use(express.json());
-
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "30s" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1m" });
 }
 
-// created using user = { email: string, issuedAt: Date }
+// Creates a new access token and refresh token for the user
 async function createUserTokens(user) {
-  // Authenticate User
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
 
-  // TODO: add refresh token to database
+  // Add refresh token to database
   try {
     const refreshTokenToAdd = new refreshTokensModel({
       email: user.email,
@@ -30,11 +25,12 @@ async function createUserTokens(user) {
   }
 }
 
+// Creates a new access token for the user for a valid refresh token
 async function handleRefreshToken(req, res) {
   const { email, token } = req.body;
   if (token == null) return res.sendStatus(401);
 
-  // TODO: find in database
+  // Find in database
   const tokenRecord = await refreshTokensModel.findOne({ email });
   if (!tokenRecord || tokenRecord.token !== token) {
     return res.sendStatus(403);
@@ -50,11 +46,12 @@ async function handleRefreshToken(req, res) {
   });
 }
 
+// Deletes the refresh token associated with the provided email
 async function deleteRefreshToken(req, res) {
   const { email } = req.body;
-  // TODO: remove from database
+
+  // Remove from database
   try {
-    // Find and delete the token associated with the provided email
     const deletedToken = await refreshTokensModel.findOneAndDelete({ email });
     if (deletedToken) {
       res.status(200).json({ message: "Token deleted successfully" });
@@ -69,8 +66,28 @@ async function deleteRefreshToken(req, res) {
   }
 }
 
+// Middleware to authenticate the access token
+async function authenticateToken(req, res, next) {
+  const { email } = req.body;
+  const tokenRecord = await refreshTokensModel.findOne({ email });
+  if (!tokenRecord) return res.sendStatus(401);
+
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    console.log(err);
+    if (err) return handleRefreshToken(req, res);
+    req.user = user;
+    next();
+  });
+}
+
 module.exports = {
   createUserTokens,
   handleRefreshToken,
   deleteRefreshToken,
+  authenticateToken,
+  generateAccessToken,
 };

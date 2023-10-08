@@ -51,20 +51,23 @@ const patientSchema = new Schema({
 })
 
 // Define a virtual property to compute the 'age' based on 'date_of_birth'.
-patientSchema.virtual('age').get(function () {
-    const today = new Date();
-    const dob = this.date_of_birth;
-    const age = today.getFullYear() - dob.getFullYear();
-  
-    // Adjust age if the birthday has not occurred this year yet.
-    const monthDiff = today.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
-  
-    return age;
-  });
+patientSchema.virtual("age").get(function () {
+  const today = new Date();
+  const date_of_birth = this.date_of_birth;
+  const age = today.getFullYear() - date_of_birth.getFullYear();
 
+
+  // Adjust age if the birthday has not occurred this year yet.
+  const monthDiff = today.getMonth() - date_of_birth.getMonth();
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < date_of_birth.getDate())
+  ) {
+    age--;
+  }
+
+  return age;
+});
 
 const patientModel = mongoose.model("Patient", patientSchema);
 module.exports = patientModel;

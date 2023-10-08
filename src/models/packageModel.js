@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const packageSchema = new Schema({
     type: {
         type: String,
-        required : true
+        required : true,
+        unique: true,
     },
     // price per year
     price_per_year: {
