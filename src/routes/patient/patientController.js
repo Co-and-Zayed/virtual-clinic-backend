@@ -9,35 +9,41 @@ const getDoctors = async (req, res) => {
     // get patient email from request body
     let email = req.body.email;
     if (!email) {
-      res.status(400).json({ message: "Patient Email is required" });
+      res.status(400).json({ message: "Patient Email is required", req: req.body });
       return;
     }
     // Get patient
-    const patient = Patient.findOne({ email: email });
+    var patient = await Patient.findOne({ email: email });
+    console.log("Patient:", patient);
     if (!patient) {
       res.status(404).json({ message: "Patient not found" });
       return;
     }
+    
     // Get patient health package
     const patientPackageId = patient.healthPackage;
+    console.log("Patient package id:", patientPackageId);
 
-    const discount = 0;
+    var discount = 0;
 
     // If the patient has a health package
     if (patientPackageId) {
-      const patientPackage = Package.findOne({ _id: patientPackageId });
+      const patientPackage = await Package.findOne({ _id: patientPackageId });
+      console.log("Patient package:", patientPackage);
       discount = patientPackage.doctor_session_discount;
     }
 
-    const doctors = await Doctor.find();
+    const doctors = await Doctor.find().lean();
 
     // Add to each doctor a field called session_price which is calculated from the patient's healthPackage
     for (let i = 0; i < doctors.length; i++) {
       let doctor = doctors[i];
       let session_price = doctor.hourlyRate * 1.1;
-      session_price -= session_price * (discount / 100);
+      session_price -= session_price * (discount);
       doctor.session_price = session_price;
     }
+
+    console.log(doctors);
 
     res.status(200).json(doctors);
   } catch (error) {
@@ -65,6 +71,8 @@ const getDoctorsByNameSpeciality = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error });
   }
 };
+
+// Subscribe to a health package 
 
 ///////////
 // ZEINA //

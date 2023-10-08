@@ -4,10 +4,10 @@ const router = express.Router()
 const { getDoctors, getDoctorsByNameSpeciality, getDoctordetails } = require('./patientController')
 
 //GET list of all doctors 
-router.get('/getDoctors' , getDoctors)
+router.post('/getDoctors' , getDoctors)
 
 //GET doctors by searching name and/or specialty
-router.get('/getDoctorsByNameSpeciality' , getDoctorsByNameSpeciality)
+router.post('/getDoctorsByNameSpeciality' , getDoctorsByNameSpeciality)
 
 /////////////
 // MOSTAFA //
