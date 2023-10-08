@@ -18,6 +18,11 @@ const doctorSchema = new Schema({
     type: String,
     required: true,
   },
+  gender: {
+    type: String,
+    enum: ["MALE", "FEMALE"],
+    required: true,
+  },
   specialty: {
     type: String,
     required: true,

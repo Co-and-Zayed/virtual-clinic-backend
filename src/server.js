@@ -15,6 +15,7 @@ const patientRoutesOld =require ("./routes/patient")
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const patientRoutes = require("./routes/patientRoutes");
 const packageRoutes = require("./routes/packageRoutes");
 
 
@@ -33,17 +34,12 @@ const { upload } = require("./utils/uploadFile");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
-
+const { registerUser, loginUser } = require("./routes/userController");
 const {
-  createAppointment,
-  getAppointments,
-  updateAppointment,
-  deleteAppointment,
-} = require("./routes/appointmentController");
-const {
-  addFamilyMember,
-  getFamilyMembers,
-} = require("./routes/familyMemberController");
+  deleteRefreshToken,
+  handleRefreshToken,
+} = require("./routes/authController");
+const prescriptionsRoutes = require("./routes/prescriptionsRoutes");
 
 
 const {
@@ -76,13 +72,15 @@ Register The Routes Here
 
 */
 
+app.get("/test", getRoute);
 app.use("/doctor", doctorRoutes);
 app.use("/patient", patientRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
+app.use("/patientAPI", patientRoutes);
 app.use("/adminAPI", adminRoutes);
+app.use("/prescriptionAPI", prescriptionsRoutes);
 
-// app.get("/test", getRoute);
 /*
     the request should include the image field in this format: 
     {
