@@ -124,14 +124,6 @@ const viewDoctors = async (req, res) => {
     res.status(400).json({ message: "Error occured", err: err });
   }
 };
-const viewPatients = async (req, res) => {
-  try {
-    const allPatients = await patientModel.find().select("-password");
-    res.status(200).json(allPatients);
-  } catch (err) {
-    res.status(400).json({ message: "Error occured", err: err });
-  }
-};
 
 const viewPatients = async (req, res) => {
   try {
