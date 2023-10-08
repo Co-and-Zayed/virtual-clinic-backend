@@ -37,7 +37,7 @@ const createPackage = async (req, res) => {
   });
 
   try {
-    const newPackage = await package.save();x
+    const newPackage = await package.save();
     res.status(201).json(newPackage);
   } catch (err) {
     res.json({ message: err.message, status: 400 });
