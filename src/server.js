@@ -11,6 +11,7 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const packageRoutes = require("./routes/packageRoutes");
+const dropdownRoutes = require("./routes/dropdown/dropdown");
 
 // Middleware
 app.use(express.json());
@@ -63,6 +64,7 @@ app.use("/authAPI", authRoutes);
 app.use("/patientAPI", patientRoutes);
 app.use("/adminAPI", adminRoutes);
 app.use("/prescriptionAPI", prescriptionsRoutes);
+app.use("/dropdown", dropdownRoutes);
 
 /*
     the request should include the image field in this format: 

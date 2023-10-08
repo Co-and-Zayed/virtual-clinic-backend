@@ -3,7 +3,7 @@ const Patient = require("../../models/patientModel.js");
 const Package = require("../../models/packageModel.js");
 
 
-//GET list of all doctors
+//GET list of all doctors or doctors by searching name and/or speciality
 const getDoctors = async (req, res) => {
   try {
     // get patient email from request body
@@ -14,7 +14,6 @@ const getDoctors = async (req, res) => {
     }
     // Get patient
     var patient = await Patient.findOne({ email: email });
-    console.log("Patient:", patient);
     if (!patient) {
       res.status(404).json({ message: "Patient not found" });
       return;
@@ -33,7 +32,15 @@ const getDoctors = async (req, res) => {
       discount = patientPackage.doctor_session_discount;
     }
 
-    const doctors = await Doctor.find().lean();
+    let params = {};
+    if (req.body.name) {
+      params.name = new RegExp(req.body.name, 'i');
+    }
+    if (req.body.specialty) {
+      params.specialty = req.body.specialty;
+    }
+
+    const doctors = await Doctor.find(params).lean();
 
     // Add to each doctor a field called session_price which is calculated from the patient's healthPackage
     for (let i = 0; i < doctors.length; i++) {
@@ -51,28 +58,6 @@ const getDoctors = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error });
   }
 };
-
-//GET doctors by searching name and/or speciality
-const getDoctorsByNameSpeciality = async (req, res) => {
-  try {
-    // Check if name and specialty are provided
-    let params = {};
-    if (req.body.name) {
-      params.name = new RegExp(req.body.name, 'i');
-    }
-    if (req.body.specialty) {
-      params.specialty = new RegExp(req.body.specialty, 'i');
-    }
-
-    const doctors = await Doctor.find(params);
-    res.status(200).json(doctors);
-  } catch (error) {
-    console.error("Error getting doctors:", error);
-    res.status(500).json({ message: "Internal server error", error: error });
-  }
-};
-
-// Subscribe to a health package 
 
 ///////////
 // ZEINA //
@@ -92,4 +77,4 @@ const getDoctordetails = async (req, res) => {
 }
 
 
-module.exports = { getDoctors, getDoctorsByNameSpeciality, getDoctordetails };
+module.exports = { getDoctors, getDoctordetails };
