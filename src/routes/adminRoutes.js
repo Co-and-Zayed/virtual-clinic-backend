@@ -13,6 +13,7 @@ const {
   deleteDoctor,
   deleteAdmin,
   viewDoctors,
+  viewPatients,
 } = require("./adminController");
 
 // POST: Creates a new access token and refresh token for the user
@@ -31,5 +32,6 @@ router.post("/deletePackage", deletePackage);
 router.post("/updatePackage", updatePackage);
 
 router.get("/viewDoctors", viewDoctors);
+router.get("/viewPatients", viewPatients);
 
 module.exports = router;
