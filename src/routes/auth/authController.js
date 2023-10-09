@@ -13,6 +13,7 @@ async function createUserTokens(user) {
   const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
 
   // Add refresh token to database
+  console.log("USER DATA: ", user);
   try {
     const refreshTokenToAdd = new refreshTokensModel({
       username: user.username,

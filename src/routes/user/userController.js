@@ -27,30 +27,32 @@ const loginUser = async (req, res) => {
 
   var object = {};
 
-  if (user.type == "DOCTOR") {
+  if (user?.type == "DOCTOR") {
     object = await doctorModel.findOne({ username: username });
-    if (object.password !== password) {
+    if (object?.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
     }
-  } else if (user.type == "PATIENT") {
+  } else if (user?.type == "PATIENT") {
     object = await patientModel.findOne({ username: username });
-    if (object.password !== password) {
+    if (object?.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
     }
   } else {
     object = await adminModel.findOne({ username: username });
-    if (object.password !== password) {
+    if (object?.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
     }
   }
 
+  console.log("OBJECT: ", object);
   if (user) {
     res.status(200).json({
       user: user,
       data: object,
+      type: !user?.type ? "ADMIN" : user?.type,
       tokens: await createUserTokens({
         username: username,
-        type: user.type,
+        type: !user?.type ? "ADMIN" : user?.type,
         issuedAt: new Date(),
       }),
     });

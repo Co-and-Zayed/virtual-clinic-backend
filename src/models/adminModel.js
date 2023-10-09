@@ -14,5 +14,10 @@ const adminSchema = new Schema({
   },
 });
 
+// Deirive time from date
+adminSchema.virtual("type").get(function () {
+  return "ADMIN";
+});
+
 const adminModel = mongoose.model("Administrator", adminSchema);
 module.exports = adminModel;

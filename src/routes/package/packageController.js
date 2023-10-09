@@ -25,15 +25,20 @@ const getPackages = async (req, res) => {
   }
 };
 const createPackage = async (req, res) => {
-  const { name, price, sessionDiscount, medicineDiscount, familyDiscount } =
-    req.body;
+  const {
+    type,
+    price_per_year,
+    doctor_session_discount,
+    medicine_discount,
+    family_discount,
+  } = req.body;
 
   const package = new packageModel({
-    name,
-    price,
-    sessionDiscount,
-    medicineDiscount,
-    familyDiscount,
+    type: type,
+    price_per_year: price_per_year,
+    doctor_session_discount: doctor_session_discount,
+    medicine_discount: medicine_discount,
+    family_discount: family_discount,
   });
 
   try {
