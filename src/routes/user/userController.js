@@ -24,15 +24,16 @@ const loginUser = async (req, res) => {
   var object = {};
 
   if (user.type == "DOCTOR") {
-    object = await doctorModel.findOne({email: email});
+    object = await doctorModel.findOne({ email: email });
     if (object.password !== password) {
-      return res.status(401).json({ message: "Email Or Passowrd Incorrect" });
+      return res.status(401).json({ message: "Email Or Password Incorrect" });
     }
   }
 
   if (user.type == "PATIENT") {
+    object = await patientModel.findOne({ email: email });
     if (object.password !== password) {
-      return res.status(401).json({ message: "Email Or Passowrd Incorrect" });
+      return res.status(401).json({ message: "Email Or Password Incorrect" });
     }
   }
 
@@ -54,10 +55,16 @@ const registerUser = async (req, res) => {
   const { username, password, date_of_birth, gender } = req.body;
 
   // Patient Fields
-  const { mobileNumber, healthRecords, emergencyContactName, emergencyContactNumber } = req.body;
+  const {
+    mobileNumber,
+    healthRecords,
+    emergencyContactName,
+    emergencyContactNumber,
+  } = req.body;
 
   // Doctor Fields
-  const { specialty, affiliation, educationalBackground, hourlyRate }  = req.body;
+  const { specialty, affiliation, educationalBackground, hourlyRate } =
+    req.body;
 
   const entityObject = {};
 
@@ -116,7 +123,7 @@ const registerUser = async (req, res) => {
 
   if (educationalBackground) {
     entityObject.educationalBackground = educationalBackground;
-  }  
+  }
 
   if (hourlyRate) {
     entityObject.hourlyRate = hourlyRate;
@@ -135,7 +142,7 @@ const registerUser = async (req, res) => {
         date_of_birth,
         affiliation,
         educationalBackground,
-        hourlyRate
+        hourlyRate,
       });
       await doctor.save();
 
@@ -147,7 +154,6 @@ const registerUser = async (req, res) => {
         data: doctor,
         tokens: await createUserTokens({ email: email, issuedAt: new Date() }),
       });
-
     } catch (err) {
       return res.status(400).json({ success: false, message: err.message });
     }
@@ -155,19 +161,19 @@ const registerUser = async (req, res) => {
   if (type === "PATIENT") {
     try {
       const patient = new patientModel({
-        name, 
+        name,
         email,
         password,
         username,
         gender,
         date_of_birth,
-        mobileNumber, 
+        mobileNumber,
         healthRecords,
         emergencyContactName,
-        emergencyContactNumber
+        emergencyContactNumber,
       });
       await patient.save();
-      
+
       const newUser = await user.save();
 
       return res.status(201).json({
@@ -176,12 +182,10 @@ const registerUser = async (req, res) => {
         data: patient,
         tokens: await createUserTokens({ email: email, issuedAt: new Date() }),
       });
-
     } catch (err) {
       return res.status(400).json({ success: false, message: err.message });
     }
   }
-
 };
 
 module.exports = { registerUser, loginUser };
