@@ -5,10 +5,12 @@ const refreshTokensSchema = new Schema({
   username: {
     type: String,
     required: false,
+    unique: true,
   },
   email: {
     type: String,
     required: false,
+    unique: true,
   },
   type: {
     type: String,
