@@ -1,14 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const adminModel = require("../models/adminModel");
+const adminModel = require("../../models/adminModel");
 
-const refreshTokensModel = require("../models/refreshTokensModel");
-const userModel = require("../models/userModel");
-const familyMembersModel = require("../models/familyMembersModel");
-const patientModel = require("../models/patientModel");
-const doctorModel = require("../models/doctorModel");
-const appointmentModel = require("../models/appointmentModel");
+const refreshTokensModel = require("../../models/refreshTokensModel");
+const userModel = require("../../models/userModel");
+const familyMembersModel = require("../../models/familyMembersModel");
+const patientModel = require("../../models/patientModel");
+const doctorModel = require("../../models/doctorModel");
+const appointmentModel = require("../../models/appointmentModel");
 
 const loginAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -124,6 +124,7 @@ const viewDoctors = async (req, res) => {
     res.status(400).json({ message: "Error occured", err: err });
   }
 };
+
 const viewPatients = async (req, res) => {
   try {
     const allPatients = await patientModel.find().select("-password");

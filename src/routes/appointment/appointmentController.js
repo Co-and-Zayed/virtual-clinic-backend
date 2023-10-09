@@ -1,4 +1,4 @@
-const appointmentModel = require("../models/appointmentModel");
+const appointmentModel = require("../../models/appointmentModel");
 const { default: mongoose } = require("mongoose");
 
 const createAppointment = async (req, res) => {

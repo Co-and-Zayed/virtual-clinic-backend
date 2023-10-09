@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const refreshTokensModel = require("../models/refreshTokensModel");
+const refreshTokensModel = require("../../models/refreshTokensModel");
 const {
   handleRefreshToken,
   deleteRefreshToken,

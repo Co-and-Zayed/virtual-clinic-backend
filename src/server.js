@@ -5,14 +5,13 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-const refreshTokensModel = require("./models/refreshTokensModel");
-const userModel = require("./models/userModel");
-const appointmentModel = require("./models/appointmentModel");
-const doctorRoutes = require("./routes/doctor");
-const userRoutes = require("./routes/userRoutes");
-const authRoutes = require("./routes/authRoutes");
-const adminRoutes = require("./routes/adminRoutes");
-const packageRoutes = require("./routes/packageRoutes");
+const doctorRoutes = require("./routes/doctor/doctor");
+const patientRoutes = require("./routes/patient/patient");
+const userRoutes = require("./routes/user/userRoutes");
+const authRoutes = require("./routes/auth/authRoutes");
+const adminRoutes = require("./routes/admin/adminRoutes");
+const packageRoutes = require("./routes/package/packageRoutes");
+const dropdownRoutes = require("./routes/dropdown/dropdown");
 
 // Middleware
 app.use(express.json());
@@ -29,17 +28,12 @@ const { upload } = require("./utils/uploadFile");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
-
+const { registerUser, loginUser } = require("./routes/user/userController");
 const {
-  createAppointment,
-  getAppointments,
-  updateAppointment,
-  deleteAppointment,
-} = require("./routes/appointmentController");
-const {
-  addFamilyMember,
-  getFamilyMembers,
-} = require("./routes/familyMemberController");
+  deleteRefreshToken,
+  handleRefreshToken,
+} = require("./routes/auth/authController");
+const prescriptionsRoutes = require("./routes/prescriptions/prescriptionsRoutes");
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -62,12 +56,16 @@ Register The Routes Here
 
 */
 
+app.get("/test", getRoute);
 app.use("/doctor", doctorRoutes);
+app.use("/patient", patientRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
+app.use("/patientAPI", patientRoutes);
 app.use("/adminAPI", adminRoutes);
+app.use("/prescriptionAPI", prescriptionsRoutes);
+app.use("/dropdown", dropdownRoutes);
 
-// app.get("/test", getRoute);
 /*
     the request should include the image field in this format: 
     {
@@ -76,13 +74,3 @@ app.use("/adminAPI", adminRoutes);
 */
 
 app.post("/upload", upload.single("image"), fileUploadRoute);
-
-// Appointment Routesz
-app.post("/createAppointment", createAppointment);
-app.post("/getAppointments/:userType", getAppointments);
-app.put("/updateAppointment/:id", updateAppointment);
-app.delete("/deleteAppointment/:id", deleteAppointment);
-
-// Family Member Routes
-app.post("/addFamilyMember", addFamilyMember);
-app.get("/getFamilyMembers", getFamilyMembers);

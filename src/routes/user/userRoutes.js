@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { registerUser, loginUser } = require("./userController");
-const userModel = require("../models/userModel");
+const userModel = require("../../models/userModel");
 
 // POST: Create a new user
 router.post("/registerUser", registerUser);
