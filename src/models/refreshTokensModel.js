@@ -10,6 +10,10 @@ const refreshTokensSchema = new Schema({
     type: String,
     required: false,
   },
+  type: {
+    type: String,
+    required: true,
+  },
   token: {
     type: String,
     required: true,

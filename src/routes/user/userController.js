@@ -2,13 +2,17 @@ const userModel = require("../../models/userModel");
 const { createUserTokens } = require("../auth/authController");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
+const adminModel = require("../../models/adminModel");
 
-const findUser = async (email) => {
+const findUser = async (username) => {
   try {
     // Find a user by the provided email
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ username });
     if (user) {
       return user;
+    } else {
+      const admin = await adminModel.findOne({ username });
+      if (admin) return admin;
     }
     return null;
   } catch (error) {
@@ -17,21 +21,24 @@ const findUser = async (email) => {
 };
 
 const loginUser = async (req, res) => {
-  const { email, password, token } = req.body;
+  const { username, password, token } = req.body;
 
-  const user = await findUser(email);
+  const user = await findUser(username);
 
   var object = {};
 
   if (user.type == "DOCTOR") {
-    object = await doctorModel.findOne({ email: email });
+    object = await doctorModel.findOne({ username: username });
     if (object.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
     }
-  }
-
-  if (user.type == "PATIENT") {
-    object = await patientModel.findOne({ email: email });
+  } else if (user.type == "PATIENT") {
+    object = await patientModel.findOne({ username: username });
+    if (object.password !== password) {
+      return res.status(401).json({ message: "Email Or Password Incorrect" });
+    }
+  } else {
+    object = await adminModel.findOne({ username: username });
     if (object.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
     }
@@ -41,7 +48,11 @@ const loginUser = async (req, res) => {
     res.status(200).json({
       user: user,
       data: object,
-      tokens: await createUserTokens({ email: email, issuedAt: new Date() }),
+      tokens: await createUserTokens({
+        username: username,
+        type: user.type,
+        issuedAt: new Date(),
+      }),
     });
   } else {
     res.status(400).json({ message: "User not found" });
@@ -77,6 +88,7 @@ const registerUser = async (req, res) => {
   const user = new userModel({
     name: name,
     email: email,
+    username: username,
     type: type,
   });
 
@@ -152,7 +164,11 @@ const registerUser = async (req, res) => {
         success: true,
         user: newUser,
         data: doctor,
-        tokens: await createUserTokens({ email: email, issuedAt: new Date() }),
+        tokens: await createUserTokens({
+          username: username,
+          type: "DOCTOR",
+          issuedAt: new Date(),
+        }),
       });
     } catch (err) {
       return res.status(400).json({ success: false, message: err.message });
@@ -180,7 +196,11 @@ const registerUser = async (req, res) => {
         success: true,
         user: newUser,
         data: patient,
-        tokens: await createUserTokens({ email: email, issuedAt: new Date() }),
+        tokens: await createUserTokens({
+          username: username,
+          type: "PATIENT",
+          issuedAt: new Date(),
+        }),
       });
     } catch (err) {
       return res.status(400).json({ success: false, message: err.message });

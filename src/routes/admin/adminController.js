@@ -18,6 +18,7 @@ const loginAdmin = async (req, res) => {
       user: user,
       tokens: await createUserTokens({
         username: username,
+        type: "ADMIN",
         issuedAt: new Date(),
       }),
     });
@@ -97,6 +98,7 @@ const createAdmin = async (req, res) => {
 async function createUserTokens(user) {
   const data = {
     username: user.username,
+    type: "ADMIN",
     issuedAt: new Date(),
   };
 
@@ -107,6 +109,7 @@ async function createUserTokens(user) {
   try {
     const refreshTokenToAdd = new refreshTokensModel({
       username: user.username,
+      type: "ADMIN",
       token: refreshToken,
     });
     await refreshTokenToAdd.save();

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const adminModel = require("../../models/adminModel");
+const { authenticateToken } = require("../auth/authController");
 const {
   createPackage,
   deletePackage,
@@ -18,12 +19,12 @@ const {
 } = require("./adminController");
 
 // POST: Creates a new access token and refresh token for the user
-router.post("/loginAdmin", loginAdmin);
-router.post("/createAdmin", createAdmin);
-router.post("/deletePatient", deletePatient);
-router.post("/deleteDoctor", deleteDoctor);
-router.post("/deleteAdmin", deleteAdmin);
-router.get("/viewAllAdmins/:id", async (req, res) => {
+router.post("/loginAdmin", authenticateToken("ADMIN"), loginAdmin);
+router.post("/createAdmin", authenticateToken("ADMIN"), createAdmin);
+router.post("/deletePatient", authenticateToken("ADMIN"), deletePatient);
+router.post("/deleteDoctor", authenticateToken("ADMIN"), deleteDoctor);
+router.post("/deleteAdmin", authenticateToken("ADMIN"), deleteAdmin);
+router.get("/viewAllAdmins/:id", authenticateToken("ADMIN"), async (req, res) => {
   const { id } = req.params;
   try {
     // Find all admins except the one with the specified ID
@@ -35,12 +36,12 @@ router.get("/viewAllAdmins/:id", async (req, res) => {
   }
 });
 
-router.get("/getPackages", getPackages);
-router.post("/createPackage", createPackage);
-router.post("/deletePackage/:id", deletePackage);
-router.post("/updatePackage/:id", updatePackage);
+router.get("/getPackages", authenticateToken("ADMIN"), getPackages);
+router.post("/createPackage", authenticateToken("ADMIN"), createPackage);
+router.post("/deletePackage/:id", authenticateToken("ADMIN"), deletePackage);
+router.post("/updatePackage/:id", authenticateToken("ADMIN"), updatePackage);
 
-router.get("/viewDoctors", viewDoctors);
-router.get("/viewPatients", viewPatients);
+router.get("/viewDoctors", authenticateToken("ADMIN"), viewDoctors);
+router.get("/viewPatients", authenticateToken("ADMIN"), viewPatients);
 
 module.exports = router;

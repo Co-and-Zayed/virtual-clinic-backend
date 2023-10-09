@@ -15,7 +15,8 @@ async function createUserTokens(user) {
   // Add refresh token to database
   try {
     const refreshTokenToAdd = new refreshTokensModel({
-      email: user.email,
+      username: user.username,
+      type: user.type,
       token: refreshToken,
     });
     await refreshTokenToAdd.save();
@@ -27,19 +28,24 @@ async function createUserTokens(user) {
 
 // Creates a new access token for the user for a valid refresh token
 async function handleRefreshToken(req, res) {
-  const { email, token } = req.body;
+  const { username, email, token } = req.body;
   if (token == null) return res.sendStatus(401);
 
   // Find in database
-  const tokenRecord = await refreshTokensModel.findOne({ email });
+  const tokenRecord = await refreshTokensModel.findOne({ username });
   if (!tokenRecord || tokenRecord.token !== token) {
-    return res.sendStatus(403);
+    // MIGHT BE ADMIN
+    const adminTokenRecord = await refreshTokensModel.findOne({ username });
+    if (!adminTokenRecord || adminTokenRecord.token !== token) {
+      return res.sendStatus(403);
+    }
   }
 
   jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
     if (err) return res.sendStatus(403);
     const accessToken = generateAccessToken({
-      email: user.email,
+      username: user.username,
+      type: user.type,
       issuedAt: new Date(),
     });
     res.json({ accessToken: accessToken });
@@ -67,21 +73,26 @@ async function deleteRefreshToken(req, res) {
 }
 
 // Middleware to authenticate the access token
-async function authenticateToken(req, res, next) {
-  const { email } = req.body;
-  const tokenRecord = await refreshTokensModel.findOne({ email });
-  if (!tokenRecord) return res.sendStatus(401);
+function authenticateToken(userType) {
+  return async (req, res, next) => {
+    const { email } = req.body;
+    const tokenRecord = await refreshTokensModel.findOne({ email });
+    if (!tokenRecord) return res.sendStatus(401);
 
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (token == null) return res.sendStatus(401);
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    console.log(err);
-    if (err) return res.sendStatus(403); // should send a refresh request
-    req.user = user;
-    next();
-  });
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      console.log(err);
+      if (err)
+        return res.status(403).json({ message: "Access Token is not valid" }); // should send a refresh request
+      if (user.type !== userType)
+        return res.status(403).json({ message: "User is not authorized" });
+      req.user = user;
+      next();
+    });
+  };
 }
 
 module.exports = {
