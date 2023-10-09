@@ -11,7 +11,7 @@ const {
 router.post("/regenerateToken", handleRefreshToken);
 
 // POST: Deletes corresponding refresh token from database on logout
-router.delete("/logout", deleteRefreshToken);
+router.post("/logout", deleteRefreshToken);
 
 router.get("/allRefreshTokens", async (req, res) => {
   const tokens = await refreshTokensModel.find();

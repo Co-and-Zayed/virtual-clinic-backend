@@ -18,22 +18,27 @@ const getPackages = async (req, res) => {
       }
       return package;
     });
-    console.log("PACKAGES WITH TIER", packagesWithTier);
+
     res.status(200).json(packagesWithTier);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 const createPackage = async (req, res) => {
-  const { name, price, sessionDiscount, medicineDiscount, familyDiscount } =
-    req.body;
+  const {
+    type,
+    price_per_year,
+    doctor_session_discount,
+    medicine_discount,
+    family_discount,
+  } = req.body;
 
   const package = new packageModel({
-    name,
-    price,
-    sessionDiscount,
-    medicineDiscount,
-    familyDiscount,
+    type: type,
+    price_per_year: price_per_year,
+    doctor_session_discount: doctor_session_discount,
+    medicine_discount: medicine_discount,
+    family_discount: family_discount,
   });
 
   try {
@@ -46,7 +51,7 @@ const createPackage = async (req, res) => {
 
 const updatePackage = async (req, res) => {
   const { id } = req.params;
-  console.log("PACKAGE ID:", id);
+
   try {
     // Use findOneAndUpdate to update the package by its _id
     const updatedPackage = await packageModel.findByIdAndUpdate(
@@ -67,7 +72,7 @@ const updatePackage = async (req, res) => {
 
 const deletePackage = async (req, res) => {
   const { id } = req.params;
-  console.log("DELETING ID:", id);
+
   try {
     const deletedPackage = await packageModel.findOneAndDelete({ _id: id });
     res.status(201).json({ message: "Package deleted successfully" });

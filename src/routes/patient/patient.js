@@ -3,8 +3,6 @@ const router = express.Router();
 
 const { getDoctors, getDoctordetails } = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
-//GET list of all doctors or doctors by searching name and/or speciality
-router.post("/getDoctors", authenticateToken, getDoctors);
 
 /////////////
 // MOSTAFA //
@@ -21,19 +19,45 @@ const {
   getFamilyMembers,
 } = require("./familyMemberController");
 
+//GET list of all doctors or doctors by searching name and/or speciality
+router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);
 // Appointment Routes
-router.post("/createAppointment", createAppointment);
-router.post("/getAppointments/:userType", getAppointments);
-router.put("/updateAppointment/:id", updateAppointment);
-router.delete("/deleteAppointment/:id", deleteAppointment);
+router.post(
+  "/createAppointment",
+  authenticateToken("PATIENT"),
+  createAppointment
+);
+router.post(
+  "/getAppointments/:userType",
+  authenticateToken("PATIENT"),
+  getAppointments
+);
+router.put(
+  "/updateAppointment/:id",
+  authenticateToken("PATIENT"),
+  updateAppointment
+);
+router.delete(
+  "/deleteAppointment/:id",
+  authenticateToken("PATIENT"),
+  deleteAppointment
+);
 
 // Family Member Routes
-router.post("/addFamilyMember", addFamilyMember);
-router.post("/getFamilyMembers", getFamilyMembers);
+router.post("/addFamilyMember", authenticateToken("PATIENT"), addFamilyMember);
+router.post(
+  "/getFamilyMembers",
+  authenticateToken("PATIENT"),
+  getFamilyMembers
+);
 
 ///////////
 // ZEINA //
 ///////////
-router.post("/getDoctordetails", getDoctordetails);
+router.post(
+  "/getDoctordetails",
+  authenticateToken("PATIENT"),
+  getDoctordetails
+);
 
 module.exports = router;

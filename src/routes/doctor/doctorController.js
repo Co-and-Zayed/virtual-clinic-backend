@@ -1,4 +1,3 @@
-
 const appointmentModel = require("../../models/appointmentModel");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
@@ -33,9 +32,9 @@ const getPatients = async (req, res) => {
   const doctor = req.body.doctor;
   try {
     //  Find all appointments with the specified doctor's email
-    const appointments = await appointmentModel.find({ doctor: doctor });
+    const appointments = await appointmentModel.find({ doctorEmail: doctor });
     const patientEmails = appointments.map(
-      (appointment) => appointment.patient
+      (appointment) => appointment.patientEmail
     );
 
     // Find patients using the extracted patient emails
@@ -54,11 +53,11 @@ const getUpcomingAptmnts = async (req, res) => {
 
     // Find all upcoming appointments with the specified doctor's email
     const upcomingAppointments = await appointmentModel.find({
-      doctor: doctor,
+      doctorEmail: doctor,
       status: "UPCOMING",
     });
     const patientEmails = upcomingAppointments.map(
-      (appointment) => appointment.patient
+      (appointment) => appointment.patientEmail
     );
 
     const patients = await patientModel.find({ email: { $in: patientEmails } });
@@ -89,7 +88,7 @@ const editSettings = async (req, res) => {
       { _id: _id },
       { ...req.body }
     );
-    console.log(doctor);
+
     res.status(200).json(doctor);
   } catch (error) {
     console.error(error);

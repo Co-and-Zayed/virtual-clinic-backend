@@ -2,14 +2,15 @@ const Doctor = require("../../models/doctorModel.js");
 const Patient = require("../../models/patientModel.js");
 const Package = require("../../models/packageModel.js");
 
-
 //GET list of all doctors or doctors by searching name and/or speciality
 const getDoctors = async (req, res) => {
   try {
     // get patient email from request body
     let email = req.body.email;
     if (!email) {
-      res.status(400).json({ message: "Patient Email is required", req: req.body });
+      res
+        .status(400)
+        .json({ message: "Patient Email is required", req: req.body });
       return;
     }
     // Get patient
@@ -18,23 +19,22 @@ const getDoctors = async (req, res) => {
       res.status(404).json({ message: "Patient not found" });
       return;
     }
-    
+
     // Get patient health package
     const patientPackageId = patient.healthPackage;
-    console.log("Patient package id:", patientPackageId);
 
     var discount = 0;
 
     // If the patient has a health package
     if (patientPackageId) {
       const patientPackage = await Package.findOne({ _id: patientPackageId });
-      console.log("Patient package:", patientPackage);
+
       discount = patientPackage.doctor_session_discount;
     }
 
     let params = {};
     if (req.body.name) {
-      params.name = new RegExp(req.body.name, 'i');
+      params.name = new RegExp(req.body.name, "i");
     }
     if (req.body.specialty) {
       params.specialty = req.body.specialty;
@@ -46,11 +46,9 @@ const getDoctors = async (req, res) => {
     for (let i = 0; i < doctors.length; i++) {
       let doctor = doctors[i];
       let session_price = doctor.hourlyRate * 1.1;
-      session_price -= session_price * (discount);
+      session_price -= session_price * discount;
       doctor.session_price = session_price;
     }
-
-    console.log(doctors);
 
     res.status(200).json(doctors);
   } catch (error) {
@@ -64,17 +62,15 @@ const getDoctors = async (req, res) => {
 ///////////
 const getDoctordetails = async (req, res) => {
   // view doctor details by selecting the name.
-  const name=req.body.name;
-  
-  try{
-     const doctor = await doctorModel.find({name: name})
-     
-     res.status(200).json(doctor)
-  }
-  catch(err){
-      res.status(400).json({error:err.message});
-  }
-}
+  const name = req.body.name;
 
+  try {
+    const doctor = await doctorModel.find({ name: name });
+
+    res.status(200).json(doctor);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
 
 module.exports = { getDoctors, getDoctordetails };
