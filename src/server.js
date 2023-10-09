@@ -56,7 +56,6 @@ app.use("/doctor", doctorRoutes);
 app.use("/patient", patientRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
-app.use("/patientAPI", patientRoutes);
 app.use("/adminAPI", adminRoutes);
 app.use("/prescriptionAPI", prescriptionsRoutes);
 app.use("/dropdown", dropdownRoutes);
