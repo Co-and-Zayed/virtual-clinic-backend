@@ -1,4 +1,3 @@
-
 const appointmentModel = require("../../models/appointmentModel");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
@@ -89,7 +88,7 @@ const editSettings = async (req, res) => {
       { _id: _id },
       { ...req.body }
     );
-    console.log(doctor);
+
     res.status(200).json(doctor);
   } catch (error) {
     console.error(error);

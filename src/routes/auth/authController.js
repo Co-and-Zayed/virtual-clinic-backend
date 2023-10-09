@@ -54,17 +54,19 @@ async function handleRefreshToken(req, res) {
 
 // Deletes the refresh token associated with the provided email
 async function deleteRefreshToken(req, res) {
-  const { email } = req.body;
-
+  // res.json({ message: "Token deleted successfully" });
+  const { username } = req.body;
   // Remove from database
   try {
-    const deletedToken = await refreshTokensModel.findOneAndDelete({ email });
+    const deletedToken = await refreshTokensModel.findOneAndDelete({
+      username,
+    });
     if (deletedToken) {
       res.status(200).json({ message: "Token deleted successfully" });
     } else {
       res
         .status(404)
-        .json({ message: "Token not found for the specified email" });
+        .json({ message: "Token not found for the specified username" });
     }
   } catch (error) {
     console.error("Error deleting token:", error);
@@ -75,21 +77,36 @@ async function deleteRefreshToken(req, res) {
 // Middleware to authenticate the access token
 function authenticateToken(userType) {
   return async (req, res, next) => {
-    const { email } = req.body;
-    const tokenRecord = await refreshTokensModel.findOne({ email });
-    if (!tokenRecord) return res.sendStatus(401);
-
+    const { refreshToken } = req.body;
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
-    if (token == null) return res.sendStatus(401);
+    if (token == null) {
+      return res
+        .status(401)
+        .json({ message: "Authorization header token not found" });
+    }
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-      console.log(err);
-      if (err)
-        return res.status(403).json({ message: "Access Token is not valid" }); // should send a refresh request
-      if (user.type !== userType)
-        return res.status(403).json({ message: "User is not authorized" });
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {
+      if (err) {
+        await refreshTokensModel.deleteMany({ token: refreshToken });
+        return res.status(401).json({ message: "Access Token is not valid" }); // should send a refresh request
+      }
+
+      const tokenRecord = await refreshTokensModel.findOne({
+        username: user.username,
+      });
+      if (!tokenRecord) {
+        await refreshTokensModel.deleteMany({ token: refreshToken });
+        return res.status(401).json({ message: "No refresh token found" });
+      }
+      if (user.type !== userType) {
+        await refreshTokensModel.deleteMany({ token: refreshToken });
+        return res
+          .status(401)
+          .json({ message: "User is not authorized", userType: user.type, input: userType });
+      }
       req.user = user;
+
       next();
     });
   };

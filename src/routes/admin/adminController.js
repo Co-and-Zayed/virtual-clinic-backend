@@ -60,7 +60,7 @@ const deleteDoctor = async (req, res) => {
 
 const deleteAdmin = async (req, res) => {
   const { username } = req.body;
-  console.log("USERNAME:", username);
+
   try {
     await adminModel.deleteMany({ username });
     await refreshTokensModel.deleteMany({ username });
