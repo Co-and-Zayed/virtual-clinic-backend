@@ -23,7 +23,7 @@ const loginUser = async (req, res) => {
 
   var object = {};
 
-  if (user.type == "DOCTOR") {
+  if (user?.type == "DOCTOR") {
     object = await doctorModel.findOne({ email: email });
     if (object.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
