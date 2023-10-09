@@ -62,10 +62,10 @@ const getDoctors = async (req, res) => {
 ///////////
 const getDoctordetails = async (req, res) => {
   // view doctor details by selecting the name.
-  const name = req.body.name;
+  const username = req.body.username;
 
   try {
-    const doctor = await doctorModel.find({ name: name });
+    const doctor = await Doctor.find({ username });
 
     res.status(200).json(doctor);
   } catch (err) {
