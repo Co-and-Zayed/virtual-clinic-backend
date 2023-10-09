@@ -44,7 +44,6 @@ const loginUser = async (req, res) => {
     }
   }
 
-  console.log("OBJECT: ", object);
   if (user) {
     res.status(200).json({
       user: user,

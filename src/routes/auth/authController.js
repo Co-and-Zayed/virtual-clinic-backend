@@ -13,7 +13,7 @@ async function createUserTokens(user) {
   const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
 
   // Add refresh token to database
-  console.log("USER DATA: ", user);
+
   try {
     const refreshTokenToAdd = new refreshTokensModel({
       username: user.username,
@@ -104,7 +104,11 @@ function authenticateToken(userType) {
         await refreshTokensModel.deleteMany({ token: refreshToken });
         return res
           .status(401)
-          .json({ message: "User is not authorized", userType: user.type, input: userType });
+          .json({
+            message: "User is not authorized",
+            userType: user.type,
+            input: userType,
+          });
       }
       req.user = user;
 
