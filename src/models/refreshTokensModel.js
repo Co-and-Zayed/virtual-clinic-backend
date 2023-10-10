@@ -5,7 +5,6 @@ const refreshTokensSchema = new Schema({
   username: {
     type: String,
     required: false,
-    unique: true,
   },
   type: {
     type: String,
@@ -14,6 +13,7 @@ const refreshTokensSchema = new Schema({
   token: {
     type: String,
     required: true,
+    unique: true,
   },
 });
 
