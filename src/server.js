@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
+require("dotenv").config({
+  path: "../.env",
+});
 const mongoose = require("mongoose");
 
 const doctorRoutes = require("./routes/doctor/doctor");
@@ -38,6 +40,7 @@ const prescriptionsRoutes = require("./routes/prescriptions/prescriptionsRoutes"
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
+    console.log("Connected to the database!");
     app.listen(port, () => {});
   })
   .catch((err) => {});
