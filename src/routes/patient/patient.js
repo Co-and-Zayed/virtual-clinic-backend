@@ -20,7 +20,7 @@ const {
 } = require("./familyMemberController");
 
 //GET list of all doctors or doctors by searching name and/or speciality
-router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);
+router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);     
 // Appointment Routes
 router.post(
   "/createAppointment",
@@ -54,8 +54,8 @@ router.post(
 ///////////
 // ZEINA //
 ///////////
-router.post(
-  "/getDoctordetails",
+router.get(
+  "/getDoctordetails/:id",
   authenticateToken("PATIENT"),
   getDoctordetails
 );

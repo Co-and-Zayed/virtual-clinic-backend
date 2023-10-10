@@ -62,10 +62,11 @@ const getDoctors = async (req, res) => {
 ///////////
 const getDoctordetails = async (req, res) => {
   // view doctor details by selecting the name.
-  const name = req.body.name;
+ // const name = req.body.name;
+ //alt .find({name:name})
 
   try {
-    const doctor = await doctorModel.find({ name: name });
+    const doctor = await doctorModel.findById(req.params.id);
 
     res.status(200).json(doctor);
   } catch (err) {
