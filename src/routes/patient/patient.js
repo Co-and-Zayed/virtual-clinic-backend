@@ -61,8 +61,8 @@ router.post(
 ///////////
 // ZEINA //
 ///////////
-router.get(
-  "/getDoctordetails/:id",
+router.post(
+  "/getDoctordetails",
   authenticateToken("PATIENT"),
   getDoctordetails
 );

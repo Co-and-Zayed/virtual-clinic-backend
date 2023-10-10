@@ -1,6 +1,7 @@
 const Doctor = require("../../models/doctorModel.js");
 const Patient = require("../../models/patientModel.js");
 const Package = require("../../models/packageModel.js");
+const doctorModel = require("../../models/doctorModel.js");
 
 //GET list of all doctors or doctors by searching name and/or speciality
 const getDoctors = async (req, res) => {
@@ -60,20 +61,18 @@ const getDoctors = async (req, res) => {
 ///////////
 // ZEINA //
 ///////////
+
 const getDoctordetails = async (req, res) => {
-  // view doctor details by selecting the name.
-
- // const name = req.body.name;
- //alt .find({name:name})
-
+  
+  const username = req.body.username;
+  
   try {
-    const doctor = await doctorModel.findById(req.params.id);
-
-
+    const doctor = await doctorModel.find({username:username});
     res.status(200).json(doctor);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
+
 
 module.exports = { getDoctors, getDoctordetails };
