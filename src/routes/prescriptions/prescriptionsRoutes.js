@@ -9,7 +9,7 @@ const {
   deletePrescription,
 } = require("./prescriptionsController");
 
-router.get("/getPrescriptions", getAllPrescriptions);
+router.post("/getPrescriptions", getAllPrescriptions);
 router.get("/getPrescription/:id", getSinglePrescription);
 router.post("/createPrescription", createPrescription);
 router.patch("/updatePrescription/:id", updatePrescription);
