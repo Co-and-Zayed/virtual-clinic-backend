@@ -20,23 +20,29 @@ const {
 } = require("./familyMemberController");
 
 //GET list of all doctors or doctors by searching name and/or speciality
-router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);     
+
+router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);
+
+
 // Appointment Routes
 router.post(
   "/createAppointment",
   authenticateToken("PATIENT"),
   createAppointment
 );
+
 router.post(
   "/getAppointments/:userType",
   authenticateToken("PATIENT"),
   getAppointments
 );
+
 router.put(
   "/updateAppointment/:id",
   authenticateToken("PATIENT"),
   updateAppointment
 );
+
 router.delete(
   "/deleteAppointment/:id",
   authenticateToken("PATIENT"),
@@ -45,6 +51,7 @@ router.delete(
 
 // Family Member Routes
 router.post("/addFamilyMember", authenticateToken("PATIENT"), addFamilyMember);
+
 router.post(
   "/getFamilyMembers",
   authenticateToken("PATIENT"),

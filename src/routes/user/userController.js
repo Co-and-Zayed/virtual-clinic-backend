@@ -165,6 +165,7 @@ const registerUser = async (req, res) => {
         success: true,
         user: newUser,
         data: doctor,
+        type: "DOCTOR",
         tokens: await createUserTokens({
           username: username,
           type: "DOCTOR",
@@ -197,6 +198,7 @@ const registerUser = async (req, res) => {
         success: true,
         user: newUser,
         data: patient,
+        type: "PATIENT",
         tokens: await createUserTokens({
           username: username,
           type: "PATIENT",

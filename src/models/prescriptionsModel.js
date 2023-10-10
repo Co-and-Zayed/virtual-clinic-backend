@@ -31,15 +31,19 @@ const prescriptionsSchema = new Schema(
       {
         name: {
           type: String,
+          required: true,
         },
         dosage: {
           type: String,
+          required: true,
         },
         quantity: {
           type: Number,
+          required: true,
         },
         duration: {
           type: String,
+          required: true,
         },
       },
     ],
