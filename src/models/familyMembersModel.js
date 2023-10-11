@@ -15,6 +15,10 @@ const familyMemberSchema = new Schema({
         enum: ["MALE", "FEMALE"],
         required : true
     },
+    age:{
+        type: Number,
+        required : true
+    },
     relation:{
         type: String,
         enum: ["HUSBAND", "WIFE", "CHILD"],
