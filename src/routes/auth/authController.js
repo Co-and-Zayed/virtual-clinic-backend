@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const refreshTokensModel = require("../../models/refreshTokensModel");
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1440m" });
 }
 
 // Creates a new access token and refresh token for the user

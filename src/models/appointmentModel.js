@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 
 const appointmentSchema = new Schema(
   {
-    patientEmail: {
+    patientUsername: {
         type: String,
         required: true,
     },
-    doctorEmail: {
+    doctorUsername: {
         type: String,
         required: true,
     },
@@ -25,7 +25,7 @@ const appointmentSchema = new Schema(
       enum: ["UPCOMING", "CANCELLED", "COMPLETED"],
       required: true,
     },
-  },
+  },{ timestamps: true}
 );
 // Deirive time from date
 appointmentSchema.virtual("time").get(function () {

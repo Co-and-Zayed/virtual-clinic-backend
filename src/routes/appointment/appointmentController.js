@@ -1,20 +1,21 @@
 const appointmentModel = require("../../models/appointmentModel");
 const { default: mongoose } = require("mongoose");
+const userModel = require("../../models/userModel");
 
 // POST create a new appointment
-// Params: patientEmail, doctorEmail, date, status
+// Params: patientUsername, doctorUsername, date, status
 const createAppointment = async (req, res) => {
-  const { patientEmail, doctorEmail, date, status } = req.body;
+  const { patientUsername, doctorUsername, date, status } = req.body;
 
-  if (!patientEmail || !doctorEmail || !date || !status) {
+  if (!patientUsername || !doctorUsername || !date || !status) {
     return res.status(400).json({
       message: "Please provide all required fields",
     });
   }
 
   const appointment = new appointmentModel({
-    patientEmail: patientEmail,
-    doctorEmail: doctorEmail,
+    patientUsername: patientUsername,
+    doctorUsername: doctorUsername,
     date: date,
     status: status,
   });
@@ -30,18 +31,17 @@ const createAppointment = async (req, res) => {
 };
 
 const getAppointments = async (req, res) => {
-  const { userType } = req.params;
-  const { email } = req.body;
+  const { username, type} = req.user;
   try {
     var appointments = [];
-    if (userType === "PATIENT") {
+    if (type === "PATIENT") {
       appointments = await appointmentModel
-        .find({ patientEmail: email })
-        .select("-patientEmail");
+        .find({ patientUsername: username })
+        .select("-patientUsername");
     } else {
       appointments = await appointmentModel
-        .find({ doctorEmail: email })
-        .select("-doctorEmail");
+        .find({ doctorUsername: username })
+        .select("-doctorUsername");
     }
     const appointmentsWithTime = appointments.map((appointment) => {
       return {
@@ -57,17 +57,16 @@ const getAppointments = async (req, res) => {
 
 const updateAppointment = async (req, res) => {
   const { id } = req.params;
-  const { patientEmail, doctorEmail, date, time, status } = req.body;
+  const { patientUsername, doctorUsername, date, time, status } = req.body;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).send(`No appointment with id: ${id}`);
   }
   const updatedAppointment = {
-    patientEmail,
-    doctorEmail,
+    patientUsername,
+    doctorUsername,
     date,
     time,
     status,
-    _id: id,
   };
   await appointmentModel.findByIdAndUpdate(id, updatedAppointment, {
     new: true,
