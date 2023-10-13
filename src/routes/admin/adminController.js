@@ -5,10 +5,22 @@ const adminModel = require("../../models/adminModel");
 
 const refreshTokensModel = require("../../models/refreshTokensModel");
 const userModel = require("../../models/userModel");
-const familyMembersModel = require("../../models/familyMembersModel");
 const patientModel = require("../../models/patientModel");
-const doctorModel = require("../../models/doctorModel");
-const appointmentModel = require("../../models/appointmentModel");
+const pharmacistModel = require("../../models/pharmacistModel");
+
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const appointmentModel = mongoose.model(
+  "Appointment",
+  new Schema({}, { strict: false }),
+  "appointments"
+);
+const familyMembersModel = mongoose.model(
+  "FamilyMember",
+  new Schema({}, { strict: false }),
+  "familymembers"
+);
+const { createUserTokens } = require("../auth/authController");
 
 const loginAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -28,33 +40,41 @@ const loginAdmin = async (req, res) => {
 };
 
 const deletePatient = async (req, res) => {
-  const { email } = req.body;
+  const { username } = req.body;
+  var deleted = [];
   try {
-    await userModel.deleteMany({ email });
-    await patientModel.deleteMany({ email });
-    await appointmentModel.deleteMany({ patientEmail: email });
-    await familyMembersModel.deleteMany({ patientEmail: email });
-    await refreshTokensModel.deleteMany({ email });
+    await userModel.deleteMany({ username });
+    console.log("USER");
+    await patientModel.deleteMany({ username });
+    console.log("PATIENT");
+    await appointmentModel.deleteMany({ patientUsername: username });
+    console.log("APPOINTMENT");
+
+    await familyMembersModel.deleteMany({ patientUsername: username });
+    console.log("FAMILY MEMBER");
+
+    await refreshTokensModel.deleteMany({ username });
+    console.log("REFRESH TOKEN");
     res.status(200).json({
       message: "Patient deleted successfully",
     });
   } catch (err) {
-    res.status(400).json({ message: "User not found", err: err });
+    res.status(400).json({ message: "An Error Occured", err: err });
   }
 };
 
-const deleteDoctor = async (req, res) => {
-  const { email } = req.body;
+const deletePharmacist = async (req, res) => {
+  const { username } = req.body;
   try {
-    await userModel.deleteMany({ email });
-    await doctorModel.deleteMany({ email });
-    await appointmentModel.deleteMany({ doctorEmail: email });
-    await refreshTokensModel.deleteMany({ email });
+    await userModel.deleteMany({ username });
+    await pharmacistModel.deleteMany({ username });
+    await appointmentModel.deleteMany({ pharmacistUsername: username });
+    await refreshTokensModel.deleteMany({ username });
     res.status(200).json({
-      message: "Doctor deleted successfully",
+      message: "Pharmacist deleted successfully",
     });
   } catch (err) {
-    res.status(400).json({ message: "User not found", err: err });
+    res.status(400).json({ message: "An error occurred", err: err });
   }
 };
 
@@ -63,6 +83,7 @@ const deleteAdmin = async (req, res) => {
 
   try {
     await adminModel.deleteMany({ username });
+    await userModel.deleteMany({ username });
     await refreshTokensModel.deleteMany({ username });
     res.status(200).json({
       message: "Admin deleted successfully",
@@ -81,48 +102,35 @@ const createAdmin = async (req, res) => {
     });
   }
 
-  const user = new adminModel({
+  const admin = new adminModel({
     username: username,
     password: password,
   });
 
+  const user = new userModel({
+    name: username,
+    username: username,
+    type: "ADMIN",
+  });
+
   try {
-    const newUser = await user.save();
-    res.status(201).json(newUser);
+    await user.save();
   } catch (err) {
-    res.json({ message: err.message, status: 409 });
+    return res.json({ message: err.message, status: 409, collection: "user" });
+  }
+
+  try {
+    await admin.save();
+    return res.status(201).json(user);
+  } catch (err) {
+    return res.json({ message: err.message, status: 409, collection: "admin" });
   }
 };
 
-// Creates a new access token and refresh token for the user
-async function createUserTokens(user) {
-  const data = {
-    username: user.username,
-    type: "ADMIN",
-    issuedAt: new Date(),
-  };
-
-  const accessToken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET);
-  const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
-
-  // Add refresh token to database
+const viewPharmacists = async (req, res) => {
   try {
-    const refreshTokenToAdd = new refreshTokensModel({
-      username: user.username,
-      type: "ADMIN",
-      token: refreshToken,
-    });
-    await refreshTokenToAdd.save();
-    return { accessToken: accessToken, refreshToken: refreshToken };
-  } catch (err) {
-    return { message: err.message };
-  }
-}
-
-const viewDoctors = async (req, res) => {
-  try {
-    const allDoctors = await doctorModel.find().select("-password");
-    res.status(200).json(allDoctors);
+    const allPharmacists = await pharmacistModel.find().select("-password");
+    res.status(200).json(allPharmacists);
   } catch (err) {
     res.status(400).json({ message: "Error occured", err: err });
   }
@@ -141,8 +149,8 @@ module.exports = {
   loginAdmin,
   createAdmin,
   deletePatient,
-  deleteDoctor,
+  deletePharmacist,
   deleteAdmin,
-  viewDoctors,
+  viewPharmacists,
   viewPatients,
 };
