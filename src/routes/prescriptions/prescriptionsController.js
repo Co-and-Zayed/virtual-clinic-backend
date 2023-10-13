@@ -4,7 +4,7 @@ const prescriptionsModel = require("../../models/prescriptionsModel");
 const getAllPrescriptions = async (req, res) => {
   const { patientUsername } = req.body;
   try {
-    const prescriptions = await prescriptionsModel.find({patientUsername});
+    const prescriptions = await prescriptionsModel.find({ patientUsername });
     res.status(200).json(prescriptions);
   } catch (err) {
     res.status(500).json({ message: "Error in getting all the prescriptions" });
