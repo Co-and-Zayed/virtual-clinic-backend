@@ -145,18 +145,17 @@ const filterDoctors = async (req, res) => {
 ///////////
 // ZEINA //
 ///////////
-
 const getDoctordetails = async (req, res) => {
-  
+  // view doctor details by selecting the name.
   const username = req.body.username;
-  
+
   try {
-    const doctor = await doctorModel.find({username:username});
+    const doctor = await Doctor.find({ username });
+
     res.status(200).json(doctor);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
-
 
 module.exports = { getDoctors, getDoctordetails, filterDoctors };
