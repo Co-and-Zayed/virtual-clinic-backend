@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const prescriptionsSchema = new Schema(
   {
-    patientEmail: {
+    patientUsername: {
       type: String,
       required: true,
     },
@@ -11,7 +11,7 @@ const prescriptionsSchema = new Schema(
       type: String,
       required: true,
     },
-    doctorEmail: {
+    doctorUsername: {
       type: String,
       required: true,
     },

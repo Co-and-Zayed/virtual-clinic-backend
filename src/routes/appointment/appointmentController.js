@@ -1,6 +1,8 @@
 const appointmentModel = require("../../models/appointmentModel");
 const { default: mongoose } = require("mongoose");
 
+// POST create a new appointment
+// Params: patientEmail, doctorEmail, date, status
 const createAppointment = async (req, res) => {
   const { patientEmail, doctorEmail, date, status } = req.body;
 

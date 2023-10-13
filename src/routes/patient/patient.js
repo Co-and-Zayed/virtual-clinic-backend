@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getDoctors, getDoctordetails } = require("./patientController");
+const { getDoctors, getDoctordetails, filterDoctors } = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -23,6 +23,8 @@ const {
 
 router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);
 
+//POST filter doctors by speciality and/or availability on a specific date and time
+router.post("/filterDoctors", authenticateToken("PATIENT"), filterDoctors);
 
 // Appointment Routes
 router.post(

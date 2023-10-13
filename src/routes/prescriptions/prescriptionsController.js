@@ -2,9 +2,9 @@ const prescriptionsModel = require("../../models/prescriptionsModel");
 
 //get all prescriptions
 const getAllPrescriptions = async (req, res) => {
-  const { patientEmail } = req.body;
+  const { patientUsername } = req.body;
   try {
-    const prescriptions = await prescriptionsModel.find({patientEmail});
+    const prescriptions = await prescriptionsModel.find({ patientUsername });
     res.status(200).json(prescriptions);
   } catch (err) {
     res.status(500).json({ message: "Error in getting all the prescriptions" });
@@ -24,9 +24,9 @@ try {
 //create a prescription
 const createPrescription = async (req, res) => {
   const prescription = new prescriptionsModel({
-    patientEmail: req.body.patientEmail,
+    patientUsername: req.body.patientUsername,
     patientName: req.body.patientName,
-    doctorEmail: req.body.doctorEmail,
+    doctorUsername: req.body.doctorUsername,
     doctorName: req.body.doctorName,
     date: Date.now(),
     filled: req.body.filled,
