@@ -19,7 +19,8 @@ const {
   getFamilyMembers,
 } = require("./familyMemberController");
 
-//POST list of all doctors or doctors by searching name and/or speciality
+//GET list of all doctors or doctors by searching name and/or speciality
+
 router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);
 
 //POST filter doctors by speciality and/or availability on a specific date and time
