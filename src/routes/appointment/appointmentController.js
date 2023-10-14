@@ -34,23 +34,28 @@ const getAppointments = async (req, res) => {
   const { email } = req.body;
   try {
     var appointments = [];
+    console.log("CHECKPOINT 1");
     if (userType === "PATIENT") {
       appointments = await appointmentModel
         .find({ patientEmail: email })
         .select("-patientEmail");
     } else {
+      console.log("CHECKPOINT 2");
       appointments = await appointmentModel
         .find({ doctorEmail: email })
         .select("-doctorEmail");
     }
+    console.log("CHECKPOINT 3");
     const appointmentsWithTime = appointments.map((appointment) => {
       return {
         ...appointment.toObject(), // Use toObject() to get the document data
         time: appointment.time, // Include the virtual "time" property
       };
     });
+    console.log("CHECKPOINT 4");
     res.json(appointmentsWithTime);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: err.message });
   }
 };
