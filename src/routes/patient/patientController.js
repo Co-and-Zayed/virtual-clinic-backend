@@ -96,35 +96,56 @@ const filterDoctors = async (req, res) => {
     // I will go to the appointments collection and get the doctors do NOT have an appointment at that date and time
     // I will return the doctors that have the specialty and do NOT have an appointment at that date and time
 
-
     const doctors = await Doctor.find(
       req.body.specialty && { specialty: req.body.specialty }
     ).lean();
 
     // combine date and time into a single date object
-    const date = new Date(req.body.date);
+    const myDate = new Date(req.body.date);
     const time = new Date(req.body.time);
-    date.setHours(time.getHours());
-    date.setMinutes(0);
-    date.setSeconds(0);
+
+    var date = new Date(
+      myDate.getFullYear(),
+      myDate.getMonth(),
+      myDate.getDate(),
+      time.getHours()
+    );
+    // date.setHours(time.getHours());
+    // date.setMinutes(0);
+    // date.setSeconds(0);
+    // date.setMilliseconds(0);
 
     console.log("date", date);
 
     // Get the doctors that have an appointment at the specified date and time
-    const appointments = await Appointment.find({
-      date: date,
-    }).lean();
+    // const appointments = await Appointment.find({
+    //   date: date,
+    // }).lean();
+
+    var allApps = await Appointment.find().lean();
+
+    // comapre each date with the date in the request
+    const appointments = allApps.filter((appointment) => {
+      const appDate = new Date(appointment.date);
+      // console.log("appointment.date", appDate);
+      // console.log("date", date);
+      return appDate.toString() == date.toString();
+      // console.log("res", res, "\n");
+      // return res;
+    });
+
+    console.log("appointments at date: ", appointments);
 
     // Get the doctors that have an appointment at the specified date and time
     const doctorsWithAppointments = appointments.map(
-      (appointment) => appointment.doctorEmail
+      (appointment) => appointment.doctorUsername
     );
 
     console.log("doctorsWithAppointments", doctorsWithAppointments);
 
     // Filter out the doctors that have an appointment at the specified date and time
     const filteredDoctors = doctors.filter(
-      (doctor) => !doctorsWithAppointments.includes(doctor.email)
+      (doctor) => !doctorsWithAppointments.includes(doctor.username)
     );
 
     // Add to each doctor a field called session_price which is calculated from the patient's healthPackage
