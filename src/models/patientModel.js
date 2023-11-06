@@ -50,6 +50,12 @@ const patientSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Package",
   },
+  healthPackageStatus:{
+    type: String,
+    enum: ["SUBSCRIBED", "UNSUBSCRIBED","CANCELLED"],
+    required : true
+  },
+  
 });
 
 // Define a virtual property to compute the 'age' based on 'date_of_birth'.

@@ -23,7 +23,8 @@ const familyMemberSchema = new Schema({
     relationTo: {
         type: String,
         required : true
-    }
+    },
+ 
 })
 
 const familyMemberModel = mongoose.model("FamilyMember", familyMemberSchema);

@@ -2,6 +2,10 @@ const Doctor = require("../../models/doctorModel.js");
 const Patient = require("../../models/patientModel.js");
 const Package = require("../../models/packageModel.js");
 const Appointment = require("../../models/appointmentModel.js");
+const patientModel = require("../../models/patientModel.js");
+const packageModel = require("../../models/packageModel.js");
+const familyMemberModel = require("../../models/familyMemberModel.js");
+const familyMembersModel = require("../../models/familyMembersModel.js");
 
 //GET list of all doctors or doctors by searching name and/or speciality
 const getDoctors = async (req, res) => {
@@ -179,4 +183,47 @@ const getDoctordetails = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors, getDoctordetails, filterDoctors };
+
+ const getHealthPackages = async (req, res) => {
+  try {
+    const healthPackages = await Package.find();
+
+    res.status(200).json(healthPackages);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }  
+ }
+  
+ const subscribeToPackage = async (req, res) => {
+  const healthPackageID = req.body.package;
+
+  const patientID = req.body.patientID;  // get the patient ID to add to it the HP
+  try {
+    const package = await packageModel.findById(healthPackageID);
+    
+    const patient = await patientModel.findOneAndUpdate(
+      { _id: patientID},
+      { healthPackage:package }
+    );
+
+    res.status(200).json(patient);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }  
+
+ }
+ const viewPackages = async (req, res) => {
+  
+
+  const patientID = req.body.patientID;  // get the patient ID to add to it the HP
+  try {
+    const patient = await patientModel.findById(patientID);
+    const package = await packageModel.findOne({_id: patient.healthPackage});
+    res.status(200).json(package);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }  
+
+ }
+
+module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages};

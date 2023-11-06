@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getDoctors, getDoctordetails, filterDoctors } = require("./patientController");
+const { getDoctors, getDoctordetails, filterDoctors,getHealthPackages,subscribeToPackage,viewPackages } = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -68,5 +68,19 @@ router.post(
   authenticateToken("PATIENT"),
   getDoctordetails
 );
-
+router.get(
+  "/getHealthPackages",
+  //authenticateToken("PATIENT"),
+  getHealthPackages
+);
+router.post(
+  "/subscribeToPackage",
+  //authenticateToken("PATIENT"),
+  subscribeToPackage
+);
+router.post(
+  "/viewPackages",
+  //authenticateToken("PATIENT"),
+  viewPackages
+);
 module.exports = router;
