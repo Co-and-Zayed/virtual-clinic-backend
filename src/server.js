@@ -14,6 +14,7 @@ const authRoutes = require("./routes/auth/authRoutes");
 const adminRoutes = require("./routes/admin/adminRoutes");
 const packageRoutes = require("./routes/package/packageRoutes");
 const dropdownRoutes = require("./routes/dropdown/dropdown");
+const stripeRoutes = require("./routes/stripe/stripeRoutes");
 
 // Middleware
 app.use(express.json());
@@ -59,6 +60,7 @@ app.use("/doctor", doctorRoutes);
 app.use("/patient", patientRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
+app.use("/stripe", stripeRoutes);
 
 
 app.use("/adminAPI", adminRoutes);

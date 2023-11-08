@@ -89,13 +89,6 @@ const filterDoctors = async (req, res) => {
       discount = patientPackage.doctor_session_discount;
     }
 
-    // My params are going to be specialty and a specific date and time
-    // I will get the specialty from the request body
-    // I will get the date and time from the request body
-    // I will get the doctors that have the specialty
-    // I will go to the appointments collection and get the doctors do NOT have an appointment at that date and time
-    // I will return the doctors that have the specialty and do NOT have an appointment at that date and time
-
     const doctors = await Doctor.find(
       req.body.specialty && { specialty: req.body.specialty }
     ).lean();
@@ -167,11 +160,51 @@ const filterDoctors = async (req, res) => {
 // ZEINA //
 ///////////
 const getDoctordetails = async (req, res) => {
+  // get user form request
+  const user = req.user;
+
+  if (!user) {
+    res.status(400).json({ message: "Valid user is required", req: req.body });
+    return;
+  }
+
+  // Get patient
+  var patient = await Patient.findOne({ username: user.username });
+  if (!patient) {
+    res.status(404).json({ message: "Patient not found" });
+    return;
+  }
+  console.log("patient", patient);
+
+  // Get patient health package
+  const patientPackageId = patient.healthPackage;
+  console.log("patientPackageId", patientPackageId);
+
+  var discount = 0;
+
+  // If the patient has a health package
+  if (patientPackageId) {
+    const patientPackage = await Package.findOne({ _id: patientPackageId });
+
+    discount = patientPackage.doctor_session_discount;
+  }
+
   // view doctor details by selecting the name.
   const username = req.body.username;
 
   try {
-    const doctor = await Doctor.find({ username });
+    const doctor = await Doctor.findOne({ username }).lean();
+
+    let session_price = doctor.hourlyRate * 1.1;
+    console.log("session_price before", session_price)
+    console.log("hourlyRate", doctor.hourlyRate)
+
+    session_price -= session_price * discount;
+    doctor.session_price = session_price;
+
+    console.log("doctor", doctor);  
+    console.log("session_price", session_price)
+    console.log("discount", discount)
 
     res.status(200).json(doctor);
   } catch (err) {
