@@ -156,6 +156,46 @@ const filterDoctors = async (req, res) => {
   }
 };
 
+// Deduct Money from Wallet
+const payWithWallet = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const user = req.user;
+
+    if (!user) {
+      res.status(400).json({ message: "Valid user is required" });
+      return;
+    }
+
+    const patient = await Patient.findOne({ username: user.username }).lean();
+
+    if (!patient) {
+      res.status(404).json({ message: "Patient not found" });
+      return;
+    }
+
+    if (patient.wallet < amount) {
+      res.status(400).json({ message: "Not enough money in wallet" });
+      return;
+    }
+
+    patient.wallet -= amount;
+    console.log("patient after paying");
+    console.log(patient);
+    // update patient
+    Patient.findOneAndUpdate({ username: user.username }, patient, {
+      wallet: patient.wallet,
+    });
+
+    res
+      .status(200)
+      .json({ message: "Money deducted successfully", user: patient });
+  } catch (error) {
+    console.error("Error deducting money:", error);
+    res.status(500).json({ message: "Internal server error", error: error });
+  }
+};
+
 ///////////
 // ZEINA //
 ///////////
@@ -196,15 +236,22 @@ const getDoctordetails = async (req, res) => {
     const doctor = await Doctor.findOne({ username }).lean();
 
     let session_price = doctor.hourlyRate * 1.1;
-    console.log("session_price before", session_price)
-    console.log("hourlyRate", doctor.hourlyRate)
+    console.log("session_price before", session_price);
+    console.log("hourlyRate", doctor.hourlyRate);
 
     session_price -= session_price * discount;
     doctor.session_price = session_price;
 
-    console.log("doctor", doctor);  
-    console.log("session_price", session_price)
-    console.log("discount", discount)
+    console.log("doctor", doctor);
+    console.log("session_price", session_price);
+    console.log("discount", discount);
+
+    // Get their appointments
+    const appointments = await Appointment.find({
+      doctorId: doctor._id,
+    }).lean();
+
+    doctor.appointments = appointments;
 
     res.status(200).json(doctor);
   } catch (err) {
@@ -212,4 +259,4 @@ const getDoctordetails = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors, getDoctordetails, filterDoctors };
+module.exports = { getDoctors, getDoctordetails, filterDoctors, payWithWallet };

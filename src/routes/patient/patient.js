@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getDoctors, getDoctordetails, filterDoctors } = require("./patientController");
+const { getDoctors, getDoctordetails, filterDoctors, payWithWallet } = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -59,6 +59,8 @@ router.post(
   authenticateToken("PATIENT"),
   getFamilyMembers
 );
+
+router.post("/payWithWallet", authenticateToken("PATIENT"), payWithWallet);
 
 ///////////
 // ZEINA //
