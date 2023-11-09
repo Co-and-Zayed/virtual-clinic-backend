@@ -200,10 +200,13 @@ const getDoctordetails = async (req, res) => {
   const patientID = req.body.patientID;  // get the patient ID to add to it the HP
   try {
     const package = await packageModel.findById(healthPackageID);
-    
+    const currentDate = new Date();
+    // Add one year to the current date
+    const oneYearLater = new Date(currentDate);
+    oneYearLater.setFullYear(currentDate.getFullYear() + 1);
     const patient = await patientModel.findOneAndUpdate(
       { _id: patientID},
-      { healthPackage:package }
+      { healthPackage:package, healthPackageStatus:"SUBSCRIBED",healthPackageRenewalDate:oneYearLater }
     );
 
     res.status(200).json(patient);
@@ -212,6 +215,7 @@ const getDoctordetails = async (req, res) => {
   }  
 
  }
+
  const viewPackages = async (req, res) => {
   
 
@@ -226,4 +230,51 @@ const getDoctordetails = async (req, res) => {
 
  }
 
-module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages};
+
+const getPackagePriceForGuest = async (req, res) => {// called when we click "subscribe" to take us to payment page
+  const patientID = req.body.patientID;
+  const packageID = req.body.packageID;
+
+  try {
+    const patient = await patientModel.findById(patientID);
+    const patientHealthPackage = await packageModel.findById(patient.healthPackage);
+    const package = await packageModel.findById(packageID);
+
+    let responsePackage = { ...package.toObject() }; // Create a copy of the package
+
+    if (patientHealthPackage != null) {
+      const discount = patientHealthPackage.family_discount;
+      const price = package.price_per_year;
+      const discountedPrice = (1 - discount) * price;
+
+      responsePackage.discountedPrice = discountedPrice;
+      console.log(discountedPrice);
+    }
+
+    res.status(200).json(responsePackage);
+  } catch (err) {
+    res.status(400).json({ error: err.message});
+  }
+};
+
+
+const subscribeToPackageForGuest = async (req, res) => {// assuming payment has been finalized (hetet el stripe di kolaha khelset)
+  const packageID = req.body.packageID;
+  const guestID = req.body.guestID;
+try {
+  const currentDate = new Date();
+  // Add one year to the current date
+  const oneYearLater = new Date(currentDate);
+  oneYearLater.setFullYear(currentDate.getFullYear() + 1);
+  const guest = await familyMembersModel.findOneAndUpdate({_id:guestID}, {healthPackage:packageID, status:"SUBSCRIBED", healthPackageRenewalDate:oneYearLater} );
+
+  res.status(200).json(package);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
+} catch (err) {
+res.status(400).json({ error: err.message });
+}  
+}
+
+
+
+
+module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages, getPackagePriceForGuest, subscribeToPackageForGuest};
