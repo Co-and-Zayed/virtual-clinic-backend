@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getDoctors, getDoctordetails, filterDoctors,getHealthPackages,subscribeToPackage,viewPackages,getPackagePriceForGuest, subscribeToPackageForGuest } = require("./patientController");
+const { getDoctors, getDoctordetails, filterDoctors,getHealthPackages,subscribeToPackage,viewPackages,getPackagePrice, subscribeToPackageForGuest, subscribeToPackageForFamilyPatient} = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -86,13 +86,18 @@ router.post(
   viewPackages
 );
 router.post(
-  "/getPackagePriceForGuest",
+  "/getPackagePrice",
   //authenticateToken("PATIENT"),
-  getPackagePriceForGuest
+  getPackagePrice
 );
 router.post(
   "/subscribeToPackageForGuest",
   //authenticateToken("PATIENT"),
   subscribeToPackageForGuest
+);
+router.post(
+  "/subscribeToPackageForFamilyPatient",
+  //authenticateToken("PATIENT"),
+  subscribeToPackageForFamilyPatient
 );
 module.exports = router;

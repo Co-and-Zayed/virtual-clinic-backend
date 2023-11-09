@@ -231,7 +231,7 @@ const getDoctordetails = async (req, res) => {
  }
 
 
-const getPackagePriceForGuest = async (req, res) => {// called when we click "subscribe" to take us to payment page
+const getPackagePrice = async (req, res) => {// called when we click "subscribe" to take us to payment page
   const patientID = req.body.patientID;
   const packageID = req.body.packageID;
 
@@ -262,13 +262,31 @@ const subscribeToPackageForGuest = async (req, res) => {// assuming payment has 
   const packageID = req.body.packageID;
   const guestID = req.body.guestID;
 try {
+  const package = await packageModel.findById(packageID);
   const currentDate = new Date();
   // Add one year to the current date
   const oneYearLater = new Date(currentDate);
   oneYearLater.setFullYear(currentDate.getFullYear() + 1);
-  const guest = await familyMembersModel.findOneAndUpdate({_id:guestID}, {healthPackage:packageID, status:"SUBSCRIBED", healthPackageRenewalDate:oneYearLater} );
+  const guest = await familyMembersModel.findOneAndUpdate({_id:guestID}, {healthPackage:package._id, status:"SUBSCRIBED", healthPackageRenewalDate:oneYearLater} );
 
-  res.status(200).json(package);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
+  res.status(200).json(guest);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
+} catch (err) {
+res.status(400).json({ error: err.message });
+}  
+}
+
+const subscribeToPackageForFamilyPatient = async (req, res) => {// assuming payment has been finalized (hetet el stripe di kolaha khelset)
+  const packageID = req.body.packageID;
+  const patientID = req.body.patientID;// family member patient
+try {
+  const package = await packageModel.findById(packageID);
+  const currentDate = new Date();
+  // Add one year to the current date
+  const oneYearLater = new Date(currentDate);
+  oneYearLater.setFullYear(currentDate.getFullYear() + 1);
+  const familyPatient = await patientModel.findOneAndUpdate({_id:patientID}, {healthPackage:package._id, healthPackageStatus:"SUBSCRIBED", healthPackageRenewalDate:oneYearLater} );
+
+  res.status(200).json(familyPatient);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
 } catch (err) {
 res.status(400).json({ error: err.message });
 }  
@@ -277,4 +295,4 @@ res.status(400).json({ error: err.message });
 
 
 
-module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages, getPackagePriceForGuest, subscribeToPackageForGuest};
+module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages, getPackagePrice, subscribeToPackageForGuest, subscribeToPackageForFamilyPatient};
