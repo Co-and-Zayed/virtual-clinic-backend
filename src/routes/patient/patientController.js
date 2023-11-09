@@ -1,5 +1,5 @@
 const Doctor = require("../../models/doctorModel.js");
-const Patient = require("../../models/patientModel.js");
+const patientModel = require("../../models/patientModel.js");
 const Package = require("../../models/packageModel.js");
 const Appointment = require("../../models/appointmentModel.js");
 
@@ -16,7 +16,7 @@ const getDoctors = async (req, res) => {
       return;
     }
     // Get patient
-    var patient = await Patient.findOne({ username: user.username });
+    var patient = await patientModel.findOne({ username: user.username });
     if (!patient) {
       res.status(404).json({ message: "Patient not found" });
       return;
@@ -71,7 +71,7 @@ const filterDoctors = async (req, res) => {
       return;
     }
     // Get patient
-    var patient = await Patient.findOne({ username: user.username });
+    var patient = await patientModel.findOne({ username: user.username });
     if (!patient) {
       res.status(404).json({ message: "Patient not found" });
       return;
@@ -167,7 +167,7 @@ const payWithWallet = async (req, res) => {
       return;
     }
 
-    const patient = await Patient.findOne({ username: user.username }).lean();
+    const patient = await patientModel.findOne({ username: user.username });
 
     if (!patient) {
       res.status(404).json({ message: "Patient not found" });
@@ -179,13 +179,15 @@ const payWithWallet = async (req, res) => {
       return;
     }
 
-    patient.wallet -= amount;
-    console.log("patient after paying");
-    console.log(patient);
+    patient.wallet = patient.wallet - amount;
+    var result = await patient.save();
+
     // update patient
-    Patient.findOneAndUpdate({ username: user.username }, patient, {
-      wallet: patient.wallet,
-    });
+    // var result = await patientModel.updateOne(
+    //   { 'username': patient.username },
+    //   { 'wallet': patient.wallet }
+    // );
+    console.log("result", result);
 
     res
       .status(200)
@@ -209,7 +211,7 @@ const getDoctordetails = async (req, res) => {
   }
 
   // Get patient
-  var patient = await Patient.findOne({ username: user.username });
+  var patient = await patientModel.findOne({ username: user.username });
   if (!patient) {
     res.status(404).json({ message: "Patient not found" });
     return;

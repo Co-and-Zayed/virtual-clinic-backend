@@ -50,6 +50,10 @@ const patientSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Package",
   },
+  wallet: {
+    type: Number,
+    default: 0,
+  },
 });
 
 // Define a virtual property to compute the 'age' based on 'date_of_birth'.
