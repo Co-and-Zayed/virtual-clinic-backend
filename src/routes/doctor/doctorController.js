@@ -96,6 +96,29 @@ const editSettings = async (req, res) => {
   }
 };
 
+
+const changePassword = async (req,res) => {
+  let newPass = req.body.newpass;
+  let confirmNewPass = req.body.confirmpassword;
+  if(!newPass || !confirmNewPass){
+    return res.status(500).send('Please enter a password');
+    }
+  else{
+    if(newPass !== confirmNewPass){
+      return res.status(500).send("The passwords do not match");
+    }
+    else{
+      let hashedPassword = bcryptjs.hashSync(newPass, 12);
+      let userId = req.user._id;
+      let updatedUser = await doctorModel.updateOne({_id:userId},{$set:{password:hashedPassword}});
+      if (!updatedUser) {
+        throw new Error ("Failed to update password")
+      }
+      res.status(200).send("Password has been changed successfully!");
+    }
+  }
+}
+
 module.exports = {
   getPatientInfo,
   getPatients,
@@ -103,4 +126,5 @@ module.exports = {
   getUpcomingAptmnts,
   editSettings,
   viewSettings,
+  changePassword,
 };
