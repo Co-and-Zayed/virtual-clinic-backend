@@ -36,6 +36,11 @@ const loginUser = async (req, res) => {
     object = await patientModel.findOne({ username: username });
     if (object?.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
+    } else if (
+      object?.healthPackageStatus === "UNSUBSCRIBED" &&
+      object?.healthPackageRenewalDate < new Date()
+    ) {
+      object.healthPackageStatus = "CANCELLED";
     }
   } else {
     object = await adminModel.findOne({ username: username });
