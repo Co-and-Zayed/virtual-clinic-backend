@@ -184,10 +184,12 @@ const registerUser = async (req, res) => {
   if (type === "PATIENT") {
     try {
       var healthRecords = [];
-      for (let i = 0; i < files.length; i++) {
-        healthRecords.push(files[i].originalname);
+      console.log(files);
+      if (files !== null && files !== undefined) {
+        for (let i = 0; i < files?.length; i++) {
+          healthRecords.push(files[i].originalname);
+        }
       }
-      console.log(healthRecords);
       const patient = new patientModel({
         name,
         email,
