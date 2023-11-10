@@ -73,7 +73,7 @@ router.post(
 );
 router.get(
   "/getHealthPackages",
-  //authenticateToken("PATIENT"),
+  authenticateToken("PATIENT"),
   getHealthPackages
 );
 router.post(
@@ -83,7 +83,7 @@ router.post(
 );
 router.post(
   "/viewPackages",
-  //authenticateToken("PATIENT"),
+  authenticateToken("PATIENT"),
   viewPackages
 );
 router.post(

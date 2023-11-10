@@ -201,7 +201,7 @@ const getDoctordetails = async (req, res) => {
   try {
     const patient = await patientModel.findById(patientID);
     const package = await packageModel.findOne({_id: patient.healthPackage});
-    res.status(200).json(package);
+    res.status(200).json([package]);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }  
