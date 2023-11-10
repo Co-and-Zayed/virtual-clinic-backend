@@ -261,4 +261,67 @@ const getDoctordetails = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors, getDoctordetails, filterDoctors, payWithWallet };
+//function that checks if new password has atleast 1 capital letter.
+const hasUpperCase = (pass) => {
+  return /[A-Z]/.test(pass);
+};
+
+// Function to check if the new password has at least 1 number
+const hasNumber = (pass) => {
+  return /\d/.test(pass);
+};
+
+const changepassword = async (req, res) => {
+  const { oldpassword, newpassword, confirmedpassword } = req.body;
+  const { username } = req.user;
+  var correct = true;
+  try {
+    const object = await patientModel.findOne({ username });
+    if (object.password !== oldpassword) {
+      correct = false;
+      return res.status(401).json({ message: "Password is Incorrect" });
+    }
+    if (
+      newpassword.length < 6 ||
+      !hasUpperCase(newpassword) ||
+      !hasNumber(newpassword)
+    ) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "New password must be at least 6 characters long, has atleast 1 number and 1 capital letter",
+        });
+    }
+
+    if (newpassword !== confirmedpassword) {
+      correct = false;
+      return res
+        .status(401)
+        .json({ message: "Confirmed Password is Incorrect" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Server error" });
+  }
+  if (correct) {
+    // const pass=object?.password;
+    // const patient = await patientModel.findOneAndUpdate(
+    //   { password: newpassword });
+
+    object.password = newpassword;
+    await object.save();
+
+    return res
+      .status(200)
+      .json({ message: "You have successfully changed your password!" });
+  }
+};
+
+module.exports = {
+  getDoctors,
+  getDoctordetails,
+  filterDoctors,
+  payWithWallet,
+  changepassword,
+};
