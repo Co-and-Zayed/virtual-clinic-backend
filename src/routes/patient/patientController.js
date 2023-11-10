@@ -193,28 +193,6 @@ const getDoctordetails = async (req, res) => {
     res.status(400).json({ error: err.message });
   }  
  }
-  
- const subscribeToPackage = async (req, res) => {
-  const healthPackageID = req.body.package;
-
-  const patientID = req.body.patientID;  // get the patient ID to add to it the HP
-  try {
-    const package = await packageModel.findById(healthPackageID);
-    const currentDate = new Date();
-    // Add one year to the current date
-    const oneYearLater = new Date(currentDate);
-    oneYearLater.setFullYear(currentDate.getFullYear() + 1);
-    const patient = await patientModel.findOneAndUpdate(
-      { _id: patientID},
-      { healthPackage:package, healthPackageStatus:"SUBSCRIBED",healthPackageRenewalDate:oneYearLater }
-    );
-
-    res.status(200).json(patient);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }  
-
- }
 
  const viewPackages = async (req, res) => {
   
@@ -230,8 +208,7 @@ const getDoctordetails = async (req, res) => {
 
  }
 
-
-const getPackagePrice = async (req, res) => {// called when we click "subscribe" to take us to payment page
+ const getPackagePrice = async (req, res) => {// called when we click "subscribe" to take us to payment page
   const patientID = req.body.patientID;
   const packageID = req.body.packageID;
 
@@ -257,41 +234,6 @@ const getPackagePrice = async (req, res) => {// called when we click "subscribe"
   }
 };
 
-
-const subscribeToPackageForGuest = async (req, res) => {// assuming payment has been finalized (hetet el stripe di kolaha khelset)
-  const packageID = req.body.packageID;
-  const guestID = req.body.guestID;
-try {
-  const package = await packageModel.findById(packageID);
-  const currentDate = new Date();
-  // Add one year to the current date
-  const oneYearLater = new Date(currentDate);
-  oneYearLater.setFullYear(currentDate.getFullYear() + 1);
-  const guest = await familyMembersModel.findOneAndUpdate({_id:guestID}, {healthPackage:package._id, status:"SUBSCRIBED", healthPackageRenewalDate:oneYearLater} );
-
-  res.status(200).json(guest);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
-} catch (err) {
-res.status(400).json({ error: err.message });
-}  
-}
-
-const subscribeToPackageForFamilyPatient = async (req, res) => {// assuming payment has been finalized (hetet el stripe di kolaha khelset)
-  const packageID = req.body.packageID;
-  const patientID = req.body.patientID;// family member patient
-try {
-  const package = await packageModel.findById(packageID);
-  const currentDate = new Date();
-  // Add one year to the current date
-  const oneYearLater = new Date(currentDate);
-  oneYearLater.setFullYear(currentDate.getFullYear() + 1);
-  const familyPatient = await patientModel.findOneAndUpdate({_id:patientID}, {healthPackage:package._id, healthPackageStatus:"SUBSCRIBED", healthPackageRenewalDate:oneYearLater} );
-
-  res.status(200).json(familyPatient);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
-} catch (err) {
-  res.status(400).json({ error: err.message });
-}  
-}
-
 const viewSubscribedPackage = async (req, res) => { // for patient
   const patientID = req.body.patientID;
 try {
@@ -313,7 +255,7 @@ const viewSubscribedPackageforFamilyMember = async (req, res) => { // for family
   const ID = req.body.ID; // of family member (patient or guest)
 try {
   const patient = await patientModel.findById(ID);
-  var package;
+  var package = null;
   let responsePackage = null; // Create a copy of the package
   if(!patient){
     const familyMember = await familyMembersModel.findById(ID);
@@ -330,5 +272,138 @@ try {
   res.status(400).json({ error: err.message });
 }  
 }
+  
+ const subscribeToPackage = async (req, res) => {// assuming payment has been finalized (hetet el stripe di kolaha khelset)
+  const healthPackageID = req.body.packageID;
+  const patientID = req.body.patientID;  // get the patient ID to add to it the HP
+  try {
+    var package = await packageModel.findById(healthPackageID);
+    const currentDate = new Date();
+    // Add one year to the current date
+    const oneYearLater = new Date(currentDate);
+    oneYearLater.setFullYear(currentDate.getFullYear() + 1);
+    const patientFind = await patientModel.findById(patientID);
+    var packageOld = await packageModel.findById(patientFind.healthPackage);
+    if(patientFind.healthPackageStatus!="SUBSCRIBED"){
+      const patient = await patientModel.findOneAndUpdate(
+        { _id: patientID},
+        { healthPackage:package, healthPackageStatus:"SUBSCRIBED",healthPackageRenewalDate:oneYearLater }
+      );
+      responsePackage = { ...package.toObject() }
+      responsePackage.status = patient.healthPackageStatus;
+    }else{
+      responsePackage = { ...packageOld.toObject() }
+      responsePackage.status = patientFind.healthPackageStatus;
+    }
+    res.status(200).json(responsePackage);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }  
 
-module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages, getPackagePrice, subscribeToPackageForGuest, subscribeToPackageForFamilyPatient, viewSubscribedPackage, viewSubscribedPackageforFamilyMember};
+ }
+
+
+const subscribeToPackageForGuest = async (req, res) => {// assuming payment has been finalized (hetet el stripe di kolaha khelset)
+  const packageID = req.body.packageID;
+  const guestID = req.body.guestID;
+try {
+  var package = await packageModel.findById(packageID);
+  const currentDate = new Date();
+  // Add one year to the current date
+  const oneYearLater = new Date(currentDate);
+  oneYearLater.setFullYear(currentDate.getFullYear() + 1);
+  const guestFind = await familyMembersModel.findById(guestID);
+  var packageOld = await packageModel.findById(guestFind.healthPackage);
+  if(guestFind.healthPackageStatus!="SUBSCRIBED"){
+    const guest = await familyMembersModel.findOneAndUpdate({_id:guestID}, {healthPackage:package._id, healthPackageStatus:"SUBSCRIBED", healthPackageRenewalDate:oneYearLater} );
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = guest.healthPackageStatus;
+  }else{
+    responsePackage = { ...packageOld.toObject() }
+    responsePackage.status = guestFind.healthPackageStatus;
+  }
+  res.status(200).json(responsePackage);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
+} catch (err) {
+res.status(400).json({ error: err.message });
+}  
+}
+
+const subscribeToPackageForFamilyPatient = async (req, res) => {// assuming payment has been finalized (hetet el stripe di kolaha khelset)
+  const packageID = req.body.packageID;
+  const patientID = req.body.patientID;// family member patient
+try {
+  var package = await packageModel.findById(packageID);
+  const currentDate = new Date();
+  // Add one year to the current date
+  const oneYearLater = new Date(currentDate);
+  oneYearLater.setFullYear(currentDate.getFullYear() + 1);
+  const familyPatientFind = await patientModel.findById(patientID);
+  var packageOld = await packageModel.findById(familyPatientFind.healthPackage);
+  if(familyPatientFind.healthPackageStatus!="SUBSCRIBED"){
+    const familyPatient = await patientModel.findOneAndUpdate({_id:patientID}, {healthPackage:package._id, healthPackageStatus:"SUBSCRIBED", healthPackageRenewalDate:oneYearLater} );
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = familyPatient.healthPackageStatus;
+  }else{
+    responsePackage = { ...packageOld.toObject() }
+    responsePackage.status = familyPatientFind.healthPackageStatus;
+  }
+  res.status(200).json(responsePackage);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
+} catch (err) {
+  res.status(400).json({ error: err.message });
+}  
+}
+
+
+const unsubscribeFromPackage = async (req, res) => {
+  const patientID = req.body.patientID;  // get the patient ID to add to it the HP
+  try {
+    const patient = await patientModel.findOneAndUpdate({ _id: patientID},{healthPackageStatus:"UNSUBSCRIBED"});
+    var package = await packageModel.findById(patient.healthPackage)
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = patient.healthPackageStatus;
+    res.status(200).json(responsePackage);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }  
+}
+
+const unsubscribeFromPackageforFamily = async (req, res) => {
+  const ID = req.body.ID; // of family member (patient or guest)
+try {
+  const patient = await patientModel.findById(ID);
+  var package = null;
+  let responsePackage = null; // Create a copy of the package
+  if(!patient){
+    const familyMember = await familyMembersModel.findOneAndUpdate({_id:ID}, {healthPackageStatus:"UNSUBSCRIBED"});
+    package = await packageModel.findById(familyMember.healthPackage)
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = familyMember.healthPackageStatus;
+  }else{
+    const patient = await patientModel.findOneAndUpdate({_id:ID}, {healthPackageStatus:"UNSUBSCRIBED"});
+    package = await packageModel.findById(patient.healthPackage)
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = patient.healthPackageStatus;
+  }
+  res.status(200).json(responsePackage);
+} catch (err) {
+  res.status(400).json({ error: err.message });
+}   
+}
+
+
+
+
+
+
+
+/*
+  REMINDER TO ADD DATE CHECK WITH THE START OF EVERY SESSION IN ORDER TO CHANEG THE STATUS OF THE SUBSCRIPTION WHEN NEEDED
+  CASES:
+  1. SUBSCRIBED AND RENEWAL DATE HAS YET TO COME. STATUS IS SUBSCRIBED AND BENEFITS APPLY
+  2. UNSUBSCRIBED BUT RENEWAL DATE HAS YET TO COME SO STATUS IS UNSUBSCRIBED BUT BENEFITS STILL APPLY.
+  3. UNSUBSCRIBED AND RENEWAL DATE PASSED. STATUS IS UNSUBSCRIBED (OR CANCELLED?) AND BENEFITS DO NOT APPLY.
+  4. RENEWAL DATE HAS PASSED AND PATIENT DID NOT PAY. STATUS IS CANCELLED AND BENEFITS DO NOT APPLY
+*/
+
+
+module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages, getPackagePrice, subscribeToPackageForGuest, subscribeToPackageForFamilyPatient, viewSubscribedPackage, viewSubscribedPackageforFamilyMember, unsubscribeFromPackage, unsubscribeFromPackageforFamily};
