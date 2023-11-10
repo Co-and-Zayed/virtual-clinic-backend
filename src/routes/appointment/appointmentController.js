@@ -2,6 +2,7 @@ const appointmentModel = require("../../models/appointmentModel");
 const patientModel = require("../../models/patientModel");
 const doctorModel = require("../../models/doctorModel");
 const { default: mongoose } = require("mongoose");
+const userModel = require("../../models/userModel");
 
 // POST create a new appointment
 // Params: patientId, doctorId, date, status
@@ -120,7 +121,6 @@ const updateAppointment = async (req, res) => {
     date,
     time,
     status,
-    _id: id,
   };
   await appointmentModel.findByIdAndUpdate(id, updatedAppointment, {
     new: true,

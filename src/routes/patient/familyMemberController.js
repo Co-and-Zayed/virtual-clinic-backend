@@ -1,10 +1,11 @@
 const appointmentModel = require("../../models/appointmentModel");
 const { default: mongoose } = require("mongoose");
-const familyMembersModel = require("../../models/familyMemberModel");
+const familyMembersModel = require("../../models/familyMembersModel");
 
 const addFamilyMember = async (req, res) => {
-    const {name, nationalID, age, gender, relationship, patientEmail} = req.body;
-    if (!name || !nationalID || !age || !gender || !relationship) {
+    const {username} = req.user;
+    const {name, nationalID, age, gender, type, relation} = req.body;
+    if (!name || !nationalID || !age || !gender || !type || !relation) {
         return res.status(400).json({
         message: "Please provide all required fields",
         });
@@ -14,8 +15,9 @@ const addFamilyMember = async (req, res) => {
         nationalID: nationalID,
         age: age,
         gender: gender,
-        relationship: relationship,
-        patientEmail: patientEmail,
+        type: type,
+        relation: relation,
+        relationTo: username,
     });
     
     try {
@@ -29,14 +31,9 @@ const addFamilyMember = async (req, res) => {
 }
 
 const getFamilyMembers = async (req, res) => {
-    const patientEmail = req.body.patientEmail;
-    if (!patientEmail) {
-        return res.status(403).json({
-        message: "FORBIDDEN ACCESS",
-        });
-    }
+    const {username} = req.user;
     try {
-        const familyMembers = await familyMembersModel.find({patientEmail: patientEmail});
+        const familyMembers = await familyMembersModel.find({relationTo: username});
         res.json(familyMembers);
     } catch (err) {
         res.status(500).json({ message: err.message });

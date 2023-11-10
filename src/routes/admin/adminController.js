@@ -115,6 +115,44 @@ const viewPatients = async (req, res) => {
   }
 };
 
+const acceptDoctor = async (req, res) => {
+  const {username}  = req.body;
+  try {
+    const updatedDoctor = await doctorModel.findOneAndUpdate(
+      { username: username },
+      { $set: { status: "ACCEPTED" } },
+      { new: true }
+    );
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: 'Doctor not found.' });
+    }
+
+    return res.json(updatedDoctor);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+  const rejectDoctor = async (req, res) => {
+    const { username } = req.body;
+    try {
+      const updatedDoctor = await doctorModel.findOneAndUpdate(
+        { username: username },
+        { $set: { status: "REJECTED" } },
+        { new: true }
+      );
+  
+      if (!updatedDoctor) {
+        return res.status(404).json({ message: 'Doctor not found.' });
+      }
+  
+      return res.json(updatedDoctor);
+    } catch (err) {
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+
 module.exports = {
   loginAdmin,
   createAdmin,
@@ -123,4 +161,6 @@ module.exports = {
   deleteAdmin,
   viewDoctors,
   viewPatients,
+  acceptDoctor,
+  rejectDoctor,
 };
