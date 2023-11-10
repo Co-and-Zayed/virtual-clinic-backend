@@ -17,7 +17,7 @@ const dropdownRoutes = require("./routes/dropdown/dropdown");
 const stripeRoutes = require("./routes/stripe/stripeRoutes");
 
 // Middleware
-// app.use(express.json());
+app.use(express.json());
 app.use(cors());
 
 // Mongoose Setup
