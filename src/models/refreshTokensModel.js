@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 const Schema = mongoose.Schema;
 
 const refreshTokensSchema = new Schema({
@@ -14,6 +15,11 @@ const refreshTokensSchema = new Schema({
     type: String,
     required: true,
     unique: true,
+  },
+  expire_at: {
+    type: Date,
+    default: Date.now,
+    expires: 86400, // 1 day
   },
 });
 

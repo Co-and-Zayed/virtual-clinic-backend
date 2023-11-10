@@ -1,5 +1,5 @@
 const Doctor = require("../../models/doctorModel.js");
-const Patient = require("../../models/patientModel.js");
+const patientModel = require("../../models/patientModel.js");
 const Package = require("../../models/packageModel.js");
 const Appointment = require("../../models/appointmentModel.js");
 
@@ -16,7 +16,7 @@ const getDoctors = async (req, res) => {
       return;
     }
     // Get patient
-    var patient = await Patient.findOne({ username: user.username });
+    var patient = await patientModel.findOne({ username: user.username });
     if (!patient) {
       res.status(404).json({ message: "Patient not found" });
       return;
@@ -71,7 +71,7 @@ const filterDoctors = async (req, res) => {
       return;
     }
     // Get patient
-    var patient = await Patient.findOne({ username: user.username });
+    var patient = await patientModel.findOne({ username: user.username });
     if (!patient) {
       res.status(404).json({ message: "Patient not found" });
       return;
@@ -89,42 +89,56 @@ const filterDoctors = async (req, res) => {
       discount = patientPackage.doctor_session_discount;
     }
 
-    // My params are going to be specialty and a specific date and time
-    // I will get the specialty from the request body
-    // I will get the date and time from the request body
-    // I will get the doctors that have the specialty
-    // I will go to the appointments collection and get the doctors do NOT have an appointment at that date and time
-    // I will return the doctors that have the specialty and do NOT have an appointment at that date and time
-
-
     const doctors = await Doctor.find(
       req.body.specialty && { specialty: req.body.specialty }
     ).lean();
 
     // combine date and time into a single date object
-    const date = new Date(req.body.date);
+    const myDate = new Date(req.body.date);
     const time = new Date(req.body.time);
-    date.setHours(time.getHours());
-    date.setMinutes(0);
-    date.setSeconds(0);
+
+    var date = new Date(
+      myDate.getFullYear(),
+      myDate.getMonth(),
+      myDate.getDate(),
+      time.getHours()
+    );
+    // date.setHours(time.getHours());
+    // date.setMinutes(0);
+    // date.setSeconds(0);
+    // date.setMilliseconds(0);
 
     console.log("date", date);
 
     // Get the doctors that have an appointment at the specified date and time
-    const appointments = await Appointment.find({
-      date: date,
-    }).lean();
+    // const appointments = await Appointment.find({
+    //   date: date,
+    // }).lean();
+
+    var allApps = await Appointment.find().lean();
+
+    // comapre each date with the date in the request
+    const appointments = allApps.filter((appointment) => {
+      const appDate = new Date(appointment.date);
+      // console.log("appointment.date", appDate);
+      // console.log("date", date);
+      return appDate.toString() == date.toString();
+      // console.log("res", res, "\n");
+      // return res;
+    });
+
+    console.log("appointments at date: ", appointments);
 
     // Get the doctors that have an appointment at the specified date and time
     const doctorsWithAppointments = appointments.map(
-      (appointment) => appointment.doctorEmail
+      (appointment) => appointment.doctorUsername
     );
 
     console.log("doctorsWithAppointments", doctorsWithAppointments);
 
     // Filter out the doctors that have an appointment at the specified date and time
     const filteredDoctors = doctors.filter(
-      (doctor) => !doctorsWithAppointments.includes(doctor.email)
+      (doctor) => !doctorsWithAppointments.includes(doctor.username)
     );
 
     // Add to each doctor a field called session_price which is calculated from the patient's healthPackage
@@ -142,15 +156,104 @@ const filterDoctors = async (req, res) => {
   }
 };
 
+// Deduct Money from Wallet
+const payWithWallet = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const user = req.user;
+
+    if (!user) {
+      res.status(400).json({ message: "Valid user is required" });
+      return;
+    }
+
+    const patient = await patientModel.findOne({ username: user.username });
+
+    if (!patient) {
+      res.status(404).json({ message: "Patient not found" });
+      return;
+    }
+
+    if (patient.wallet < amount) {
+      res.status(400).json({ message: "Not enough money in wallet" });
+      return;
+    }
+
+    patient.wallet = patient.wallet - amount;
+    var result = await patient.save();
+
+    // update patient
+    // var result = await patientModel.updateOne(
+    //   { 'username': patient.username },
+    //   { 'wallet': patient.wallet }
+    // );
+    console.log("result", result);
+
+    res
+      .status(200)
+      .json({ message: "Money deducted successfully", user: patient });
+  } catch (error) {
+    console.error("Error deducting money:", error);
+    res.status(500).json({ message: "Internal server error", error: error });
+  }
+};
+
 ///////////
 // ZEINA //
 ///////////
 const getDoctordetails = async (req, res) => {
+  // get user form request
+  const user = req.user;
+
+  if (!user) {
+    res.status(400).json({ message: "Valid user is required", req: req.body });
+    return;
+  }
+
+  // Get patient
+  var patient = await patientModel.findOne({ username: user.username });
+  if (!patient) {
+    res.status(404).json({ message: "Patient not found" });
+    return;
+  }
+  console.log("patient", patient);
+
+  // Get patient health package
+  const patientPackageId = patient.healthPackage;
+  console.log("patientPackageId", patientPackageId);
+
+  var discount = 0;
+
+  // If the patient has a health package
+  if (patientPackageId) {
+    const patientPackage = await Package.findOne({ _id: patientPackageId });
+
+    discount = patientPackage.doctor_session_discount;
+  }
+
   // view doctor details by selecting the name.
   const username = req.body.username;
 
   try {
-    const doctor = await Doctor.find({ username });
+    const doctor = await Doctor.findOne({ username }).lean();
+
+    let session_price = doctor.hourlyRate * 1.1;
+    console.log("session_price before", session_price);
+    console.log("hourlyRate", doctor.hourlyRate);
+
+    session_price -= session_price * discount;
+    doctor.session_price = session_price;
+
+    console.log("doctor", doctor);
+    console.log("session_price", session_price);
+    console.log("discount", discount);
+
+    // Get their appointments
+    const appointments = await Appointment.find({
+      doctorId: doctor._id,
+    }).lean();
+
+    doctor.appointments = appointments;
 
     res.status(200).json(doctor);
   } catch (err) {
@@ -158,4 +261,4 @@ const getDoctordetails = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors, getDoctordetails, filterDoctors };
+module.exports = { getDoctors, getDoctordetails, filterDoctors, payWithWallet };

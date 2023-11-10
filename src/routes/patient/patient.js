@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getDoctors, getDoctordetails, filterDoctors } = require("./patientController");
+const { getDoctors, getDoctordetails, filterDoctors, payWithWallet } = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -19,7 +19,8 @@ const {
   getFamilyMembers,
 } = require("./familyMemberController");
 
-//POST list of all doctors or doctors by searching name and/or speciality
+//GET list of all doctors or doctors by searching name and/or speciality
+
 router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);
 
 //POST filter doctors by speciality and/or availability on a specific date and time
@@ -58,6 +59,8 @@ router.get(
   authenticateToken("PATIENT"),
   getFamilyMembers
 );
+
+router.post("/payWithWallet", authenticateToken("PATIENT"), payWithWallet);
 
 ///////////
 // ZEINA //

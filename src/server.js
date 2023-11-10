@@ -12,8 +12,9 @@ const patientRoutes = require("./routes/patient/patient");
 const userRoutes = require("./routes/user/userRoutes");
 const authRoutes = require("./routes/auth/authRoutes");
 const adminRoutes = require("./routes/admin/adminRoutes");
-const packageRoutes = require("./routes/package/packageRoutes");
+const commonRoutes = require("./routes/commonRoutes");
 const dropdownRoutes = require("./routes/dropdown/dropdown");
+const stripeRoutes = require("./routes/stripe/stripeRoutes");
 
 // Middleware
 app.use(express.json());
@@ -30,11 +31,6 @@ const { upload } = require("./utils/uploadFile");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
-const { registerUser, loginUser } = require("./routes/user/userController");
-const {
-  deleteRefreshToken,
-  handleRefreshToken,
-} = require("./routes/auth/authController");
 const prescriptionsRoutes = require("./routes/prescriptions/prescriptionsRoutes");
 
 mongoose
@@ -59,6 +55,10 @@ app.use("/doctor", doctorRoutes);
 app.use("/patient", patientRoutes);
 app.use("/userAPI", userRoutes);
 app.use("/authAPI", authRoutes);
+app.use("/stripe", stripeRoutes);
+
+app.use(commonRoutes);
+
 app.use("/adminAPI", adminRoutes);
 app.use("/prescriptionAPI", prescriptionsRoutes);
 app.use("/dropdown", dropdownRoutes);

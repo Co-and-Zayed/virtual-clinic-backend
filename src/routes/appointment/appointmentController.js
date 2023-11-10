@@ -1,28 +1,32 @@
 const appointmentModel = require("../../models/appointmentModel");
+const patientModel = require("../../models/patientModel");
+const doctorModel = require("../../models/doctorModel");
 const { default: mongoose } = require("mongoose");
 const userModel = require("../../models/userModel");
 
 // POST create a new appointment
-// Params: patientUsername, doctorUsername, date, status
+// Params: patientId, doctorId, date, status
 const createAppointment = async (req, res) => {
-  const { patientUsername, doctorUsername, date, status } = req.body;
+  const { patientId, doctorId, date, status } = req.body;
 
-  if (!patientUsername || !doctorUsername || !date || !status) {
+  if (!patientId || !doctorId || !date || !status) {
     return res.status(400).json({
-      message: "Please provide all required fields",
+      message:
+        "Please provide all required fields: patientId, doctorId, date, status",
     });
   }
 
   const appointment = new appointmentModel({
-    patientUsername: patientUsername,
-    doctorUsername: doctorUsername,
+    patientId: patientId,
+    doctorId: doctorId,
     date: date,
     status: status,
   });
 
   try {
     const newAppointment = await appointment.save();
-    res.status(201).json({
+    
+    res.status(200).json({
       appointment: { ...newAppointment._doc, time: newAppointment.time },
     });
   } catch (err) {
@@ -31,39 +35,89 @@ const createAppointment = async (req, res) => {
 };
 
 const getAppointments = async (req, res) => {
-  const { username, type} = req.user;
+  const { userType } = req.params;
+  var { id } = req.body;
+  // convert id to ObjectId
+  id = new mongoose.Types.ObjectId(id);
   try {
     var appointments = [];
-    if (type === "PATIENT") {
+    console.log("CHECKPOINT 1");
+    if (userType === "PATIENT") {
       appointments = await appointmentModel
-        .find({ patientUsername: username })
-        .select("-patientUsername");
+        .find({ patientId: id })
+        .lean()
+        .select("-patientId");
+
+      const patient = await patientModel
+        .find(id)
+        .select("-password")
+        .lean();
+
+      for (let i = 0; i < appointments.length; i++) {
+        const appointment = appointments[i];
+
+        const doctor = await doctorModel
+          .findById(appointment.doctorId)
+          .select("-password")
+          .lean();
+
+        appointments[i] = {
+          ...appointment,
+          patient,
+          doctor,
+          time: appointment.time,
+        };
+      }
     } else {
+      console.log("CHECKPOINT 2");
       appointments = await appointmentModel
-        .find({ doctorUsername: username })
-        .select("-doctorUsername");
+        .find({ doctorId: id })
+        .lean()
+        .select("-doctorId");
+
+      const doctor = await doctorModel.findById(id).select("-password").lean();
+
+      for (let i = 0; i < appointments.length; i++) {
+        const appointment = appointments[i];
+
+        const patient = await patientModel
+          .findById(appointment.patientId)
+          .select("-password")
+          .lean();
+
+        appointments[i] = {
+          ...appointment,
+          patient,
+          doctor,
+          time: appointment.time,
+        };
+      }
     }
+
+    console.log("CHECKPOINT 3");
     const appointmentsWithTime = appointments.map((appointment) => {
       return {
-        ...appointment.toObject(), // Use toObject() to get the document data
+        ...appointment, // Use toObject() to get the document data
         time: appointment.time, // Include the virtual "time" property
       };
     });
+    console.log("CHECKPOINT 4");
     res.json(appointmentsWithTime);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: err.message });
   }
 };
 
 const updateAppointment = async (req, res) => {
   const { id } = req.params;
-  const { patientUsername, doctorUsername, date, time, status } = req.body;
+  const { patientId, doctorId, date, time, status } = req.body;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).send(`No appointment with id: ${id}`);
   }
   const updatedAppointment = {
-    patientUsername,
-    doctorUsername,
+    patientId,
+    doctorId,
     date,
     time,
     status,

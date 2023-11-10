@@ -34,13 +34,13 @@ router.get("/viewAllAdmins/:id", authenticateToken("ADMIN"), async (req, res) =>
     // Find all admins except the one with the specified ID
     const admins = await adminModel.find({ _id: { $ne: id } });
 
-    res.json(admins);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+      res.json(admins);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
-});
+);
 
-router.get("/getPackages", authenticateToken("ADMIN"), getPackages);
 router.post("/createPackage", authenticateToken("ADMIN"), createPackage);
 router.post("/deletePackage/:id", authenticateToken("ADMIN"), deletePackage);
 router.post("/updatePackage/:id", authenticateToken("ADMIN"), updatePackage);

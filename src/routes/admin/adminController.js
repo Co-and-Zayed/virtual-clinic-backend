@@ -9,6 +9,8 @@ const familyMembersModel = require("../../models/familyMembersModel");
 const patientModel = require("../../models/patientModel");
 const doctorModel = require("../../models/doctorModel");
 const appointmentModel = require("../../models/appointmentModel");
+const prescriptionsModel = require("../../models/prescriptionsModel");
+const { createUserTokens } = require("../auth/authController");
 
 const loginAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -35,6 +37,7 @@ const deletePatient = async (req, res) => {
     await appointmentModel.deleteMany({ patientEmail: email });
     await familyMembersModel.deleteMany({ patientEmail: email });
     await refreshTokensModel.deleteMany({ email });
+    await prescriptionsModel.deleteMany({ email });
     res.status(200).json({
       message: "Patient deleted successfully",
     });
@@ -93,31 +96,6 @@ const createAdmin = async (req, res) => {
     res.json({ message: err.message, status: 409 });
   }
 };
-
-// Creates a new access token and refresh token for the user
-async function createUserTokens(user) {
-  const data = {
-    username: user.username,
-    type: "ADMIN",
-    issuedAt: new Date(),
-  };
-
-  const accessToken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET);
-  const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
-
-  // Add refresh token to database
-  try {
-    const refreshTokenToAdd = new refreshTokensModel({
-      username: user.username,
-      type: "ADMIN",
-      token: refreshToken,
-    });
-    await refreshTokenToAdd.save();
-    return { accessToken: accessToken, refreshToken: refreshToken };
-  } catch (err) {
-    return { message: err.message };
-  }
-}
 
 const viewDoctors = async (req, res) => {
   try {

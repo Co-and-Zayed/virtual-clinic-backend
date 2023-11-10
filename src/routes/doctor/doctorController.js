@@ -49,11 +49,11 @@ const getPatients = async (req, res) => {
 //GET patients based on upcomimg appointments
 const getUpcomingAptmnts = async (req, res) => {
   try {
-    const doctor = req.body.doctor;
+    const { username } = req.body;
 
     // Find all upcoming appointments with the specified doctor's email
     const upcomingAppointments = await appointmentModel.find({
-      doctorEmail: doctor,
+      doctorUsername: username,
       status: "UPCOMING",
     });
     const patientEmails = upcomingAppointments.map(

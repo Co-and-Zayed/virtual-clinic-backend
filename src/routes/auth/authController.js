@@ -1,19 +1,22 @@
-require("dotenv").config();
+require("dotenv").config({
+  path: "../.env",
+});
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const refreshTokensModel = require("../../models/refreshTokensModel");
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1440m" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" });
 }
 
 // Creates a new access token and refresh token for the user
 async function createUserTokens(user) {
   const accessToken = generateAccessToken(user);
-  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "1440m",
+  });
 
   // Add refresh token to database
-
   try {
     const refreshTokenToAdd = new refreshTokensModel({
       username: user.username,
@@ -33,17 +36,20 @@ async function handleRefreshToken(req, res) {
   if (token == null) return res.sendStatus(401);
 
   // Find in database
-  const tokenRecord = await refreshTokensModel.findOne({ username });
+  const tokenRecord = await refreshTokensModel.findOne({ token });
   if (!tokenRecord || tokenRecord.token !== token) {
-    // MIGHT BE ADMIN
-    const adminTokenRecord = await refreshTokensModel.findOne({ username });
-    if (!adminTokenRecord || adminTokenRecord.token !== token) {
-      return res.sendStatus(403);
-    }
+    console.log("TOKEN NOT FOUND FOR USER: ", username);
+    return res
+      .status(401)
+      .json({ message: "Refresh Token not found for user: " + username });
   }
 
   jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
-    if (err) return res.sendStatus(403);
+    if (err) {
+      await refreshTokensModel.deleteMany({ token: token });
+      return res.status(401).json({ message: "Refresh Token has expired" });
+    }
+
     const accessToken = generateAccessToken({
       username: user.username,
       type: user.type,
@@ -56,11 +62,11 @@ async function handleRefreshToken(req, res) {
 // Deletes the refresh token associated with the provided email
 async function deleteRefreshToken(req, res) {
   // res.json({ message: "Token deleted successfully" });
-  const { username } = req.body;
+  const { refreshToken } = req.body;
   // Remove from database
   try {
     const deletedToken = await refreshTokensModel.findOneAndDelete({
-      username,
+      token: refreshToken,
     });
     if (deletedToken) {
       res.status(200).json({ message: "Token deleted successfully" });
@@ -76,7 +82,7 @@ async function deleteRefreshToken(req, res) {
 }
 
 // Middleware to authenticate the access token
-function authenticateToken(userType) {
+function authenticateToken(userType = null) {
   return async (req, res, next) => {
     const { refreshToken } = req.body;
     const authHeader = req.headers["authorization"];
@@ -100,15 +106,28 @@ function authenticateToken(userType) {
         await refreshTokensModel.deleteMany({ token: refreshToken });
         return res.status(401).json({ message: "No refresh token found" });
       }
-      if (user.type !== userType) {
+
+      // verify the refresh token is valid has not expired
+      jwt.verify(
+        tokenRecord.token,
+        process.env.REFRESH_TOKEN_SECRET,
+        async (err, user) => {
+          if (err) {
+            await refreshTokensModel.deleteMany({ token: refreshToken });
+            return res
+              .status(401)
+              .json({ message: "Refresh Token has expired" });
+          }
+        }
+      );
+
+      if (userType && user.type !== userType) {
         await refreshTokensModel.deleteMany({ token: refreshToken });
-        return res
-          .status(401)
-          .json({
-            message: "User is not authorized",
-            userType: user.type,
-            input: userType,
-          });
+        return res.status(401).json({
+          message: "User is not authorized",
+          userType: user.type,
+          input: userType,
+        });
       }
       req.user = user;
 
