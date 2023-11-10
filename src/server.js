@@ -17,7 +17,7 @@ const dropdownRoutes = require("./routes/dropdown/dropdown");
 const stripeRoutes = require("./routes/stripe/stripeRoutes");
 
 // Middleware
-app.use(express.json());
+// app.use(express.json());
 app.use(cors());
 
 // Mongoose Setup
@@ -28,6 +28,7 @@ const port = process.env.PORT || 3000;
 
 // Util Imports
 const { upload } = require("./utils/uploadFile");
+const { uploadS3 } = require("./utils/uploadMultipleFiles");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");
@@ -71,3 +72,12 @@ app.use("/dropdown", dropdownRoutes);
 */
 
 app.post("/upload", upload.single("image"), fileUploadRoute);
+
+// Upload Multiple Files Test Route
+app.post("/uploadMultiple", uploadS3.array('files', 2), (req, res) => {
+  const files = req.files;
+  for (let i = 0; i < files.length; i++) {
+    console.log(Date.now().toString() + "-" + files[i].originalname + "\n");
+  }
+  res.json({message: "Files Uploaded Successfully"});
+})

@@ -61,6 +61,9 @@ const loginUser = async (req, res) => {
 };
 
 const registerUser = async (req, res) => {
+  // Files
+  const files = req.files;
+
   const { name, email, type } = req.body;
 
   // Common Fields
@@ -72,7 +75,6 @@ const registerUser = async (req, res) => {
   // Patient Fields
   const {
     mobileNumber,
-    healthRecords,
     emergencyContactName,
     emergencyContactNumber,
   } = req.body;
@@ -181,6 +183,11 @@ const registerUser = async (req, res) => {
   }
   if (type === "PATIENT") {
     try {
+      var healthRecords = [];
+      for (let i = 0; i < files.length; i++) {
+        healthRecords.push(files[i].originalname);
+      }
+      console.log(healthRecords);
       const patient = new patientModel({
         name,
         email,
