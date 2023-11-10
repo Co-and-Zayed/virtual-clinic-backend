@@ -32,20 +32,38 @@ const addFamilyMember = async (req, res) => {// THIS WORKS ONLY FOR GUEST FAMILY
     }
 }
 
+//TO BE CHANGED (check patient table for patient family members)
 const getFamilyMembers = async (req, res) => {
-    const patientEmail = req.body.patientEmail;
-    if (!patientEmail) {
-        return res.status(403).json({
-        message: "FORBIDDEN ACCESS",
-        });
-    }
+    // const patientEmail = req.body.patientEmail;
+    // if (!patientEmail) {
+    //     return res.status(403).json({
+    //     message: "FORBIDDEN ACCESS",
+    //     });
+    // }
+    const patientID = req.body.patientID;
     try {
-        const familyMembers = await familyMembersModel.find({patientEmail: patientEmail});
-        res.json(familyMembers);
+        // const familyMembers = await familyMembersModel.find({patientEmail: patientEmail});
+        // res.json(familyMembers);
+        const patient = await patientModel.findById(patientID);
+        let responsefamilyMembers = [100];
+        var familyMember;
+        console.log(familyMember);
+        //console.log("!" + Object.keys(patient.familyMembers).length + "!");
+        for (let i = 0; i < 2; i++) {
+            console.log("TEST")
+            if(patient.familyMembers[i].type == "GUEST"){
+                familyMember = await familyMembersModel.findById((patient.familyMembers)[i].id);
+            }else{
+                familyMember = await patientModel.findById((patient.familyMembers)[i].id);
+            }
+            responsefamilyMembers.push(familyMember)
+            console.log(familyMember);
+          }
+          res.status(200).json(responsefamilyMembers);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-    };
+};
 
 module.exports = {addFamilyMember, getFamilyMembers};
     

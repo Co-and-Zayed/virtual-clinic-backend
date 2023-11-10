@@ -288,11 +288,47 @@ try {
 
   res.status(200).json(familyPatient);// this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
 } catch (err) {
-res.status(400).json({ error: err.message });
+  res.status(400).json({ error: err.message });
 }  
 }
 
+const viewSubscribedPackage = async (req, res) => { // for patient
+  const patientID = req.body.patientID;
+try {
+  const patient = await patientModel.findById(patientID);
+  var package = null;
+  let responsePackage = null; // Create a copy of the package
+  if(patient.healthPackage){
+    package = await packageModel.findById(patient.healthPackage);
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = patient.healthPackageStatus;
+  }
+  res.status(200).json(responsePackage);
+} catch (err) {
+  res.status(400).json({ error: err.message });
+}  
+}
 
+const viewSubscribedPackageforFamilyMember = async (req, res) => { // for family member
+  const ID = req.body.ID; // of family member (patient or guest)
+try {
+  const patient = await patientModel.findById(ID);
+  var package;
+  let responsePackage = null; // Create a copy of the package
+  if(!patient){
+    const familyMember = await familyMembersModel.findById(ID);
+    package = await packageModel.findById(familyMember.healthPackage)
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = familyMember.healthPackageStatus;
+  }else{
+    package = await packageModel.findById(patient.healthPackage)
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = patient.healthPackageStatus;
+  }
+  res.status(200).json(responsePackage);
+} catch (err) {
+  res.status(400).json({ error: err.message });
+}  
+}
 
-
-module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages, getPackagePrice, subscribeToPackageForGuest, subscribeToPackageForFamilyPatient};
+module.exports = { getDoctors, getDoctordetails, filterDoctors ,getHealthPackages,subscribeToPackage,viewPackages, getPackagePrice, subscribeToPackageForGuest, subscribeToPackageForFamilyPatient, viewSubscribedPackage, viewSubscribedPackageforFamilyMember};
