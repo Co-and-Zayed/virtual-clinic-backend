@@ -202,12 +202,28 @@ const getDoctordetails = async (req, res) => {
     const patient = await patientModel.findById(patientID);
     var package = null;
     let responsePackage = null; // Create a copy of the package
+    let responseArray = []
+    const packages = await packageModel.find();
     if(patient.healthPackage){
       package = await packageModel.findById(patient.healthPackage);
       responsePackage = { ...package.toObject() }
       responsePackage.status = patient.healthPackageStatus;
+      responseArray.push(responsePackage);
+      for (let i = 0; i < packages.length; i++){
+        if(!(packages[i]._id.equals(package._id))){
+          responseArray.push(packages[i]);
+          console.log(packages[i]);
+          console.log(package._id);
+        }
+      }
+    }else{
+      for (let i = 0; i < packages.length; i++){
+          responseArray.push(packages[i]);
+      }
     }
-    res.status(200).json([responsePackage]);
+    
+    
+    res.status(200).json(responseArray);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }  
@@ -265,23 +281,13 @@ try {
   let responsePackage = null; // Create a copy of the package
   if(!patient){
     const familyMember = await familyMembersModel.findById(ID);
-    if(familyMember.healthPackage){
-      package = await packageModel.findById(familyMember.healthPackage)
-      responsePackage = { ...package.toObject() }
-      responsePackage.status = familyMember.healthPackageStatus;
-    }
-    else{
-      res.status(401).json("Family member is not subscribed to any package")
-    }
+    package = await packageModel.findById(familyMember.healthPackage)
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = familyMember.healthPackageStatus;
   }else{
-    if(patient.healthPackage){
-      package = await packageModel.findById(patient.healthPackage)
-      responsePackage = { ...package.toObject() }
-      responsePackage.status = patient.healthPackageStatus;
-    } 
-    else(
-      res.status(401).json("Family member is not subscribed to any package")
-    )
+    package = await packageModel.findById(patient.healthPackage)
+    responsePackage = { ...package.toObject() }
+    responsePackage.status = patient.healthPackageStatus;
   }
   res.status(200).json([responsePackage]);
 } catch (err) {
