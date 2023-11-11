@@ -101,6 +101,10 @@ const getAppointments = async (req, res) => {
       };
     });
     console.log("CHECKPOINT 4");
+    // sort appointments by date
+    appointmentsWithTime.sort((a, b) => {
+      return new Date(a.date) - new Date(b.date);
+    });
     res.json(appointmentsWithTime);
   } catch (err) {
     console.log(err);
