@@ -3,6 +3,8 @@ const { default: mongoose } = require("mongoose");
 const familyMembersModel = require("../../models/familyMembersModel");
 const patientModel = require("../../models/patientModel");
 
+
+//CHANGED
 const addFamilyMember = async (req, res) => {// THIS WORKS ONLY FOR GUEST FAMILY MEMBERS. YOU STILL NEED TO WRITE THE API FOR AddPatientAsFamilyMember!
     const {name, nationalID, age, gender, relationship, patientEmail} = req.body;
     if (!name || !nationalID || !age || !gender || !relationship) {
@@ -32,24 +34,14 @@ const addFamilyMember = async (req, res) => {// THIS WORKS ONLY FOR GUEST FAMILY
     }
 }
 
-//TO BE CHANGED (check patient table for patient family members)
+//CHANGED
 const getFamilyMembers = async (req, res) => {
-    // const patientEmail = req.body.patientEmail;
-    // if (!patientEmail) {
-    //     return res.status(403).json({
-    //     message: "FORBIDDEN ACCESS",
-    //     });
-    // }
     const patientID = req.body.patientID;
     try {
-        // const familyMembers = await familyMembersModel.find({patientEmail: patientEmail});
-        // res.json(familyMembers);
         const patient = await patientModel.findById(patientID);
-        let responsefamilyMembers = [100];
+        let responsefamilyMembers = [];
         var familyMember;
-        console.log(familyMember);
-        //console.log("!" + Object.keys(patient.familyMembers).length + "!");
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < (patient.familyMembers).length; i++) {
             console.log("TEST")
             if(patient.familyMembers[i].type == "GUEST"){
                 familyMember = await familyMembersModel.findById((patient.familyMembers)[i].id);

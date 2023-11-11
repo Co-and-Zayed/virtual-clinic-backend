@@ -54,12 +54,12 @@ router.delete(
 
 // Family Member Routes
 router.post("/addFamilyMember", 
-// authenticateToken("PATIENT"),
+ authenticateToken("PATIENT"),
  addFamilyMember);
 
 router.post(
   "/getFamilyMembers",
-  //authenticateToken("PATIENT"),
+  authenticateToken("PATIENT"),
   getFamilyMembers
 );
 
@@ -108,17 +108,17 @@ router.post(
 );
 router.post(
   "/viewSubscribedPackageforFamilyMember",
-  //authenticateToken("PATIENT"),
+  authenticateToken("PATIENT"),
   viewSubscribedPackageforFamilyMember
 );
 router.post(
   "/unsubscribeFromPackage",
-  //authenticateToken("PATIENT"),
+  authenticateToken("PATIENT"),
   unsubscribeFromPackage
 );
 router.post(
   "/unsubscribeFromPackageforFamily",
-  //authenticateToken("PATIENT"),
+  authenticateToken("PATIENT"),
   unsubscribeFromPackageforFamily
 );
 module.exports = router;

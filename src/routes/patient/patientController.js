@@ -200,8 +200,14 @@ const getDoctordetails = async (req, res) => {
   const patientID = req.body.patientID;  // get the patient ID to add to it the HP
   try {
     const patient = await patientModel.findById(patientID);
-    const package = await packageModel.findOne({_id: patient.healthPackage});
-    res.status(200).json([package]);
+    var package = null;
+    let responsePackage = null; // Create a copy of the package
+    if(patient.healthPackage){
+      package = await packageModel.findById(patient.healthPackage);
+      responsePackage = { ...package.toObject() }
+      responsePackage.status = patient.healthPackageStatus;
+    }
+    res.status(200).json([responsePackage]);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }  
@@ -259,15 +265,25 @@ try {
   let responsePackage = null; // Create a copy of the package
   if(!patient){
     const familyMember = await familyMembersModel.findById(ID);
-    package = await packageModel.findById(familyMember.healthPackage)
-    responsePackage = { ...package.toObject() }
-    responsePackage.status = familyMember.healthPackageStatus;
+    if(familyMember.healthPackage){
+      package = await packageModel.findById(familyMember.healthPackage)
+      responsePackage = { ...package.toObject() }
+      responsePackage.status = familyMember.healthPackageStatus;
+    }
+    else{
+      res.status(401).json("Family member is not subscribed to any package")
+    }
   }else{
-    package = await packageModel.findById(patient.healthPackage)
-    responsePackage = { ...package.toObject() }
-    responsePackage.status = patient.healthPackageStatus;
+    if(patient.healthPackage){
+      package = await packageModel.findById(patient.healthPackage)
+      responsePackage = { ...package.toObject() }
+      responsePackage.status = patient.healthPackageStatus;
+    } 
+    else(
+      res.status(401).json("Family member is not subscribed to any package")
+    )
   }
-  res.status(200).json(responsePackage);
+  res.status(200).json([responsePackage]);
 } catch (err) {
   res.status(400).json({ error: err.message });
 }  
@@ -357,7 +373,7 @@ try {
 const unsubscribeFromPackage = async (req, res) => {
   const patientID = req.body.patientID;  // get the patient ID to add to it the HP
   try {
-    const patient = await patientModel.findOneAndUpdate({ _id: patientID},{healthPackageStatus:"UNSUBSCRIBED"});
+    const patient = await patientModel.findOneAndUpdate({ _id: patientID},{healthPackageStatus:"UNSUBSCRIBED"}, { new: true });
     var package = await packageModel.findById(patient.healthPackage)
     responsePackage = { ...package.toObject() }
     responsePackage.status = patient.healthPackageStatus;
