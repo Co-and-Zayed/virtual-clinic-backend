@@ -551,29 +551,54 @@ const subscribeToPackageForFamilyPatient = async (req, res) => {
   const packageID = req.body.packageID;
   const patientID = req.body.patientID; // family member patient
   try {
+    const familyPatient = await patientModel.findById(patientID);
     var package = await packageModel.findById(packageID);
-    const currentDate = new Date();
-    // Add one year to the current date
-    const oneYearLater = new Date(currentDate);
-    oneYearLater.setFullYear(currentDate.getFullYear() + 1);
-    const familyPatientFind = await patientModel.findById(patientID);
-    var packageOld = await packageModel.findById(
-      familyPatientFind.healthPackage
-    );
-    if (familyPatientFind.healthPackageStatus != "SUBSCRIBED") {
-      const familyPatient = await patientModel.findOneAndUpdate(
-        { _id: patientID },
-        {
-          healthPackage: package._id,
-          healthPackageStatus: "SUBSCRIBED",
-          healthPackageRenewalDate: oneYearLater,
-        }
+    if (familyPatient) {
+      const currentDate = new Date();
+      // Add one year to the current date
+      const oneYearLater = new Date(currentDate);
+      oneYearLater.setFullYear(currentDate.getFullYear() + 1);
+      const familyPatientFind = await patientModel.findById(patientID);
+      var packageOld = await packageModel.findById(
+        familyPatientFind.healthPackage
       );
-      responsePackage = { ...package.toObject() };
-      responsePackage.status = familyPatient.healthPackageStatus;
+      if (familyPatientFind.healthPackageStatus != "SUBSCRIBED") {
+        const familyPatient = await patientModel.findOneAndUpdate(
+          { _id: patientID },
+          {
+            healthPackage: package._id,
+            healthPackageStatus: "SUBSCRIBED",
+            healthPackageRenewalDate: oneYearLater,
+          }
+        );
+        responsePackage = { ...package.toObject() };
+        responsePackage.status = familyPatient.healthPackageStatus;
+      } else {
+        responsePackage = { ...packageOld.toObject() };
+        responsePackage.status = familyPatientFind.healthPackageStatus;
+      }
     } else {
-      responsePackage = { ...packageOld.toObject() };
-      responsePackage.status = familyPatientFind.healthPackageStatus;
+      const currentDate = new Date();
+      // Add one year to the current date
+      const oneYearLater = new Date(currentDate);
+      oneYearLater.setFullYear(currentDate.getFullYear() + 1);
+      const guestFind = await familyMembersModel.findById(patientID);
+      var packageOld = await packageModel.findById(guestFind.healthPackage);
+      if (guestFind.healthPackageStatus != "SUBSCRIBED") {
+        const guest = await familyMembersModel.findOneAndUpdate(
+          { _id: patientID },
+          {
+            healthPackage: package._id,
+            healthPackageStatus: "SUBSCRIBED",
+            healthPackageRenewalDate: oneYearLater,
+          }
+        );
+        responsePackage = { ...package.toObject() };
+        responsePackage.status = guest.healthPackageStatus;
+      } else {
+        responsePackage = { ...packageOld.toObject() };
+        responsePackage.status = guestFind.healthPackageStatus;
+      }
     }
     res.status(200).json(responsePackage); // this is called when we click on the subscribe button to take us to the payment page (passing the needed data with us). However, the package is only added to the guest after the payment has been finalized
   } catch (err) {

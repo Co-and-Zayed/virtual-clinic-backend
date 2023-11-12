@@ -37,7 +37,7 @@ const loginUser = async (req, res) => {
     if (object?.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
     } else if (
-      object?.healthPackageStatus === "UNSUBSCRIBED" &&
+      //object?.healthPackageStatus === "UNSUBSCRIBED" &&
       object?.healthPackageRenewalDate < new Date()
     ) {
       object.healthPackageStatus = "CANCELLED";
