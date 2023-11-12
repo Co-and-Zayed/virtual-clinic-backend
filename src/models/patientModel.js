@@ -69,6 +69,10 @@ const patientSchema = new Schema({
       required : true 
     } ,
   }],  
+  wallet: {
+    type: Number,
+    default: 0,
+  },
 });
 
 // Define a virtual property to compute the 'age' based on 'date_of_birth'.

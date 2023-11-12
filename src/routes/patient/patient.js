@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const { getDoctors, getDoctordetails, filterDoctors,getHealthPackages,subscribeToPackage,viewPackages,getPackagePrice, 
-  subscribeToPackageForGuest, subscribeToPackageForFamilyPatient, viewSubscribedPackage, viewSubscribedPackageforFamilyMember, unsubscribeFromPackage, unsubscribeFromPackageforFamily} = require("./patientController");
+  subscribeToPackageForGuest, subscribeToPackageForFamilyPatient, viewSubscribedPackage, viewSubscribedPackageforFamilyMember, unsubscribeFromPackage, unsubscribeFromPackageforFamily,payWithWallet} = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -62,6 +62,8 @@ router.post(
   authenticateToken("PATIENT"),
   getFamilyMembers
 );
+
+router.post("/payWithWallet", authenticateToken("PATIENT"), payWithWallet);
 
 ///////////
 // ZEINA //

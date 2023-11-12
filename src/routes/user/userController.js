@@ -66,6 +66,9 @@ const registerUser = async (req, res) => {
   // Common Fields
   const { username, password, date_of_birth, gender } = req.body;
 
+  // Cast date_of_birth to Date object
+  // const date_of_birth_new = new Date(date_of_birth, "DD/MM/YYYY");
+
   // Patient Fields
   const {
     mobileNumber,
