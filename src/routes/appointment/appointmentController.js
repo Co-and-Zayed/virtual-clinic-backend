@@ -35,14 +35,21 @@ const createAppointment = async (req, res) => {
 };
 
 const getAppointments = async (req, res) => {
-  const { userType } = req.params;
-  var { id } = req.body;
+  const { type, username } = req.user;
+  var id;
+  if(type === "PATIENT"){
+    const patient = await patientModel.findOne({ username: username });
+    id = patient._id;
+  }else{
+    const doctor = await doctorModel.findOne({ username: username });
+    id = doctor._id;
+  }
   // convert id to ObjectId
-  id = new mongoose.Types.ObjectId(id);
+
   try {
     var appointments = [];
     console.log("CHECKPOINT 1");
-    if (userType === "PATIENT") {
+    if (type === "PATIENT") {
       appointments = await appointmentModel
         .find({ patientId: id })
         .lean()

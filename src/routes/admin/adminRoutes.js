@@ -26,8 +26,8 @@ router.post("/createAdmin", authenticateToken("ADMIN"), createAdmin);
 router.post("/deletePatient", authenticateToken("ADMIN"), deletePatient);
 router.post("/deleteDoctor", authenticateToken("ADMIN"), deleteDoctor);
 router.post("/deleteAdmin", authenticateToken("ADMIN"), deleteAdmin);
-router.put("/acceptDoctor", acceptDoctor);
-router.put("/rejectDoctor", rejectDoctor);
+router.put("/acceptDoctor",authenticateToken("ADMIN"), acceptDoctor);
+router.put("/rejectDoctor",authenticateToken("ADMIN"), rejectDoctor);
 router.get("/viewAllAdmins/:id", authenticateToken("ADMIN"), async (req, res) => {
   const { id } = req.params;
   try {
