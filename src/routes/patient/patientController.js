@@ -195,35 +195,66 @@ const getDoctordetails = async (req, res) => {
  }
 
  const viewPackages = async (req, res) => {
-  
-
   const patientID = req.body.patientID;  // get the patient ID to add to it the HP
   try {
     const patient = await patientModel.findById(patientID);
     var package = null;
+    const familyMembers = patient.familyMembers;
+    var maxDiscount = 0;
     let responsePackage = null; // Create a copy of the package
     let responseArray = []
     const packages = await packageModel.find();
+    for(let i=0 ; i<familyMembers.length; i++){
+      if(familyMembers[i].type == "EXISTING"){
+        const familyPatient = await patientModel.findById(familyMembers[i].id);
+        const familyPatientPackage = await packageModel.findById(familyPatient.healthPackage);
+        if(familyPatientPackage && (familyPatient.healthPackageStatus)==("SUBSCRIBED")){
+          if((familyPatientPackage.family_discount)>maxDiscount){
+            maxDiscount = familyPatientPackage.family_discount;
+          }
+        }
+      }
+    }
     if(patient.healthPackage){
       package = await packageModel.findById(patient.healthPackage);
       responsePackage = { ...package.toObject() }
       responsePackage.status = patient.healthPackageStatus;
       responsePackage.healthPackageRenewalDate = patient.healthPackageRenewalDate
+      if(maxDiscount>0){
+        const price = responsePackage.price_per_year;
+        responsePackage.discountedPrice = (1 - maxDiscount) * price;
+      }
       responseArray.push(responsePackage);
       for (let i = 0; i < packages.length; i++){
-        if(!(packages[i]._id.equals(package._id))){
-          responseArray.push(packages[i]);
-          console.log(packages[i]);
-          console.log(package._id);
+        if(maxDiscount>0){
+          if(!(packages[i]._id.equals(package._id))){
+            responsePackage = { ...packages[i].toObject() }
+            const price = responsePackage.price_per_year;
+            responsePackage.discountedPrice = (1 - maxDiscount) * price;
+            responseArray.push(responsePackage);
+            // console.log(responsePackage);
+            // console.log(responsePackage._id);
+          }
+        }else{
+          if(!(packages[i]._id.equals(package._id))){
+            responseArray.push(packages[i]);
+            // console.log(packages[i]);
+            // console.log(package._id);
+          }
         }
       }
     }else{
       for (let i = 0; i < packages.length; i++){
+        if(maxDiscount>0){
+          responsePackage = { ...packages[i].toObject() }
+          const price = responsePackage.price_per_year;
+          responsePackage.discountedPrice = (1 - maxDiscount) * price;
+          responseArray.push(responsePackage);
+        }else{
           responseArray.push(packages[i]);
+        }
       }
     }
-    
-    
     res.status(200).json(responseArray);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -276,26 +307,77 @@ try {
 
 const viewSubscribedPackageforFamilyMember = async (req, res) => { // for family member
   const ID = req.body.ID; // of family member (patient or guest)
+  const patientID = req.body.patientID;
+  
 try {
+  const loggedInPatient = await patientModel.findById(patientID);
   const patient = await patientModel.findById(ID);
+  const loggedInPatientPackage = await packageModel.findById(loggedInPatient.healthPackage);
   var package = null;
   let responsePackage = null; // Create a copy of the package
+  let responseArray = [];
+  var discount = 0;
+  if(loggedInPatientPackage){
+    discount = loggedInPatientPackage.family_discount;
+  }
+  const packages = await packageModel.find();
   if(!patient){
     const familyMember = await familyMembersModel.findById(ID);
     package = await packageModel.findById(familyMember.healthPackage)
+    if(package){
     responsePackage = { ...package.toObject() }
     responsePackage.status = familyMember.healthPackageStatus;
     responsePackage.healthPackageRenewalDate = familyMember.healthPackageRenewalDate;
+    if(discount>0){
+      const price = responsePackage.price_per_year;
+      const discountedPrice = (1 - discount) * price;
+      responsePackage.discountedPrice = discountedPrice;
+    }
+    responseArray.push(responsePackage);
+    }
+    for (let i = 0; i < packages.length; i++){
+      if(!(packages[i].equals(package))){
+        if(discount>0){
+          responsePackage = { ...packages[i].toObject() }
+          const price = responsePackage.price_per_year;
+          responsePackage.discountedPrice = (1 - maxDiscount) * price;
+          responseArray.push(responsePackage);
+        }else{
+          responseArray.push(packages[i]);
+        }
+      }
+    }
   }else{
-    package = await packageModel.findById(patient.healthPackage)
-    responsePackage = { ...package.toObject() }
-    responsePackage.status = patient.healthPackageStatus;
-    responsePackage.healthPackageRenewalDate = patient.healthPackageRenewalDate;
+    package = await packageModel.findById(patient.healthPackage);
+    if(package){
+      responsePackage = { ...package.toObject() }
+      responsePackage.status = patient.healthPackageStatus;
+      responsePackage.healthPackageRenewalDate = patient.healthPackageRenewalDate;
+      if(discount>0){
+        const price = responsePackage.price_per_year;
+        const discountedPrice = (1 - discount) * price;
+        responsePackage.discountedPrice = discountedPrice;
+      }
+      responseArray.push(responsePackage);
+      }
+      for (let i = 0; i < packages.length; i++){
+        if(!(packages[i].equals(package))){
+          if(discount>0){
+            responsePackage = { ...packages[i].toObject() }
+            const price = responsePackage.price_per_year;
+            responsePackage.discountedPrice = (1 - maxDiscount) * price;
+            responseArray.push(responsePackage);
+          }else{
+            responseArray.push(packages[i]);
+          }
+        }
+      }
   }
-  res.status(200).json([responsePackage]);
+  res.status(200).json(responseArray);
 } catch (err) {
   res.status(400).json({ error: err.message });
-}  
+}
+  
 }
   
  const subscribeToPackage = async (req, res) => {// assuming payment has been finalized (hetet el stripe di kolaha khelset)
@@ -414,6 +496,8 @@ try {
   res.status(400).json({ error: err.message });
 }   
 }
+
+
 
 
 
