@@ -125,7 +125,7 @@ const acceptDoctor = async (req, res) => {
     );
 
     if (!updatedDoctor) {
-      return res.status(404).json({ message: 'Doctor not found.' });
+      return res.status(404).json({ message: "Doctor not found." });
     }
 
     return res.json(updatedDoctor);
@@ -144,12 +144,12 @@ const acceptDoctor = async (req, res) => {
       );
   
       if (!updatedDoctor) {
-        return res.status(404).json({ message: 'Doctor not found.' });
+        return res.status(404).json({ message: "Doctor not found." });
       }
   
       return res.json(updatedDoctor);
     } catch (err) {
-      return res.status(500).json({ message: 'Internal Server Error' });
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   };
 
