@@ -208,6 +208,7 @@ const getDoctordetails = async (req, res) => {
       package = await packageModel.findById(patient.healthPackage);
       responsePackage = { ...package.toObject() }
       responsePackage.status = patient.healthPackageStatus;
+      responsePackage.healthPackageRenewalDate = patient.healthPackageRenewalDate
       responseArray.push(responsePackage);
       for (let i = 0; i < packages.length; i++){
         if(!(packages[i]._id.equals(package._id))){
@@ -284,10 +285,12 @@ try {
     package = await packageModel.findById(familyMember.healthPackage)
     responsePackage = { ...package.toObject() }
     responsePackage.status = familyMember.healthPackageStatus;
+    responsePackage.healthPackageRenewalDate = familyMember.healthPackageRenewalDate;
   }else{
     package = await packageModel.findById(patient.healthPackage)
     responsePackage = { ...package.toObject() }
     responsePackage.status = patient.healthPackageStatus;
+    responsePackage.healthPackageRenewalDate = patient.healthPackageRenewalDate;
   }
   res.status(200).json([responsePackage]);
 } catch (err) {
