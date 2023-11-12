@@ -47,12 +47,12 @@ const deletePatient = async (req, res) => {
 };
 
 const deleteDoctor = async (req, res) => {
-  const { email } = req.body;
+  const { username, _id } = req.body;
   try {
-    await userModel.deleteMany({ email });
-    await doctorModel.deleteMany({ email });
-    await appointmentModel.deleteMany({ doctorEmail: email });
-    await refreshTokensModel.deleteMany({ email });
+    await userModel.deleteMany({ username });
+    await doctorModel.deleteMany({ username });
+    await appointmentModel.deleteMany({ doctorId: _id });
+    await refreshTokensModel.deleteMany({ username });
     res.status(200).json({
       message: "Doctor deleted successfully",
     });
