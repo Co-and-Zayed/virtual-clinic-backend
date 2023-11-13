@@ -6,6 +6,15 @@ const familyMemberSchema = new Schema({
         type: String,
         required : true
     },
+    age:{
+        type: Number,
+        required: true
+    },
+    gender: {
+        type: String,
+        enum: ["MALE", "FEMALE"],
+        required: true,
+    },
     nationalID:{
         type: String,
         required : true
@@ -23,7 +32,19 @@ const familyMemberSchema = new Schema({
     relationTo: {
         type: String,
         required : true
+    },
+    healthPackage: {
+        type: Schema.Types.ObjectId,
+        ref: "Package",
+    },
+    healthPackageStatus:{
+        type: String,
+        enum: ["SUBSCRIBED", "UNSUBSCRIBED","CANCELLED"],
+    },
+    healthPackageRenewalDate:{
+        type: Date,
     }
+ 
 })
 
 const familyMemberModel = mongoose.model("FamilyMember", familyMemberSchema);

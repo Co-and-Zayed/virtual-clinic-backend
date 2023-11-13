@@ -1,7 +1,22 @@
 const express = require("express");
 const router = express.Router();
 
-const { getDoctors, getDoctordetails, filterDoctors, payWithWallet } = require("./patientController");
+const {
+  getDoctors,
+  getDoctordetails,
+  filterDoctors,
+  getHealthPackages,
+  subscribeToPackage,
+  viewPackages,
+  getPackagePrice,
+  subscribeToPackageForGuest,
+  subscribeToPackageForFamilyPatient,
+  viewSubscribedPackage,
+  viewSubscribedPackageforFamilyMember,
+  unsubscribeFromPackage,
+  unsubscribeFromPackageforFamily,
+  payWithWallet,
+} = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -70,5 +85,50 @@ router.post(
   authenticateToken("PATIENT"),
   getDoctordetails
 );
-
+router.get(
+  "/getHealthPackages",
+  authenticateToken("PATIENT"),
+  getHealthPackages
+);
+router.post(
+  "/subscribeToPackage",
+  //authenticateToken("PATIENT"),
+  subscribeToPackage
+);
+router.post("/viewPackages", authenticateToken("PATIENT"), viewPackages);
+router.post(
+  "/getPackagePrice",
+  //authenticateToken("PATIENT"),
+  getPackagePrice
+);
+router.post(
+  "/subscribeToPackageForGuest",
+  //authenticateToken("PATIENT"),
+  subscribeToPackageForGuest
+);
+router.post(
+  "/subscribeToPackageForFamilyPatient",
+  authenticateToken("PATIENT"),
+  subscribeToPackageForFamilyPatient
+);
+router.post(
+  "/viewSubscribedPackage",
+  authenticateToken("PATIENT"),
+  viewSubscribedPackage
+);
+router.post(
+  "/viewSubscribedPackageforFamilyMember",
+  authenticateToken("PATIENT"),
+  viewSubscribedPackageforFamilyMember
+);
+router.post(
+  "/unsubscribeFromPackage",
+  authenticateToken("PATIENT"),
+  unsubscribeFromPackage
+);
+router.post(
+  "/unsubscribeFromPackageforFamily",
+  authenticateToken("PATIENT"),
+  unsubscribeFromPackageforFamily
+);
 module.exports = router;

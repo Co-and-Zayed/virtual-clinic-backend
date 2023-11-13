@@ -50,6 +50,25 @@ const patientSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Package",
   },
+  healthPackageStatus:{
+    type: String,
+    enum: ["SUBSCRIBED", "UNSUBSCRIBED","CANCELLED"],
+  },
+  healthPackageRenewalDate:{
+    type: Date,
+  },
+  familyMembers:[{
+    id:{
+      type: Schema.Types.ObjectId,
+      ref: "familyMembers" 
+      // | "patient",
+    },
+    type:{
+      type: String,
+      enum: ["GUEST", "EXISTING"],
+      required : true 
+    } ,
+  }],  
   wallet: {
     type: Number,
     default: 0,

@@ -29,7 +29,7 @@ const familyMembersSchema = new Schema(
     patientEmail: {
             type: String,
             required: false,
-        },
+        }   
   },
 );
 
