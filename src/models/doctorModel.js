@@ -45,6 +45,14 @@ const doctorSchema = new Schema({
     type: Number,
     required: true,
   },
+  doctorDocuments: {
+    type: [String], // This defines an array of strings
+    default: [], // You can set a default value if needed
+  },
+  wallet: {
+    type: Number,
+    default: 0,
+  },
   status: {
     type: String,
     enum: ["APPROVED", "PENDING"],

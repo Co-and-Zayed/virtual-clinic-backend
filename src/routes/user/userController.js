@@ -148,6 +148,26 @@ const registerUser = async (req, res) => {
 
   // Construct Patient Or Doctor Object
   if (type === "DOCTOR") {
+    var doctorDocuments = [];
+    console.log("FILES");
+    console.log(files);
+    console.log(req.createdAt);
+    if (files !== null && files !== undefined) {
+      for (let i = 0; i < files?.length; i++) {
+        const date = new Date(req.body.createdAt);
+        const timestamp =
+          date.getHours() +
+          "-" +
+          date.getMinutes() +
+          "-" +
+          date.getSeconds() +
+          "-" +
+          date.getMilliseconds();
+        doctorDocuments.push(
+          `${timestamp}__${req.body.username}__${files[i].originalname}`
+        );
+      }
+    }
     try {
       const doctor = new doctorModel({
         name,
@@ -158,6 +178,7 @@ const registerUser = async (req, res) => {
         specialty,
         date_of_birth,
         affiliation,
+        doctorDocuments,
         educationalBackground,
         hourlyRate,
       });
@@ -189,13 +210,6 @@ const registerUser = async (req, res) => {
         for (let i = 0; i < files?.length; i++) {
           healthRecords.push(files[i].originalname);
         }
-
-        // Object.keys(files).forEach((key) => {
-        //   console.log("SINGLE FILE");
-        //   console.log(key);
-        //   console.log(files[key]);
-        //   healthRecords.push(files[key].name);
-        // });
       }
       const patient = new patientModel({
         name,
