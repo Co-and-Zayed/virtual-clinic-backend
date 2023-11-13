@@ -3,6 +3,7 @@ const { createUserTokens } = require("../auth/authController");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
 const adminModel = require("../../models/adminModel");
+const { getBucketPrefix } = require("../../utils/getBucketPrefix");
 
 const findUser = async (username) => {
   try {
@@ -163,9 +164,7 @@ const registerUser = async (req, res) => {
           date.getSeconds() +
           "-" +
           date.getMilliseconds();
-        doctorDocuments.push(
-          `${timestamp}__${req.body.username}__${files[i].originalname}`
-        );
+        doctorDocuments.push(`${getBucketPrefix(req)}${files[i].originalname}`);
       }
     }
     try {
