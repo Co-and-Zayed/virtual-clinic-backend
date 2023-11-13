@@ -155,15 +155,6 @@ const registerUser = async (req, res) => {
     console.log(req.createdAt);
     if (files !== null && files !== undefined) {
       for (let i = 0; i < files?.length; i++) {
-        const date = new Date(req.body.createdAt);
-        const timestamp =
-          date.getHours() +
-          "-" +
-          date.getMinutes() +
-          "-" +
-          date.getSeconds() +
-          "-" +
-          date.getMilliseconds();
         doctorDocuments.push(`${getBucketPrefix(req)}${files[i].originalname}`);
       }
     }
