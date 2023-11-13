@@ -63,6 +63,8 @@ const loginUser = async (req, res) => {
 const registerUser = async (req, res) => {
   // Files
   const files = req.files;
+  console.log("FILES");
+  console.log(files);
 
   const { name, email, type } = req.body;
 
@@ -73,11 +75,8 @@ const registerUser = async (req, res) => {
   // const date_of_birth_new = new Date(date_of_birth, "DD/MM/YYYY");
 
   // Patient Fields
-  const {
-    mobileNumber,
-    emergencyContactName,
-    emergencyContactNumber,
-  } = req.body;
+  const { mobileNumber, emergencyContactName, emergencyContactNumber } =
+    req.body;
 
   // Doctor Fields
   const { specialty, affiliation, educationalBackground, hourlyRate } =
@@ -184,11 +183,19 @@ const registerUser = async (req, res) => {
   if (type === "PATIENT") {
     try {
       var healthRecords = [];
+      console.log("FILES");
       console.log(files);
       if (files !== null && files !== undefined) {
         for (let i = 0; i < files?.length; i++) {
           healthRecords.push(files[i].originalname);
         }
+
+        // Object.keys(files).forEach((key) => {
+        //   console.log("SINGLE FILE");
+        //   console.log(key);
+        //   console.log(files[key]);
+        //   healthRecords.push(files[key].name);
+        // });
       }
       const patient = new patientModel({
         name,
@@ -218,6 +225,8 @@ const registerUser = async (req, res) => {
         }),
       });
     } catch (err) {
+      console.log("FILES");
+      console.log(files);
       return res.status(400).json({ success: false, message: err.message });
     }
   }
