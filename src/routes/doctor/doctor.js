@@ -8,6 +8,9 @@ const {
   getUpcomingAptmnts,
   editSettings,
   viewSettings,
+  viewAllContracts,
+  acceptContract,
+  rejectContract,
 } = require("./doctorController");
 const { getAppointments } = require("../appointment/appointmentController");
 
@@ -36,6 +39,13 @@ router.post("/viewSettings", authenticateToken("DOCTOR"), viewSettings);
 //PATCH email, hourly rate, affiliation
 router.patch("/editSettings", authenticateToken("DOCTOR"), editSettings);
 
-router.post("/getAppointments/:userType", getAppointments);
+router.get("/getAppointments/",authenticateToken("DOCTOR"), getAppointments);
+
+// After regestration accept or reject contract
+router.get("/viewAllContracts", authenticateToken("DOCTOR"), viewAllContracts);
+
+router.put("/acceptContract", authenticateToken("DOCTOR"), acceptContract);
+
+router.put("/rejectContract", authenticateToken("DOCTOR"), rejectContract);
 
 module.exports = router;

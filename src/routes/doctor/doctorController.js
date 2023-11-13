@@ -1,6 +1,7 @@
 const appointmentModel = require("../../models/appointmentModel");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
+const contractModel = require("../../models/contractModel");
 
 //GET a patient's information and health records
 const getPatientInfo = async (req, res) => {
@@ -29,16 +30,16 @@ const viewSettings = async (req, res) => {
 
 //GET list of all patients
 const getPatients = async (req, res) => {
-  const doctor = req.body.doctor;
+  const { username } = req.user;
+  const doctor = await doctorModel.findOne({ username });
+  console.log("FOUND DOCTOR");
   try {
     //  Find all appointments with the specified doctor's email
-    const appointments = await appointmentModel.find({ doctorEmail: doctor });
-    const patientEmails = appointments.map(
-      (appointment) => appointment.patientEmail
-    );
+    const appointments = await appointmentModel.find({ doctorId: doctor._id });
+    const patientIds = appointments.map((appointment) => appointment.patientId);
 
     // Find patients using the extracted patient emails
-    const patients = await patientModel.find({ email: { $in: patientEmails } });
+    const patients = await patientModel.find({ _id: { $in: patientIds } });
     res.status(200).json(patients);
   } catch (error) {
     console.error(error);
@@ -96,6 +97,60 @@ const editSettings = async (req, res) => {
   }
 };
 
+const viewAllContracts = async (req, res) => {
+  const { username } = req.user;
+  try {
+    const contract = await contractModel.find({ doctorUsername: username });
+    res.status(200).json(contract);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Server error" });
+  }
+};
+
+const acceptContract = async (req, res) => {
+  const { _id } = req.body;
+  const { username } = req.user;
+  try {
+    const contract = await contractModel.findOneAndUpdate(
+      { _id: _id },
+      { status: "ACCEPTED" },
+      { new: true }
+    );
+    const doctor = await doctorModel.findOneAndUpdate(
+      { username: username },
+      { status: "ACCEPTED" },
+      { new: true }
+    );
+    res.status(200).json({ contract, doctor });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Server error" });
+  }
+};
+
+const rejectContract = async (req, res) => {
+  const { _id } = req.body;
+  const { username } = req.user;
+
+  try {
+    const contract = await contractModel.findOneAndUpdate(
+      { _id: _id },
+      { status: "REJECTED" },
+      { new: true }
+    );
+    const doctor = await doctorModel.findOneAndUpdate(
+      { username: username },
+      { status: "REJECTED" },
+      { new: true }
+    );
+    res.status(200).json({ contract, doctor });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getPatientInfo,
   getPatients,
@@ -103,4 +158,7 @@ module.exports = {
   getUpcomingAptmnts,
   editSettings,
   viewSettings,
+  viewAllContracts,
+  acceptContract,
+  rejectContract,
 };

@@ -48,8 +48,8 @@ router.post(
   createAppointment
 );
 
-router.post(
-  "/getAppointments/:userType",
+router.get(
+  "/getAppointments",
   authenticateToken("PATIENT"),
   getAppointments
 );
@@ -69,7 +69,7 @@ router.delete(
 // Family Member Routes
 router.post("/addFamilyMember", authenticateToken("PATIENT"), addFamilyMember);
 
-router.post(
+router.get(
   "/getFamilyMembers",
   authenticateToken("PATIENT"),
   getFamilyMembers

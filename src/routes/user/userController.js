@@ -3,6 +3,7 @@ const { createUserTokens } = require("../auth/authController");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
 const adminModel = require("../../models/adminModel");
+const { getBucketPrefix } = require("../../utils/getBucketPrefix");
 
 const findUser = async (username) => {
   try {
@@ -66,6 +67,11 @@ const loginUser = async (req, res) => {
 };
 
 const registerUser = async (req, res) => {
+  // Files
+  const files = req.files;
+  console.log("FILES");
+  console.log(files);
+
   const { name, email, type } = req.body;
 
   // Common Fields
@@ -75,12 +81,8 @@ const registerUser = async (req, res) => {
   // const date_of_birth_new = new Date(date_of_birth, "DD/MM/YYYY");
 
   // Patient Fields
-  const {
-    mobileNumber,
-    healthRecords,
-    emergencyContactName,
-    emergencyContactNumber,
-  } = req.body;
+  const { mobileNumber, emergencyContactName, emergencyContactNumber } =
+    req.body;
 
   // Doctor Fields
   const { specialty, affiliation, educationalBackground, hourlyRate } =
@@ -152,6 +154,15 @@ const registerUser = async (req, res) => {
 
   // Construct Patient Or Doctor Object
   if (type === "DOCTOR") {
+    var doctorDocuments = [];
+    console.log("FILES");
+    console.log(files);
+    console.log(req.createdAt);
+    if (files !== null && files !== undefined) {
+      for (let i = 0; i < files?.length; i++) {
+        doctorDocuments.push(`${getBucketPrefix(req)}${files[i].originalname}`);
+      }
+    }
     try {
       const doctor = new doctorModel({
         name,
@@ -162,6 +173,7 @@ const registerUser = async (req, res) => {
         specialty,
         date_of_birth,
         affiliation,
+        doctorDocuments,
         educationalBackground,
         hourlyRate,
       });
@@ -186,6 +198,14 @@ const registerUser = async (req, res) => {
   }
   if (type === "PATIENT") {
     try {
+      var healthRecords = [];
+      console.log("FILES");
+      console.log(files);
+      if (files !== null && files !== undefined) {
+        for (let i = 0; i < files?.length; i++) {
+          healthRecords.push(files[i].originalname);
+        }
+      }
       const patient = new patientModel({
         name,
         email,
@@ -214,6 +234,8 @@ const registerUser = async (req, res) => {
         }),
       });
     } catch (err) {
+      console.log("FILES");
+      console.log(files);
       return res.status(400).json({ success: false, message: err.message });
     }
   }

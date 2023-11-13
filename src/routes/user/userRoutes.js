@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { registerUser, loginUser } = require("./userController");
 const userModel = require("../../models/userModel");
+const { uploadS3 } = require("../../utils/uploadMultipleFiles");
 
 // POST: Create a new user
-router.post("/registerUser", registerUser);
+router.post("/registerUser", uploadS3.array("files", 20), registerUser);
 
 // POST: Login a user
 router.post("/login", loginUser);
