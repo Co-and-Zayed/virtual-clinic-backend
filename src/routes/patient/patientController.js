@@ -198,6 +198,28 @@ const payWithWallet = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { password } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized Access"
+    });
+  }
+
+  const patient = await patientModel.findOne({username: user.username});
+
+  patient.password = password;
+  await patient.save();
+
+  return res.json({
+    success: true,
+    message: "Password Reset"
+  });
+}
+
 ///////////
 // ZEINA //
 ///////////
@@ -261,4 +283,4 @@ const getDoctordetails = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors, getDoctordetails, filterDoctors, payWithWallet };
+module.exports = { getDoctors, getDoctordetails, filterDoctors, payWithWallet, resetPassword };

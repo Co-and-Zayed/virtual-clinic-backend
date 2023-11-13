@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, loginUser } = require("./userController");
+const { registerUser, loginUser, forgetPassword, verifyOtp } = require("./userController");
 const userModel = require("../../models/userModel");
 const { uploadS3 } = require("../../utils/uploadMultipleFiles");
 
@@ -9,6 +9,12 @@ router.post("/registerUser", uploadS3.array("files", 20), registerUser);
 
 // POST: Login a user
 router.post("/login", loginUser);
+
+// POST: Forget password
+router.post("/forgetPassword", forgetPassword);
+
+// POST: Verify Otp
+router.post("/verifyOtp", verifyOtp);
 
 // GET: Get all users
 router.get("/getUsers", async (req, res) => {

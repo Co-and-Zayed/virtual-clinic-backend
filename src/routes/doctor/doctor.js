@@ -8,6 +8,7 @@ const {
   getUpcomingAptmnts,
   editSettings,
   viewSettings,
+  resetpassword
 } = require("./doctorController");
 const { getAppointments } = require("../appointment/appointmentController");
 
@@ -37,5 +38,8 @@ router.post("/viewSettings", authenticateToken("DOCTOR"), viewSettings);
 router.patch("/editSettings", authenticateToken("DOCTOR"), editSettings);
 
 router.post("/getAppointments/:userType", getAppointments);
+
+// Reset Password
+router.post("/resetPassword", authenticateToken("DOCTOR"), resetpassword);
 
 module.exports = router;

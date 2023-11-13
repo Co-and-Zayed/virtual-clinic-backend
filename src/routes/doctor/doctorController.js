@@ -96,6 +96,28 @@ const editSettings = async (req, res) => {
   }
 };
 
+const resetpassword = async (req, res) => {
+  const { password } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauhtorized Access"
+    });
+  }
+
+  const doctor = doctorModel.findOne({username: user?.username});
+
+  doctor.password = password;
+  await doctor.save();
+
+  return res.json({
+    succes: true,
+    message: "Password reset"
+  });
+}
+
 module.exports = {
   getPatientInfo,
   getPatients,
@@ -103,4 +125,5 @@ module.exports = {
   getUpcomingAptmnts,
   editSettings,
   viewSettings,
+  resetpassword
 };

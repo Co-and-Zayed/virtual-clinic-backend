@@ -3,6 +3,7 @@ const { createUserTokens } = require("../auth/authController");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
 const adminModel = require("../../models/adminModel");
+const { sendMail } = require("../../utils/sendMail");
 
 const findUser = async (username) => {
   try {
@@ -59,6 +60,77 @@ const loginUser = async (req, res) => {
     res.status(400).json({ message: "User not found" });
   }
 };
+
+const forgetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await userModel.findOne({email: email});
+
+  if (!user) {
+    return res.json({
+      success: false,
+      message: "User Not Found"
+    });
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  user.otp = otp;
+
+  await user.save();
+
+  const subject = "El7a2ni Password Reset";
+  const message = `Your OTP to reset your password is ${otp} .\n Please do not share it with anyone.`;
+
+  try {
+    sendMail(user.email, subject, message);
+    return res.json({
+      success: true,
+      message: 'Reset Password OTP Sent'
+    });
+  } catch (err) {
+    return res.json({
+      success: false,
+      message: "An Error Occurred"
+    });
+  }
+  
+}
+
+const verifyOtp = async (req, res) => {
+  const { otp } = req.body;
+
+  const user = await userModel.findOne({otp: otp});
+
+  if (!user) {
+    return res.json({
+      success: false,
+      message: "Wrong Otp"
+    });
+  }
+
+  var object = {};
+
+  if (user?.type == "DOCTOR") {
+    object = await doctorModel.findOne({ username: user?.username });
+  } else if (user?.type == "PATIENT") {
+    object = await patientModel.findOne({ username: user?.username });
+  } else {
+    object = await adminModel.findOne({ username: user?.username });
+  }
+
+  res.status(200).json({
+    success: true,
+    user: user,
+    data: object,
+    type: !user?.type ? "ADMIN" : user?.type,
+    tokens: await createUserTokens({
+      username: user?.username,
+      type: !user?.type ? "ADMIN" : user?.type,
+      issuedAt: new Date(),
+    }),
+  });
+}
 
 const registerUser = async (req, res) => {
   // Files
@@ -232,4 +304,4 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+module.exports = { registerUser, loginUser, forgetPassword, verifyOtp };

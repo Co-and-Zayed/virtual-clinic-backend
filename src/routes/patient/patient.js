@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getDoctors, getDoctordetails, filterDoctors, payWithWallet } = require("./patientController");
+const { getDoctors, getDoctordetails, filterDoctors, payWithWallet, resetPassword } = require("./patientController");
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -70,5 +70,8 @@ router.post(
   authenticateToken("PATIENT"),
   getDoctordetails
 );
+
+// Reset Password
+router.post("/resetPassword", authenticateToken("PATIENT"), resetPassword);
 
 module.exports = router;
