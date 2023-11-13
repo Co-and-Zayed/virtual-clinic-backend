@@ -110,13 +110,19 @@ const viewAllContracts = async (req, res) => {
 
 const acceptContract = async (req, res) => {
   const { _id } = req.body;
+  const { username } = req.user;
   try {
     const contract = await contractModel.findOneAndUpdate(
       { _id: _id },
       { status: "ACCEPTED" },
       { new: true }
     );
-    res.status(200).json(contract);
+    const doctor = await doctorModel.findOneAndUpdate(
+      { username: username },
+      { status: "ACCEPTED" },
+      { new: true }
+    );
+    res.status(200).json({contract, doctor});
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Server error" });
@@ -125,13 +131,20 @@ const acceptContract = async (req, res) => {
 
 const rejectContract = async (req, res) => {
   const { _id } = req.body;
+  const { username } = req.user;
+
   try {
     const contract = await contractModel.findOneAndUpdate(
       { _id: _id },
       { status: "REJECTED" },
       { new: true }
     );
-    res.status(200).json(contract);
+    const doctor = await doctorModel.findOneAndUpdate(
+      { username: username },
+      { status: "REJECTED" },
+      { new: true }
+    );
+    res.status(200).json({contract, doctor});
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Server error" });

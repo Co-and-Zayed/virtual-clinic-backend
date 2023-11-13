@@ -121,7 +121,7 @@ const acceptDoctor = async (req, res) => {
   try {
     const updatedDoctor = await doctorModel.findOneAndUpdate(
       { username: username },
-      { $set: { status: "ACCEPTED" } },
+      { $set: { status: "WAITING" } },
       { new: true }
     );
 

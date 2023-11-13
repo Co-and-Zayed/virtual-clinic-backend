@@ -39,7 +39,7 @@ router.post("/viewSettings", authenticateToken("DOCTOR"), viewSettings);
 //PATCH email, hourly rate, affiliation
 router.patch("/editSettings", authenticateToken("DOCTOR"), editSettings);
 
-router.post("/getAppointments/:userType", getAppointments);
+router.get("/getAppointments/",authenticateToken("DOCTOR"), getAppointments);
 
 // After regestration accept or reject contract
 router.get("/viewAllContracts", authenticateToken("DOCTOR"), viewAllContracts);
