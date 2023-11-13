@@ -30,16 +30,16 @@ const viewSettings = async (req, res) => {
 
 //GET list of all patients
 const getPatients = async (req, res) => {
-  const doctor = req.body.doctor;
+  const { username } = req.user;
+  const doctor = await doctorModel.findOne({ username });
+  console.log("FOUND DOCTOR");
   try {
     //  Find all appointments with the specified doctor's email
-    const appointments = await appointmentModel.find({ doctorEmail: doctor });
-    const patientEmails = appointments.map(
-      (appointment) => appointment.patientEmail
-    );
+    const appointments = await appointmentModel.find({ doctorId: doctor._id });
+    const patientIds = appointments.map((appointment) => appointment.patientId);
 
     // Find patients using the extracted patient emails
-    const patients = await patientModel.find({ email: { $in: patientEmails } });
+    const patients = await patientModel.find({ _id: { $in: patientIds } });
     res.status(200).json(patients);
   } catch (error) {
     console.error(error);
@@ -122,7 +122,7 @@ const acceptContract = async (req, res) => {
       { status: "ACCEPTED" },
       { new: true }
     );
-    res.status(200).json({contract, doctor});
+    res.status(200).json({ contract, doctor });
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Server error" });
@@ -144,7 +144,7 @@ const rejectContract = async (req, res) => {
       { status: "REJECTED" },
       { new: true }
     );
-    res.status(200).json({contract, doctor});
+    res.status(200).json({ contract, doctor });
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Server error" });
