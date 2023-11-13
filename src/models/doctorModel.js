@@ -50,6 +50,9 @@ const doctorSchema = new Schema({
     enum: ["PENDING", "ACCEPTED", "REJECTED"],
     default: "PENDING",
   },
+  contractID:{
+    type: String,
+  },
 });
 
 //Define a virtual property to compute the 'age' based on 'date_of_birth'.

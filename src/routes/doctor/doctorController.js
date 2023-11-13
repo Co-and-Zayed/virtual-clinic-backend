@@ -1,6 +1,7 @@
 const appointmentModel = require("../../models/appointmentModel");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
+const contractModel = require("../../models/contractModel");
 
 //GET a patient's information and health records
 const getPatientInfo = async (req, res) => {
@@ -96,6 +97,47 @@ const editSettings = async (req, res) => {
   }
 };
 
+const viewAllContracts = async (req, res) => {
+  const { username } = req.user;
+  try {
+    const contract = await contractModel.find({ doctorUsername: username });
+    res.status(200).json(contract);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Server error" });
+  }
+};
+
+const acceptContract = async (req, res) => {
+  const { _id } = req.body;
+  try {
+    const contract = await contractModel.findOneAndUpdate(
+      { _id: _id },
+      { status: "ACCEPTED" },
+      { new: true }
+    );
+    res.status(200).json(contract);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Server error" });
+  }
+};
+
+const rejectContract = async (req, res) => {
+  const { _id } = req.body;
+  try {
+    const contract = await contractModel.findOneAndUpdate(
+      { _id: _id },
+      { status: "REJECTED" },
+      { new: true }
+    );
+    res.status(200).json(contract);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getPatientInfo,
   getPatients,
@@ -103,4 +145,7 @@ module.exports = {
   getUpcomingAptmnts,
   editSettings,
   viewSettings,
+  viewAllContracts,
+  acceptContract,
+  rejectContract,
 };

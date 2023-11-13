@@ -18,6 +18,7 @@ const {
   viewPatients,
   acceptDoctor,
   rejectDoctor,
+  sendContract,
 } = require("./adminController");
 
 // POST: Creates a new access token and refresh token for the user
@@ -26,13 +27,18 @@ router.post("/createAdmin", authenticateToken("ADMIN"), createAdmin);
 router.post("/deletePatient", authenticateToken("ADMIN"), deletePatient);
 router.post("/deleteDoctor", authenticateToken("ADMIN"), deleteDoctor);
 router.post("/deleteAdmin", authenticateToken("ADMIN"), deleteAdmin);
-router.put("/acceptDoctor",authenticateToken("ADMIN"), acceptDoctor);
-router.put("/rejectDoctor",authenticateToken("ADMIN"), rejectDoctor);
-router.get("/viewAllAdmins/:id", authenticateToken("ADMIN"), async (req, res) => {
-  const { id } = req.params;
-  try {
-    // Find all admins except the one with the specified ID
-    const admins = await adminModel.find({ _id: { $ne: id } });
+router.put("/acceptDoctor", authenticateToken("ADMIN"), acceptDoctor);
+router.put("/rejectDoctor", authenticateToken("ADMIN"), rejectDoctor);
+router.post("/sendContract", authenticateToken("ADMIN"), sendContract);
+
+router.get(
+  "/viewAllAdmins/:id",
+  authenticateToken("ADMIN"),
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      // Find all admins except the one with the specified ID
+      const admins = await adminModel.find({ _id: { $ne: id } });
 
       res.json(admins);
     } catch (error) {
