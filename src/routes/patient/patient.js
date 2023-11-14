@@ -46,19 +46,11 @@ router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);
 router.post("/filterDoctors", authenticateToken("PATIENT"), filterDoctors);
 
 // Appointment Routes
-router.post(
-  "/createAppointment",
-  authenticateToken("PATIENT"),
-  createAppointment
-);
+router.post("/createAppointment", authenticateToken(), createAppointment);
 
 router.get("/getAppointments", authenticateToken("PATIENT"), getAppointments);
 
-router.put(
-  "/updateAppointment/:id",
-  authenticateToken("PATIENT"),
-  updateAppointment
-);
+router.put("/updateAppointment/:id", authenticateToken(), updateAppointment);
 
 router.delete(
   "/deleteAppointment/:id",
