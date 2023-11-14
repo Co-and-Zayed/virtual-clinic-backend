@@ -162,6 +162,7 @@ const sendContract = async (req, res) => {
       doctorUsername: username,
       hourlyRate: doctor.hourlyRate,
       clinicRate: 0.1 * doctor.hourlyRate,
+      role: "DOCTOR",
     });
     const updatedDoctor = await doctorModel.findOneAndUpdate(
       { username: username },

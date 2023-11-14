@@ -31,17 +31,17 @@ const loginUser = async (req, res) => {
   if (user?.type == "DOCTOR") {
     object = await doctorModel.findOne({ username: username });
     if (object?.password !== password) {
-      return res.status(401).json({ message: "Email Or Password Incorrect" });
+      return res.status(401).json({ message: "Username Or Password Incorrect" });
     }
   } else if (user?.type == "PATIENT") {
     object = await patientModel.findOne({ username: username });
     if (object?.password !== password) {
-      return res.status(401).json({ message: "Email Or Password Incorrect" });
+      return res.status(401).json({ message: "Username Or Password Incorrect" });
     }
   } else {
     object = await adminModel.findOne({ username: username });
     if (object?.password !== password) {
-      return res.status(401).json({ message: "Email Or Password Incorrect" });
+      return res.status(401).json({ message: "Username Or Password Incorrect" });
     }
   }
 

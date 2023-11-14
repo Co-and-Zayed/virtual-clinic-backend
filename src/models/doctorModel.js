@@ -60,7 +60,7 @@ const doctorSchema = new Schema({
   },
   contractID:{
     type: String,
-    default: "",
+    default: null,
   },
 });
 

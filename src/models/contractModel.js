@@ -20,6 +20,11 @@ const contractSchema = new Schema({
     type: Date,
     default: () => new Date(+new Date() + 365 * 24 * 60 * 60 * 1000),
   }, // Contract that ends after 1 Year
+  role : {
+    type: String,
+    enum: ["DOCTOR", "PHARMACIST"],
+    required: true,
+  },
   hourlyRate: {
     type: Number,
     required: true,
