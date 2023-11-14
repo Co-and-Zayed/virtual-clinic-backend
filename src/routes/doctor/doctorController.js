@@ -106,20 +106,23 @@ const resetpassword = async (req, res) => {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: "Unauhtorized Access"
+      message: "Unauhtorized Access",
     });
   }
 
-  const doctor = doctorModel.findOne({username: user?.username});
+  const doctor = doctorModel.findOneAndUpdate(
+    { username: user?.username },
+    { password }
+  );
 
-  doctor.password = password;
-  await doctor.save();
+  // doctor.password = password;
+  // await doctor.save();
 
   return res.json({
     succes: true,
-    message: "Password reset"
+    message: "Password reset",
   });
-}
+};
 
 const viewAllContracts = async (req, res) => {
   const { username } = req.user;
@@ -174,7 +177,6 @@ const rejectContract = async (req, res) => {
     res.status(400).json({ message: "Server error" });
   }
 };
-
 
 module.exports = {
   getPatientInfo,
