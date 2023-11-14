@@ -725,6 +725,24 @@ const updateMedicalHistory = async (req, res) => {
   }
 };
 
+const getHealthRecords = async (req, res) => {
+  const { username } = req.user;
+
+  try {
+    const patient = await patientModel.findOne({ username });
+
+    if (!patient) {
+      res.status(404).json({ message: "Patient Not Found" });
+    }
+
+    const healthRecords = patient.healthRecords;
+
+    res.status(200).json({ message: "Health Records Retrieved Successfully", healthRecords });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 /*
   REMINDER TO ADD DATE CHECK WITH THE START OF EVERY SESSION IN ORDER TO CHANEG THE STATUS OF THE SUBSCRIPTION WHEN NEEDED
   CASES:
@@ -751,5 +769,6 @@ module.exports = {
   payWithWallet,
   updateMedicalHistory,
   resetPassword,
+  getHealthRecords,
   changePassword,
 };
