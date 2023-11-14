@@ -175,6 +175,36 @@ const sendContract = async (req, res) => {
   }
 };
 
+// Change Password
+const changePassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized Access",
+    });
+  }
+
+  const admin = await adminModel.findOne({ username: user?.username });
+
+  if (admin.password !== oldPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Old Password is incorrect",
+    });
+  }
+
+  admin.password = newPassword;
+  await admin.save();
+
+  return res.json({
+    success: true,
+    message: "Password Changed Successfully!",
+  });
+};
+
 module.exports = {
   loginAdmin,
   createAdmin,
@@ -186,4 +216,5 @@ module.exports = {
   acceptDoctor,
   rejectDoctor,
   sendContract,
+  changePassword,
 };

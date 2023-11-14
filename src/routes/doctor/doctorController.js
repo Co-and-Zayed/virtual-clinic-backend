@@ -204,6 +204,35 @@ const addHealthRecordForPatient = async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
+
+// Change Password
+const changePassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized Access",
+    });
+  }
+
+  const doctor = await doctorModel.findOne({ username: user?.username });
+
+  if (doctor.password !== oldPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Old Password is incorrect",
+    });
+  }
+
+  doctor.password = newPassword;
+  await doctor.save();
+
+  return res.json({
+    success: true,
+    message: "Password Changed Successfully!",
+  });
 };
 
 module.exports = {
@@ -218,4 +247,5 @@ module.exports = {
   acceptContract,
   rejectContract,
   addHealthRecordForPatient,
+  changePassword,
 };

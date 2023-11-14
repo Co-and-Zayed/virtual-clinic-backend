@@ -20,6 +20,7 @@ const {
   updateMedicalHistory,
   resetPassword,
   getHealthRecords,
+  changePassword,
 } = require("./patientController");
 
 const { authenticateToken } = require("../auth/authController");
@@ -47,19 +48,11 @@ router.post("/getDoctors", authenticateToken("PATIENT"), getDoctors);
 router.post("/filterDoctors", authenticateToken("PATIENT"), filterDoctors);
 
 // Appointment Routes
-router.post(
-  "/createAppointment",
-  authenticateToken("PATIENT"),
-  createAppointment
-);
+router.post("/createAppointment", authenticateToken(), createAppointment);
 
 router.get("/getAppointments", authenticateToken("PATIENT"), getAppointments);
 
-router.put(
-  "/updateAppointment/:id",
-  authenticateToken("PATIENT"),
-  updateAppointment
-);
+router.put("/updateAppointment/:id", authenticateToken(), updateAppointment);
 
 router.delete(
   "/deleteAppointment/:id",
@@ -140,5 +133,7 @@ router.post(
 router.post("/resetPassword", authenticateToken("PATIENT"), resetPassword);
 
 router.get("/getHealthRecords", authenticateToken("PATIENT"), getHealthRecords);
+// Change Password
+router.post("/changePassword", authenticateToken("PATIENT"), changePassword);
 
 module.exports = router;

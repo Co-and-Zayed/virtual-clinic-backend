@@ -4,7 +4,7 @@ const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
 const adminModel = require("../../models/adminModel");
 const { sendMail } = require("../../utils/sendMail");
-const { getBucketPrefix } = require("../../utils/getBucketName");
+const { getBucketName } = require("../../utils/getBucketName");
 
 const findUser = async (username) => {
   try {
@@ -259,7 +259,7 @@ const registerUser = async (req, res) => {
     console.log(req.createdAt);
     if (files !== null && files !== undefined) {
       for (let i = 0; i < files?.length; i++) {
-        doctorDocuments.push(`${getBucketPrefix(req)}${files[i].originalname}`);
+        doctorDocuments.push(`${getBucketName(req, files[i].originalname)}`);
       }
     }
     try {
