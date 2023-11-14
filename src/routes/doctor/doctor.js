@@ -12,6 +12,7 @@ const {
   viewAllContracts,
   acceptContract,
   rejectContract,
+  addHealthRecordForPatient
 } = require("./doctorController");
 const { getAppointments } = require("../appointment/appointmentController");
 
@@ -51,5 +52,7 @@ router.put("/rejectContract", authenticateToken("DOCTOR"), rejectContract);
 
 // Reset Password
 router.post("/resetPassword", authenticateToken("DOCTOR"), resetpassword);
+
+router.post("/addHealthRecordForPatient", authenticateToken("DOCTOR"), addHealthRecordForPatient);
 
 module.exports = router;

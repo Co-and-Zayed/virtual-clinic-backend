@@ -19,6 +19,7 @@ const {
   payWithWallet,
   updateMedicalHistory,
   resetPassword,
+  getHealthRecords,
 } = require("./patientController");
 
 const { authenticateToken } = require("../auth/authController");
@@ -137,5 +138,7 @@ router.post(
 
 // Reset Password
 router.post("/resetPassword", authenticateToken("PATIENT"), resetPassword);
+
+router.get("/getHealthRecords", authenticateToken("PATIENT"), getHealthRecords);
 
 module.exports = router;

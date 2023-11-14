@@ -173,6 +173,39 @@ const rejectContract = async (req, res) => {
   }
 };
 
+const addHealthRecordForPatient = async (req, res) => {
+  const { username } = req.user;
+  const { patientId, healthRecord } = req.body;
+
+  console.log(patientId);
+
+  try {
+    const doctor = await doctorModel.find({ username });
+
+    if (!doctor) {
+      res.status(404).json({ message: "doctor not found" });
+      return;
+    }
+
+    const patient = await patientModel.findById(patientId);
+    console.log(patient);
+
+    if (!patient) {
+      res.status(404).json({ message: "patient not found" });
+      return;
+    }
+
+    const healthRecords = patient.healthRecords;
+    healthRecords.push(healthRecord);
+
+    const savedPatient = await patient.save();
+
+    res.status(200).json({ savedPatient });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 module.exports = {
   getPatientInfo,
   getPatients,
@@ -184,4 +217,5 @@ module.exports = {
   viewAllContracts,
   acceptContract,
   rejectContract,
+  addHealthRecordForPatient,
 };
