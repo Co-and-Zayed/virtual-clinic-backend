@@ -209,20 +209,20 @@ const resetPassword = async (req, res) => {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized Access"
+      message: "Unauthorized Access",
     });
   }
 
-  const patient = await patientModel.findOne({username: user.username});
+  const patient = await patientModel.findOne({ username: user?.username });
 
   patient.password = password;
   await patient.save();
 
   return res.json({
     success: true,
-    message: "Password Reset"
+    message: "Password Reset",
   });
-}
+};
 
 ///////////
 // ZEINA //

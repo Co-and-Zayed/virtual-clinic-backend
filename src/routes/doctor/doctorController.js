@@ -50,20 +50,18 @@ const getPatients = async (req, res) => {
 //GET patients based on upcomimg appointments
 const getUpcomingAptmnts = async (req, res) => {
   try {
-    const { username } = req.user;
-
-    const doctor = await doctorModel.findOne({ username: username });
+    const { username } = req.body;
 
     // Find all upcoming appointments with the specified doctor's email
     const upcomingAppointments = await appointmentModel.find({
-      doctorId: doctor._id,
+      doctorUsername: username,
       status: "UPCOMING",
     });
-    const patientIds = upcomingAppointments.map(
-      (appointment) => appointment.patientId
+    const patientEmails = upcomingAppointments.map(
+      (appointment) => appointment.patientEmail
     );
 
-    const patients = await patientModel.find({ _id: { $in: patientIds } });
+    const patients = await patientModel.find({ email: { $in: patientEmails } });
     res.status(200).json(patients);
   } catch (error) {
     console.error(error);
@@ -110,13 +108,10 @@ const resetpassword = async (req, res) => {
     });
   }
 
-  const doctor = doctorModel.findOneAndUpdate(
-    { username: user?.username },
-    { password }
-  );
+  const doctor = await doctorModel.findOne({ username: user?.username });
 
-  // doctor.password = password;
-  // await doctor.save();
+  doctor.password = password;
+  await doctor.save();
 
   return res.json({
     succes: true,
