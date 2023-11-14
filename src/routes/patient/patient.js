@@ -18,7 +18,9 @@ const {
   unsubscribeFromPackageforFamily,
   payWithWallet,
   updateMedicalHistory,
+  resetPassword,
 } = require("./patientController");
+
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -132,5 +134,8 @@ router.post(
   uploadS3.array("files", 20),
   updateMedicalHistory
 );
+
+// Reset Password
+router.post("/resetPassword", authenticateToken("PATIENT"), resetPassword);
 
 module.exports = router;

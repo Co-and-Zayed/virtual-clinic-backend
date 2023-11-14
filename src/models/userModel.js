@@ -22,6 +22,11 @@ const userSchema = new Schema(
       enum: ["DOCTOR", "PATIENT", "ADMIN"],
       required: true,
     },
+    otp: {
+      type: String,
+      required: false,
+      unique: true
+    }
   },
   { timestamps: true }
 );
