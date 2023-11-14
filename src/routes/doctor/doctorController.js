@@ -50,18 +50,20 @@ const getPatients = async (req, res) => {
 //GET patients based on upcomimg appointments
 const getUpcomingAptmnts = async (req, res) => {
   try {
-    const { username } = req.body;
+    const { username } = req.user;
+
+    const doctor = await doctorModel.findOne({ username: username });
 
     // Find all upcoming appointments with the specified doctor's email
     const upcomingAppointments = await appointmentModel.find({
-      doctorUsername: username,
+      doctorId: doctor._id,
       status: "UPCOMING",
     });
-    const patientEmails = upcomingAppointments.map(
-      (appointment) => appointment.patientEmail
+    const patientIds = upcomingAppointments.map(
+      (appointment) => appointment.patientId
     );
 
-    const patients = await patientModel.find({ email: { $in: patientEmails } });
+    const patients = await patientModel.find({ _id: { $in: patientIds } });
     res.status(200).json(patients);
   } catch (error) {
     console.error(error);
