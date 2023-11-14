@@ -22,6 +22,34 @@ const findUser = async (username) => {
   }
 };
 
+const getUser = async (req, res) => {
+  const { username, type } = req.user;
+  if (type === "PATIENT") {
+    const patient = await patientModel.findOne({ username });
+    if (patient) {
+      res.status(200).json({ data: patient });
+    } else {
+      res.status(404).json({ message: "Patient not found" });
+    }
+  } else if (type === "DOCTOR") {
+    const doctor = await doctorModel.findOne({ username });
+    if (doctor) {
+      res.status(200).json({ data: doctor });
+    } else {
+      res.status(404).json({ message: "Doctor not found" });
+    }
+  } else if (type === "ADMIN") {
+    const admin = await adminModel.findOne({ username });
+    if (admin) {
+      res.status(200).json({ data: admin });
+    } else {
+      res.status(404).json({ message: "Admin not found" });
+    }
+  } else {
+    res.status(404).json({ message: "Invalid user type" });
+  }
+};
+
 const loginUser = async (req, res) => {
   const { username, password, token } = req.body;
 
@@ -70,12 +98,12 @@ const loginUser = async (req, res) => {
 const forgetPassword = async (req, res) => {
   const { email } = req.body;
 
-  const user = await userModel.findOne({email: email});
+  const user = await userModel.findOne({ email: email });
 
   if (!user) {
     return res.json({
       success: false,
-      message: "User Not Found"
+      message: "User Not Found",
     });
   }
 
@@ -92,26 +120,25 @@ const forgetPassword = async (req, res) => {
     sendMail(user.email, subject, message);
     return res.json({
       success: true,
-      message: 'Reset Password OTP Sent'
+      message: "Reset Password OTP Sent",
     });
   } catch (err) {
     return res.json({
       success: false,
-      message: "An Error Occurred"
+      message: "An Error Occurred",
     });
   }
-  
-}
+};
 
 const verifyOtp = async (req, res) => {
   const { otp } = req.body;
 
-  const user = await userModel.findOne({otp: otp});
+  const user = await userModel.findOne({ otp: otp });
 
   if (!user) {
     return res.json({
       success: false,
-      message: "Wrong Otp"
+      message: "Wrong Otp",
     });
   }
 
@@ -136,7 +163,7 @@ const verifyOtp = async (req, res) => {
       issuedAt: new Date(),
     }),
   });
-}
+};
 
 const registerUser = async (req, res) => {
   // Files
@@ -313,4 +340,10 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, forgetPassword, verifyOtp };
+module.exports = {
+  registerUser,
+  loginUser,
+  forgetPassword,
+  verifyOtp,
+  getUser,
+};

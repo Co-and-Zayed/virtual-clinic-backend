@@ -1,11 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, loginUser, forgetPassword, verifyOtp } = require("./userController");
+const {
+  registerUser,
+  loginUser,
+  forgetPassword,
+  verifyOtp,
+  getUser,
+} = require("./userController");
 const userModel = require("../../models/userModel");
 const { uploadS3 } = require("../../utils/uploadMultipleFiles");
+const { authenticateToken } = require("../auth/authController");
 
 // POST: Create a new user
 router.post("/registerUser", uploadS3.array("files", 20), registerUser);
+
+// GET: Get a user by username
+router.get("/getUser", authenticateToken(), getUser);
 
 // POST: Login a user
 router.post("/login", loginUser);
