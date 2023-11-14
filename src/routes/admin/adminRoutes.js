@@ -19,6 +19,7 @@ const {
   acceptDoctor,
   rejectDoctor,
   sendContract,
+  changePassword,
 } = require("./adminController");
 
 // POST: Creates a new access token and refresh token for the user
@@ -53,5 +54,8 @@ router.post("/updatePackage/:id", authenticateToken("ADMIN"), updatePackage);
 
 router.get("/viewDoctors", authenticateToken("ADMIN"), viewDoctors);
 router.get("/viewPatients", authenticateToken("ADMIN"), viewPatients);
+
+// Change password
+router.post("/changePassword", authenticateToken("ADMIN"), changePassword);
 
 module.exports = router;

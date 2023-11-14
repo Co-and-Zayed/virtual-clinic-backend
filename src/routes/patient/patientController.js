@@ -224,6 +224,36 @@ const resetPassword = async (req, res) => {
   });
 };
 
+// Change Password
+const changePassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized Access",
+    });
+  }
+
+  const patient = await patientModel.findOne({ username: user?.username });
+
+  if (patient.password !== oldPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Old Password is incorrect",
+    });
+  }
+
+  patient.password = newPassword;
+  await patient.save();
+
+  return res.json({
+    success: true,
+    message: "Password Changed Successfully!",
+  });
+};
+
 ///////////
 // ZEINA //
 ///////////
@@ -721,4 +751,5 @@ module.exports = {
   payWithWallet,
   updateMedicalHistory,
   resetPassword,
+  changePassword,
 };
