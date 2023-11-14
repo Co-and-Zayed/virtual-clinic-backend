@@ -23,6 +23,11 @@ const appointmentSchema = new Schema({
     enum: ["UPCOMING", "CANCELLED", "COMPLETED"],
     required: true,
   },
+  patientType: {
+    type: String,
+    enum: ["PATIENT", "GUEST"],
+    default: "PATIENT",
+  },
 });
 // Deirive time from date
 appointmentSchema.virtual("time").get(function () {

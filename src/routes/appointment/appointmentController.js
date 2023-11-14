@@ -1,13 +1,14 @@
 const appointmentModel = require("../../models/appointmentModel");
 const patientModel = require("../../models/patientModel");
 const doctorModel = require("../../models/doctorModel");
+const familyMembersModel = require("../../models/familyMembersModel");
 const { default: mongoose } = require("mongoose");
 const userModel = require("../../models/userModel");
 
 // POST create a new appointment
 // Params: patientId, doctorId, date, status
 const createAppointment = async (req, res) => {
-  const { patientId, doctorId, date, status } = req.body;
+  const { patientId, doctorId, date, status, patientType } = req.body;
 
   if (!patientId || !doctorId || !date || !status) {
     return res.status(400).json({
@@ -21,11 +22,12 @@ const createAppointment = async (req, res) => {
     doctorId: doctorId,
     date: date,
     status: status,
+    patientType: patientType,
   });
 
   try {
     const newAppointment = await appointment.save();
-    
+
     res.status(200).json({
       appointment: { ...newAppointment._doc, time: newAppointment.time },
     });
@@ -37,10 +39,10 @@ const createAppointment = async (req, res) => {
 const getAppointments = async (req, res) => {
   const { type, username } = req.user;
   var id;
-  if(type === "PATIENT"){
+  if (type === "PATIENT") {
     const patient = await patientModel.findOne({ username: username });
     id = patient._id;
-  }else{
+  } else {
     const doctor = await doctorModel.findOne({ username: username });
     id = doctor._id;
   }
@@ -55,10 +57,7 @@ const getAppointments = async (req, res) => {
         .lean()
         .select("-patientId");
 
-      const patient = await patientModel
-        .find(id)
-        .select("-password")
-        .lean();
+      const patient = await patientModel.find(id).select("-password").lean();
 
       for (let i = 0; i < appointments.length; i++) {
         const appointment = appointments[i];
@@ -87,10 +86,16 @@ const getAppointments = async (req, res) => {
       for (let i = 0; i < appointments.length; i++) {
         const appointment = appointments[i];
 
-        const patient = await patientModel
-          .findById(appointment.patientId)
-          .select("-password")
-          .lean();
+        const patient =
+          appointment.patientType && appointment.patientType === "GUEST"
+            ? await familyMembersModel
+                .findById(appointment.patientId)
+                .select("-password")
+                .lean()
+            : await patientModel
+                .findById(appointment.patientId)
+                .select("-password")
+                .lean();
 
         appointments[i] = {
           ...appointment,
