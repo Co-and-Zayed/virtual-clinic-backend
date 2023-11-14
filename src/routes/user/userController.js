@@ -3,7 +3,7 @@ const { createUserTokens } = require("../auth/authController");
 const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
 const adminModel = require("../../models/adminModel");
-const { getBucketPrefix } = require("../../utils/getBucketPrefix");
+const { getBucketPrefix } = require("../../utils/getBucketName");
 
 const findUser = async (username) => {
   try {

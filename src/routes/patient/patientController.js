@@ -5,6 +5,7 @@ const Appointment = require("../../models/appointmentModel.js");
 const patientModel = require("../../models/patientModel.js");
 const packageModel = require("../../models/packageModel.js");
 const familyMembersModel = require("../../models/familyMembersModel.js");
+const { getBucketName } = require("../../utils/getBucketName");
 
 //GET list of all doctors or doctors by searching name and/or speciality
 const getDoctors = async (req, res) => {
@@ -651,6 +652,27 @@ const unsubscribeFromPackageforFamily = async (req, res) => {
   }
 };
 
+const updateMedicalHistory = async (req, res) => {
+  const { username } = req.user;
+  const medicalHistory = req.files;
+  console.log("MEDICAL HISTORY");
+  console.log(medicalHistory);
+  try {
+    const newMedicalHistory = medicalHistory.map((file) =>
+      getBucketName(req, file.originalname)
+    );
+    const patient = await patientModel.findOneAndUpdate(
+      { username },
+      { medicalHistory: newMedicalHistory }
+    );
+    res
+      .status(200)
+      .json({ message: "Medical history updated successfully", patient });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 /*
   REMINDER TO ADD DATE CHECK WITH THE START OF EVERY SESSION IN ORDER TO CHANEG THE STATUS OF THE SUBSCRIPTION WHEN NEEDED
   CASES:
@@ -675,4 +697,5 @@ module.exports = {
   unsubscribeFromPackage,
   unsubscribeFromPackageforFamily,
   payWithWallet,
+  updateMedicalHistory,
 };

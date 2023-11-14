@@ -13,13 +13,14 @@ const addFamilyMember = async (req, res) => {
     relationship,
     patientEmail,
     isPatient,
-    memberUsername,
+    memberEmail,
+    memberMobileNumber,
   } = req.body;
   const { username } = req.user;
   if (
     (!isPatient &&
       (!name || !nationalID || !age || !gender || !relationship)) ||
-    (isPatient && !memberUsername)
+    (isPatient && !memberEmail && !memberMobileNumber)
   ) {
     return res.status(400).json({
       message: "Please provide all required fields",
@@ -29,9 +30,22 @@ const addFamilyMember = async (req, res) => {
   try {
     var famMember;
     if (isPatient) {
-      const patientMember = await patientModel.findOne({
-        username: memberUsername,
-      });
+      var patientMember;
+
+      if (memberEmail) {
+        patientMember = await patientModel.findOne({
+          email: memberEmail,
+        });
+      } else if (memberMobileNumber) {
+        patientMember = await patientModel.findOne({
+          mobileNumber: memberMobileNumber,
+        });
+      } else {
+        res
+          .status(400)
+          .json({ message: "Please provide either email or mobile number" });
+      }
+
       famMember = {
         id: patientMember._id,
         type: "EXISTING",
