@@ -272,47 +272,36 @@ const hasNumber = (pass) => {
 };
 
 const changepassword = async (req, res) => {
-  const { oldpassword, newpassword, confirmedpassword } = req.body;
-  const { username } = req.user;
-  var correct = true;
-  try {
-    const object = await patientModel.findOne({ username });
-    if (object.password !== oldpassword) {
-      correct = false;
-      return res.status(401).json({ message: "Password is Incorrect" });
-    }
-    if (
-      newpassword.length < 6 ||
-      !hasUpperCase(newpassword) ||
-      !hasNumber(newpassword)
-    ) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "New password must be at least 6 characters long, has atleast 1 number and 1 capital letter",
-        });
-    }
+  const user = req.user;
 
+  const { oldpassword, newpassword, confirmedpassword } = req.body;
+
+  var correct = true;
+  // var isvalid=true;
+  try {
+    const patient = await patientModel.findOne({ username: user.username });
+    //const pass = object.password;
+    if (patient.password !== oldpassword) {
+      correct = false;
+      res.status(401).json({ message: "Password is Incorrect" });
+      return;
+    }
     if (newpassword !== confirmedpassword) {
       correct = false;
-      return res
-        .status(401)
-        .json({ message: "Confirmed Password is Incorrect" });
+      res.status(401).json({ message: "Confirmed Password is Incorrect" });
+      return;
     }
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Server error" });
   }
   if (correct) {
-    // const pass=object?.password;
-    // const patient = await patientModel.findOneAndUpdate(
-    //   { password: newpassword });
+    const newpatient = await patientModel.findOneAndUpdate(
+      { username: user.username },
+      { $set: { password: newpassword } }
+    );
 
-    object.password = newpassword;
-    await object.save();
-
-    return res
+    res
       .status(200)
       .json({ message: "You have successfully changed your password!" });
   }
