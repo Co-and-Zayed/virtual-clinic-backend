@@ -27,7 +27,6 @@ const packageSchema = new Schema({
         type: Number,
         required : true
     },
-    
 })
 
 const packageModel = mongoose.model("Package", packageSchema);

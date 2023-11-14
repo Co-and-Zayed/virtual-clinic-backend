@@ -16,3 +16,5 @@ const fileUploadRoute = (req, res) => {
 }
 
 module.exports = { getRoute, fileUploadRoute }
+
+const test = "tesst"
