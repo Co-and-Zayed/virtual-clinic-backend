@@ -16,7 +16,10 @@ const {
   deleteAdmin,
   viewDoctors,
   viewPatients,
-  resetPassword
+  resetPassword,
+  acceptDoctor,
+  rejectDoctor,
+  sendContract,
 } = require("./adminController");
 
 // POST: Creates a new access token and refresh token for the user
@@ -26,6 +29,10 @@ router.post("/deletePatient", authenticateToken("ADMIN"), deletePatient);
 router.post("/deleteDoctor", authenticateToken("ADMIN"), deleteDoctor);
 router.post("/deleteAdmin", authenticateToken("ADMIN"), deleteAdmin);
 router.post("/resetPassword", authenticateToken("ADMIN"), resetPassword);
+router.put("/acceptDoctor", authenticateToken("ADMIN"), acceptDoctor);
+router.put("/rejectDoctor", authenticateToken("ADMIN"), rejectDoctor);
+router.post("/sendContract", authenticateToken("ADMIN"), sendContract);
+
 router.get(
   "/viewAllAdmins/:id",
   authenticateToken("ADMIN"),

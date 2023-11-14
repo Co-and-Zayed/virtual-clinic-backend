@@ -10,6 +10,7 @@ const patientModel = require("../../models/patientModel");
 const doctorModel = require("../../models/doctorModel");
 const appointmentModel = require("../../models/appointmentModel");
 const prescriptionsModel = require("../../models/prescriptionsModel");
+const contractModel = require("../../models/contractModel");
 const { createUserTokens } = require("../auth/authController");
 
 const loginAdmin = async (req, res) => {
@@ -47,12 +48,12 @@ const deletePatient = async (req, res) => {
 };
 
 const deleteDoctor = async (req, res) => {
-  const { email } = req.body;
+  const { username, _id } = req.body;
   try {
-    await userModel.deleteMany({ email });
-    await doctorModel.deleteMany({ email });
-    await appointmentModel.deleteMany({ doctorEmail: email });
-    await refreshTokensModel.deleteMany({ email });
+    await userModel.deleteMany({ username });
+    await doctorModel.deleteMany({ username });
+    await appointmentModel.deleteMany({ doctorId: _id });
+    await refreshTokensModel.deleteMany({ username });
     res.status(200).json({
       message: "Doctor deleted successfully",
     });
@@ -136,6 +137,64 @@ const resetPassword = async (req, res) => {
     message: "Password Reset"
   });
 }
+const acceptDoctor = async (req, res) => {
+  const { username } = req.body;
+  try {
+    const updatedDoctor = await doctorModel.findOneAndUpdate(
+      { username: username },
+      { $set: { status: "WAITING" } },
+      { new: true }
+    );
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: "Doctor not found." });
+    }
+
+    return res.json(updatedDoctor);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+const rejectDoctor = async (req, res) => {
+  const { username } = req.body;
+  try {
+    const updatedDoctor = await doctorModel.findOneAndUpdate(
+      { username: username },
+      { $set: { status: "REJECTED" } },
+      { new: true }
+    );
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: "Doctor not found." });
+    }
+
+    return res.json(updatedDoctor);
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const sendContract = async (req, res) => {
+  const { username } = req.body;
+  try {
+    const doctor = await doctorModel.findOne({ username: username });
+    const contract = new contractModel({
+      doctorUsername: username,
+      hourlyRate: doctor.hourlyRate,
+      clinicRate: 0.1 * doctor.hourlyRate,
+    });
+    const updatedDoctor = await doctorModel.findOneAndUpdate(
+      { username: username },
+      { $set: { contractID: contract._id } },
+      { new: true }
+    );
+    const newContract = await contract.save();
+    res.status(201).json(newContract);
+  } catch (err) {
+    res.json({ message: err.message, status: 409 });
+  }
+};
 
 module.exports = {
   loginAdmin,
@@ -145,4 +204,7 @@ module.exports = {
   deleteAdmin,
   viewDoctors,
   viewPatients,
+  acceptDoctor,
+  rejectDoctor,
+  sendContract,
 };

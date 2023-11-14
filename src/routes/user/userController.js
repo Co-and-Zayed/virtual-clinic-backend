@@ -4,6 +4,7 @@ const doctorModel = require("../../models/doctorModel");
 const patientModel = require("../../models/patientModel");
 const adminModel = require("../../models/adminModel");
 const { sendMail } = require("../../utils/sendMail");
+const { getBucketPrefix } = require("../../utils/getBucketName");
 
 const findUser = async (username) => {
   try {
@@ -37,6 +38,11 @@ const loginUser = async (req, res) => {
     object = await patientModel.findOne({ username: username });
     if (object?.password !== password) {
       return res.status(401).json({ message: "Email Or Password Incorrect" });
+    } else if (
+      //object?.healthPackageStatus === "UNSUBSCRIBED" &&
+      object?.healthPackageRenewalDate < new Date()
+    ) {
+      object.healthPackageStatus = "CANCELLED";
     }
   } else {
     object = await adminModel.findOne({ username: username });
@@ -220,6 +226,15 @@ const registerUser = async (req, res) => {
 
   // Construct Patient Or Doctor Object
   if (type === "DOCTOR") {
+    var doctorDocuments = [];
+    console.log("FILES");
+    console.log(files);
+    console.log(req.createdAt);
+    if (files !== null && files !== undefined) {
+      for (let i = 0; i < files?.length; i++) {
+        doctorDocuments.push(`${getBucketPrefix(req)}${files[i].originalname}`);
+      }
+    }
     try {
       const doctor = new doctorModel({
         name,
@@ -230,6 +245,7 @@ const registerUser = async (req, res) => {
         specialty,
         date_of_birth,
         affiliation,
+        doctorDocuments,
         educationalBackground,
         hourlyRate,
       });
@@ -261,13 +277,6 @@ const registerUser = async (req, res) => {
         for (let i = 0; i < files?.length; i++) {
           healthRecords.push(files[i].originalname);
         }
-
-        // Object.keys(files).forEach((key) => {
-        //   console.log("SINGLE FILE");
-        //   console.log(key);
-        //   console.log(files[key]);
-        //   healthRecords.push(files[key].name);
-        // });
       }
       const patient = new patientModel({
         name,

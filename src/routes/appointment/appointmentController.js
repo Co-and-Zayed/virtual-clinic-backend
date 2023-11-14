@@ -2,6 +2,7 @@ const appointmentModel = require("../../models/appointmentModel");
 const patientModel = require("../../models/patientModel");
 const doctorModel = require("../../models/doctorModel");
 const { default: mongoose } = require("mongoose");
+const userModel = require("../../models/userModel");
 
 // POST create a new appointment
 // Params: patientId, doctorId, date, status
@@ -34,14 +35,21 @@ const createAppointment = async (req, res) => {
 };
 
 const getAppointments = async (req, res) => {
-  const { userType } = req.params;
-  var { id } = req.body;
+  const { type, username } = req.user;
+  var id;
+  if(type === "PATIENT"){
+    const patient = await patientModel.findOne({ username: username });
+    id = patient._id;
+  }else{
+    const doctor = await doctorModel.findOne({ username: username });
+    id = doctor._id;
+  }
   // convert id to ObjectId
-  id = new mongoose.Types.ObjectId(id);
+
   try {
     var appointments = [];
     console.log("CHECKPOINT 1");
-    if (userType === "PATIENT") {
+    if (type === "PATIENT") {
       appointments = await appointmentModel
         .find({ patientId: id })
         .lean()
@@ -101,6 +109,10 @@ const getAppointments = async (req, res) => {
       };
     });
     console.log("CHECKPOINT 4");
+    // sort appointments by date
+    appointmentsWithTime.sort((a, b) => {
+      return new Date(a.date) - new Date(b.date);
+    });
     res.json(appointmentsWithTime);
   } catch (err) {
     console.log(err);
@@ -120,7 +132,6 @@ const updateAppointment = async (req, res) => {
     date,
     time,
     status,
-    _id: id,
   };
   await appointmentModel.findByIdAndUpdate(id, updatedAppointment, {
     new: true,
