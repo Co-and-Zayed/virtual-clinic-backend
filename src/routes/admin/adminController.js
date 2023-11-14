@@ -115,6 +115,28 @@ const viewPatients = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { password } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized Access"
+    });
+  }
+
+  const admin = await adminModel.findOne({username: user.username});
+
+  admin.password = password;
+  await admin.save();
+
+  return res.json({
+    success: true,
+    message: "Password Reset"
+  });
+}
+
 module.exports = {
   loginAdmin,
   createAdmin,

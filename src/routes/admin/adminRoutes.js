@@ -16,6 +16,7 @@ const {
   deleteAdmin,
   viewDoctors,
   viewPatients,
+  resetPassword
 } = require("./adminController");
 
 // POST: Creates a new access token and refresh token for the user
@@ -24,6 +25,7 @@ router.post("/createAdmin", authenticateToken("ADMIN"), createAdmin);
 router.post("/deletePatient", authenticateToken("ADMIN"), deletePatient);
 router.post("/deleteDoctor", authenticateToken("ADMIN"), deleteDoctor);
 router.post("/deleteAdmin", authenticateToken("ADMIN"), deleteAdmin);
+router.post("/resetPassword", authenticateToken("ADMIN"), resetPassword);
 router.get(
   "/viewAllAdmins/:id",
   authenticateToken("ADMIN"),
