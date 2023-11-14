@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { uploadS3 } = require("../../utils/uploadMultipleFiles");
 
 const {
   getDoctors,
@@ -16,7 +17,10 @@ const {
   unsubscribeFromPackage,
   unsubscribeFromPackageforFamily,
   payWithWallet,
+  updateMedicalHistory,
+  resetPassword,
 } = require("./patientController");
+
 const { authenticateToken } = require("../auth/authController");
 
 /////////////
@@ -48,11 +52,7 @@ router.post(
   createAppointment
 );
 
-router.get(
-  "/getAppointments",
-  authenticateToken("PATIENT"),
-  getAppointments
-);
+router.get("/getAppointments", authenticateToken("PATIENT"), getAppointments);
 
 router.put(
   "/updateAppointment/:id",
@@ -69,11 +69,7 @@ router.delete(
 // Family Member Routes
 router.post("/addFamilyMember", authenticateToken("PATIENT"), addFamilyMember);
 
-router.get(
-  "/getFamilyMembers",
-  authenticateToken("PATIENT"),
-  getFamilyMembers
-);
+router.get("/getFamilyMembers", authenticateToken("PATIENT"), getFamilyMembers);
 
 router.post("/payWithWallet", authenticateToken("PATIENT"), payWithWallet);
 
@@ -131,4 +127,15 @@ router.post(
   authenticateToken("PATIENT"),
   unsubscribeFromPackageforFamily
 );
+
+router.post(
+  "/updateMedicalHistory",
+  authenticateToken("PATIENT"),
+  uploadS3.array("files", 20),
+  updateMedicalHistory
+);
+
+// Reset Password
+router.post("/resetPassword", authenticateToken("PATIENT"), resetPassword);
+
 module.exports = router;

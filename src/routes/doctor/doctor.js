@@ -8,6 +8,7 @@ const {
   getUpcomingAptmnts,
   editSettings,
   viewSettings,
+  resetpassword,
   viewAllContracts,
   acceptContract,
   rejectContract,
@@ -47,5 +48,8 @@ router.get("/viewAllContracts", authenticateToken("DOCTOR"), viewAllContracts);
 router.put("/acceptContract", authenticateToken("DOCTOR"), acceptContract);
 
 router.put("/rejectContract", authenticateToken("DOCTOR"), rejectContract);
+
+// Reset Password
+router.post("/resetPassword", authenticateToken("DOCTOR"), resetpassword);
 
 module.exports = router;

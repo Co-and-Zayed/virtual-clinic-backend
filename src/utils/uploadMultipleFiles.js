@@ -2,7 +2,7 @@ const AWS = require("aws-sdk");
 require("dotenv").config();
 const multer = require("multer");
 const multerS3 = require("multer-s3");
-const { getBucketPrefix } = require("./getBucketPrefix");
+const { getBucketName } = require("./getBucketName");
 const fs = require("fs");
 
 AWS.config.update({
@@ -18,7 +18,7 @@ const uploadS3 = multer({
     bucket: process.env.S3_BUCKET_NAME,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
-      const modifiedFileName = `${getBucketPrefix(req)}${file.originalname}`;
+      const modifiedFileName = `${getBucketName(req, file.originalname)}`;
       cb(null, modifiedFileName);
     },
   }),

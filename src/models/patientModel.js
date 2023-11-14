@@ -51,34 +51,40 @@ const patientSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Package",
   },
-  healthPackageStatus:{
+  healthPackageStatus: {
     type: String,
-    enum: ["SUBSCRIBED", "UNSUBSCRIBED","CANCELLED"],
+    enum: ["SUBSCRIBED", "UNSUBSCRIBED", "CANCELLED"],
   },
-  healthPackageRenewalDate:{
+  healthPackageRenewalDate: {
     type: Date,
   },
-  wallet:{
+  wallet: {
     type: Number,
     default: 0,
   },
-  familyMembers:[{
-    id:{
-      type: Schema.Types.ObjectId,
-      ref: "familyMembers" 
-      // | "patient",
+  medicalHistory: {
+    type: [String],
+    default: [],
+  },
+  familyMembers: [
+    {
+      id: {
+        type: Schema.Types.ObjectId,
+        ref: "familyMembers",
+        // | "patient",
+      },
+      type: {
+        type: String,
+        enum: ["GUEST", "EXISTING"],
+        required: true,
+      },
+      relation: {
+        type: String,
+        enum: ["HUSBAND", "WIFE", "CHILD"],
+        required: true,
+      },
     },
-    type:{
-      type: String,
-      enum: ["GUEST", "EXISTING"],
-      required : true 
-    } ,
-    relation:{
-      type: String,
-      enum: ["HUSBAND", "WIFE", "CHILD"],
-      required : true
-    }
-  }],
+  ],
 });
 
 // Define a virtual property to compute the 'age' based on 'date_of_birth'.
