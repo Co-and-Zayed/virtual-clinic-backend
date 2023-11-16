@@ -2,36 +2,29 @@ const express = require("express");
 const router = express.Router();
 const adminModel = require("../../../../models/adminModel");
 const { authenticateToken } = require("../../../../routes/auth/authController");
-const {
-  createPackage,
-  deletePackage,
-  updatePackage,
-  getPackages,
-} = require("../package/packageController");
+
 const {
   loginAdmin,
   createAdmin,
   deletePatient,
-  deleteDoctor,
+  deletePharmacist,
   deleteAdmin,
-  viewDoctors,
+  viewPharmacists,
   viewPatients,
-  acceptDoctor,
-  rejectDoctor,
+  acceptPharmacist,
+  rejectPharmacist,
   sendContract,
-  changePassword,
 } = require("./adminController");
 
 // POST: Creates a new access token and refresh token for the user
 router.post("/loginAdmin", authenticateToken("ADMIN"), loginAdmin);
-router.post("/createAdmin", authenticateToken("ADMIN"), createAdmin);
+router.post("/createAdmin", createAdmin);
 router.post("/deletePatient", authenticateToken("ADMIN"), deletePatient);
-router.post("/deleteDoctor", authenticateToken("ADMIN"), deleteDoctor);
+router.post("/deletePharmacist", authenticateToken("ADMIN"), deletePharmacist);
 router.post("/deleteAdmin", authenticateToken("ADMIN"), deleteAdmin);
-router.put("/acceptDoctor", authenticateToken("ADMIN"), acceptDoctor);
-router.put("/rejectDoctor", authenticateToken("ADMIN"), rejectDoctor);
+router.put("/acceptPharmacist", authenticateToken("ADMIN"), acceptPharmacist);
+router.put("/rejectPharmacist", authenticateToken("ADMIN"), rejectPharmacist);
 router.post("/sendContract", authenticateToken("ADMIN"), sendContract);
-
 router.get(
   "/viewAllAdmins/:id",
   authenticateToken("ADMIN"),
@@ -48,14 +41,7 @@ router.get(
   }
 );
 
-router.post("/createPackage", authenticateToken("ADMIN"), createPackage);
-router.post("/deletePackage/:id", authenticateToken("ADMIN"), deletePackage);
-router.post("/updatePackage/:id", authenticateToken("ADMIN"), updatePackage);
-
-router.get("/viewDoctors", authenticateToken("ADMIN"), viewDoctors);
+router.get("/viewPharmacists", authenticateToken("ADMIN"), viewPharmacists);
 router.get("/viewPatients", authenticateToken("ADMIN"), viewPatients);
-
-// Change password
-router.post("/changePassword", authenticateToken("ADMIN"), changePassword);
 
 module.exports = router;

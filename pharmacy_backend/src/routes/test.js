@@ -1,4 +1,4 @@
-const { uploadFile } = require("../../../utils/uploadFile");
+const { uploadFile } = require("../../../utils/uploadMultipleFiles");
 
 const getRoute = (req, res) => {
   return res.status(200).json({ message: "Success" });
@@ -20,5 +20,3 @@ const fileUploadRoute = (req, res) => {
 };
 
 module.exports = { getRoute, fileUploadRoute };
-
-const test = "tesst";

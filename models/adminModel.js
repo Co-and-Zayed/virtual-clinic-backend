@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const { generateAccessToken } = require("../routes/auth/authController");
 
 const adminSchema = new Schema({
   username: {

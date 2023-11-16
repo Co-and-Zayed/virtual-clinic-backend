@@ -4,15 +4,15 @@ const router = express.Router();
 const doctorRoutes = require("./routes/doctor/doctor");
 const patientRoutes = require("./routes/patient/patient");
 const userRoutes = require("./routes/user/userRoutes");
-const authRoutes = require("./routes/auth/authRoutes");
+const authRoutes = require("../../routes/auth/authRoutes");
 const adminRoutes = require("./routes/admin/adminRoutes");
 const commonRoutes = require("./routes/commonRoutes");
 const dropdownRoutes = require("./routes/dropdown/dropdown");
 const stripeRoutes = require("./routes/stripe/stripeRoutes");
 
 // Util Imports
-const { upload } = require("./utils/uploadFile");
-const { uploadS3 } = require("./utils/uploadMultipleFiles");
+const { upload } = require("../../utils/uploadFile");
+const { uploadS3 } = require("../../utils/uploadMultipleFiles");
 
 // Route Imports
 const { getRoute, fileUploadRoute } = require("./routes/test");

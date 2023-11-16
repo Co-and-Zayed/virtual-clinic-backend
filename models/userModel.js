@@ -19,14 +19,14 @@ const userSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["DOCTOR", "PATIENT", "ADMIN"],
+      enum: ["DOCTOR", "PHARMACIST", "PATIENT", "ADMIN"],
       required: true,
     },
     otp: {
       type: String,
       required: false,
-      unique: true
-    }
+      unique: true,
+    },
   },
   { timestamps: true }
 );

@@ -66,6 +66,20 @@ const patientSchema = new Schema({
     type: [String],
     default: [],
   },
+  cart: [
+    {
+      medicine: {
+        type: Schema.Types.ObjectId, // Reference to the Medicine model
+        ref: "Medicines", // Reference to the "Medicine" collection
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        required: true,
+        default: 1,
+      },
+    },
+  ],
   familyMembers: [
     {
       id: {

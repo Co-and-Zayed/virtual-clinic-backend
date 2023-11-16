@@ -1,8 +1,8 @@
-const appointmentModel = require("../../models/appointmentModel");
+const appointmentModel = require("../../../../models/appointmentModel");
 const { default: mongoose } = require("mongoose");
-const familyMembersModel = require("../../models/familyMembersModel");
-const patientModel = require("../../models/patientModel");
-const packageModel = require("../../models/packageModel");
+const familyMembersModel = require("../../../../models/familyMembersModel");
+const patientModel = require("../../../../models/patientModel");
+const packageModel = require("../../../../models/packageModel");
 
 const addFamilyMember = async (req, res) => {
   // THIS WORKS ONLY FOR GUEST FAMILY MEMBERS. YOU STILL NEED TO WRITE THE API FOR AddPatientAsFamilyMember!

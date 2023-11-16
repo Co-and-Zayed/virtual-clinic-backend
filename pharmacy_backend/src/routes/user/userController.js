@@ -1,0 +1,308 @@
+const userModel = require("../../../../models/userModel");
+const { createUserTokens } = require("../../../../routes/auth/authController");
+const pharmacistModel = require("../../../../models/pharmacistModel");
+const patientModel = require("../../../../models/patientModel");
+const adminModel = require("../../../../models/adminModel");
+const { sendMail } = require("../../../../utils/sendMail");
+const { getBucketName } = require("../../../../utils/getBucketName");
+
+const findUser = async (username) => {
+  try {
+    // Find a user by the provided username
+    const user = await userModel.findOne({ username });
+    if (user) {
+      return user;
+    } else {
+      const admin = await adminModel.findOne({ username });
+      if (admin) return admin;
+    }
+    return null;
+  } catch (error) {
+    res.json({ message: "Error finding the user" });
+  }
+};
+
+const loginUser = async (req, res) => {
+  const { username, password, token } = req.body;
+
+  const user = await findUser(username);
+
+  var object = {};
+
+  if (user?.type == "PHARMACIST") {
+    object = await pharmacistModel.findOne({ username: username });
+    if (object?.password !== password) {
+      return res
+        .status(401)
+        .json({ message: "Username Or Password Incorrect" });
+    }
+  } else if (user?.type == "PATIENT") {
+    object = await patientModel.findOne({ username: username });
+    if (object?.password !== password) {
+      return res
+        .status(401)
+        .json({ message: "Username Or Password Incorrect" });
+    }
+  } else {
+    object = await adminModel.findOne({ username: username });
+    if (object?.password !== password) {
+      return res
+        .status(401)
+        .json({ message: "Username Or Password Incorrect" });
+    }
+  }
+
+  if (user) {
+    res.status(200).json({
+      user: user,
+      data: object,
+      type: !user?.type ? "ADMIN" : user?.type,
+      tokens: await createUserTokens({
+        username: username,
+        type: !user?.type ? "ADMIN" : user?.type,
+        issuedAt: new Date(),
+      }),
+    });
+  } else {
+    res.status(400).json({ message: "User not found" });
+  }
+};
+
+const registerUser = async (req, res) => {
+  const { name, email, type } = req.body;
+
+  // Common Fields
+  const { username, password, date_of_birth, gender } = req.body;
+
+  // Patient Fields
+  const {
+    mobileNumber,
+    healthRecords,
+    emergencyContactName,
+    emergencyContactNumber,
+  } = req.body;
+
+  // Pharmacist Fields
+  const { specialty, affiliation, educationalBackground, hourlyRate } =
+    req.body;
+
+  const entityObject = {};
+
+  // if (!name || !email) {
+  //   return res.status(400).json({
+  //     message: "Please provide all required fields",
+  //   });
+  // }
+
+  const user = new userModel({
+    name: name,
+    email: email,
+    username: username,
+    type: type,
+  });
+
+  // Field Validation
+  if (username) {
+    entityObject.username = username;
+  }
+
+  if (password) {
+    entityObject.password = password;
+  }
+
+  if (date_of_birth) {
+    entityObject.date_of_birth = date_of_birth;
+  }
+
+  if (gender) {
+    entityObject.gender = gender;
+  }
+
+  if (mobileNumber) {
+    entityObject.mobileNumber = mobileNumber;
+  }
+
+  if (healthRecords) {
+    entityObject.healthRecords = healthRecords;
+  }
+
+  if (emergencyContactName) {
+    entityObject.emergencyContactName = emergencyContactName;
+  }
+
+  if (emergencyContactNumber) {
+    entityObject.emergencyContactNumber = emergencyContactNumber;
+  }
+
+  if (specialty) {
+    entityObject.specialty = specialty;
+  }
+
+  if (affiliation) {
+    entityObject.affiliation = affiliation;
+  }
+
+  if (educationalBackground) {
+    entityObject.educationalBackground = educationalBackground;
+  }
+
+  if (hourlyRate) {
+    entityObject.hourlyRate = hourlyRate;
+  }
+
+  // Construct Patient Or Pharmacist Object
+  if (type === "PHARMACIST") {
+    try {
+      const files = req.files;
+      console.log(files);
+      var pharmacistDocuments = [];
+      if (files !== null && files !== undefined) {
+        for (let i = 0; i < files?.length; i++) {
+          pharmacistDocuments.push(
+            `${getBucketName(req)}${files[i].originalname}`
+          );
+        }
+      }
+      const pharmacist = new pharmacistModel({
+        name,
+        email,
+        username,
+        password,
+        gender,
+        specialty,
+        date_of_birth,
+        affiliation,
+        educationalBackground,
+        hourlyRate,
+        pharmacistDocuments,
+      });
+
+      await pharmacist.save();
+
+      const newUser = await user.save();
+
+      return res.status(201).json({
+        success: true,
+        user: newUser,
+        data: pharmacist,
+        type: "PHARMACIST",
+        tokens: await createUserTokens({
+          username: username,
+          type: "PHARMACIST",
+          issuedAt: new Date(),
+        }),
+      });
+    } catch (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+  }
+  if (type === "PATIENT") {
+    const wallet = 0;
+    try {
+      const cart = [];
+      const patient = new patientModel({
+        name,
+        email,
+        password,
+        username,
+        gender,
+        date_of_birth,
+        mobileNumber,
+        healthRecords,
+        emergencyContactName,
+        emergencyContactNumber,
+        wallet,
+        cart,
+      });
+      await patient.save();
+
+      const newUser = await user.save();
+
+      return res.status(201).json({
+        success: true,
+        user: newUser,
+        data: patient,
+        type: "PATIENT",
+        tokens: await createUserTokens({
+          username: username,
+          type: "PATIENT",
+          issuedAt: new Date(),
+        }),
+      });
+    } catch (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+  }
+};
+
+const verifyOtp = async (req, res) => {
+  const { otp } = req.body;
+
+  const user = await userModel.findOne({ otp: otp });
+
+  if (!user) {
+    return res.json({
+      success: false,
+      message: "Wrong Otp",
+    });
+  }
+
+  var object = {};
+
+  if (user?.type == "PHARMACIST") {
+    object = await pharmacistModel.findOne({ username: user?.username });
+  } else if (user?.type == "PATIENT") {
+    object = await patientModel.findOne({ username: user?.username });
+  } else {
+    object = await adminModel.findOne({ username: user?.username });
+  }
+
+  res.status(200).json({
+    success: true,
+    user: user,
+    data: object,
+    type: !user?.type ? "ADMIN" : user?.type,
+    tokens: await createUserTokens({
+      username: user?.username,
+      type: !user?.type ? "ADMIN" : user?.type,
+      issuedAt: new Date(),
+    }),
+  });
+};
+
+const forgetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await userModel.findOne({ email: email });
+
+  if (!user) {
+    return res.json({
+      success: false,
+      message: "User Not Found",
+    });
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  user.otp = otp;
+
+  await user.save();
+
+  const subject = "El7a2ni Password Reset";
+  const message = `Your OTP to reset your password is ${otp} .\n Please do not share it with anyone.`;
+
+  try {
+    sendMail(user.email, subject, message);
+    return res.json({
+      success: true,
+      message: "Reset Password OTP Sent",
+    });
+  } catch (err) {
+    return res.json({
+      success: false,
+      message: "An Error Occurred",
+    });
+  }
+};
+
+module.exports = { registerUser, loginUser, forgetPassword, verifyOtp };

@@ -1,4 +1,4 @@
-const prescriptionsModel = require("../../models/prescriptionsModel");
+const prescriptionsModel = require("../../../../models/prescriptionsModel");
 
 //get all prescriptions
 const getAllPrescriptions = async (req, res) => {
@@ -13,7 +13,7 @@ const getAllPrescriptions = async (req, res) => {
 
 //get a single prescription
 const getSinglePrescription = async (req, res) => {
-try {
+  try {
     const prescription = await prescriptionsModel.findById(req.params.id);
     res.status(200).json(prescription);
   } catch (err) {

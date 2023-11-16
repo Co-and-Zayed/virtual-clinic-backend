@@ -8,7 +8,7 @@ require("dotenv").config({
 const mongoose = require("mongoose");
 
 const clinicRoutes = require("./clinic_backend/src/clinic");
-// const pharmacyRoutes = require("./routes/patient/patient");
+const pharmacyRoutes = require("./pharmacy_backend/src/pharmacy");
 
 // Middleware
 app.use(express.json());
@@ -38,4 +38,4 @@ Register The Routes Here
 */
 
 app.use("/clinic", clinicRoutes);
-// app.use("/patient", patientRoutes);
+app.use("/pharmacy", pharmacyRoutes);

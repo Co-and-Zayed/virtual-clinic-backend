@@ -4,7 +4,9 @@ const Schema = mongoose.Schema;
 const contractSchema = new Schema({
   doctorUsername: {
     type: String,
-    required: true,
+  },
+  username: {
+    type: String,
   },
   status: {
     type: String,

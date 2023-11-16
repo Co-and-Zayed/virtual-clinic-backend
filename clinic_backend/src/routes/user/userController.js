@@ -1,10 +1,10 @@
-const userModel = require("../../models/userModel");
-const { createUserTokens } = require("../auth/authController");
-const doctorModel = require("../../models/doctorModel");
-const patientModel = require("../../models/patientModel");
-const adminModel = require("../../models/adminModel");
-const { sendMail } = require("../../utils/sendMail");
-const { getBucketName } = require("../../utils/getBucketName");
+const userModel = require("../../../../models/userModel");
+const { createUserTokens } = require("../../../../routes/auth/authController");
+const doctorModel = require("../../../../models/doctorModel");
+const patientModel = require("../../../../models/patientModel");
+const adminModel = require("../../../../models/adminModel");
+const { sendMail } = require("../../../../utils/sendMail");
+const { getBucketName } = require("../../../../utils/getBucketName");
 
 const findUser = async (username) => {
   try {

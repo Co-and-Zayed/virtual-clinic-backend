@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { uploadS3 } = require("../../utils/uploadMultipleFiles");
+const { uploadS3 } = require("../../../../utils/uploadMultipleFiles");
 
 const {
   getDoctors,
@@ -23,7 +23,7 @@ const {
   changePassword,
 } = require("./patientController");
 
-const { authenticateToken } = require("../auth/authController");
+const { authenticateToken } = require("../../../../routes/auth/authController");
 
 /////////////
 // MOSTAFA //

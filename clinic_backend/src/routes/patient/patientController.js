@@ -1,11 +1,11 @@
-const Doctor = require("../../models/doctorModel.js");
-//const patientModel = require("../../models/patientModel.js");
-const Package = require("../../models/packageModel.js");
-const Appointment = require("../../models/appointmentModel.js");
-const patientModel = require("../../models/patientModel.js");
-const packageModel = require("../../models/packageModel.js");
-const familyMembersModel = require("../../models/familyMembersModel.js");
-const { getBucketName } = require("../../utils/getBucketName");
+const Doctor = require("../../../../models/doctorModel.js");
+//const patientModel = require("../../../../models/patientModel.js");
+const Package = require("../../../../models/packageModel.js");
+const Appointment = require("../../../../models/appointmentModel.js");
+const patientModel = require("../../../../models/patientModel.js");
+const packageModel = require("../../../../models/packageModel.js");
+const familyMembersModel = require("../../../../models/familyMembersModel.js");
+const { getBucketName } = require("../../../../utils/getBucketName.js");
 
 //GET list of all doctors or doctors by searching name and/or speciality
 const getDoctors = async (req, res) => {
@@ -737,7 +737,10 @@ const getHealthRecords = async (req, res) => {
 
     const healthRecords = patient.healthRecords;
 
-    res.status(200).json({ message: "Health Records Retrieved Successfully", healthRecords });
+    res.status(200).json({
+      message: "Health Records Retrieved Successfully",
+      healthRecords,
+    });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

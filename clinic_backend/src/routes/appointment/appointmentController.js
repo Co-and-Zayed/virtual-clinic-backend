@@ -1,9 +1,9 @@
-const appointmentModel = require("../../models/appointmentModel");
-const patientModel = require("../../models/patientModel");
-const doctorModel = require("../../models/doctorModel");
-const familyMembersModel = require("../../models/familyMembersModel");
+const appointmentModel = require("../../../../models/appointmentModel");
+const patientModel = require("../../../../models/patientModel");
+const doctorModel = require("../../../../models/doctorModel");
+const familyMembersModel = require("../../../../models/familyMembersModel");
 const { default: mongoose } = require("mongoose");
-const userModel = require("../../models/userModel");
+const userModel = require("../../../../models/userModel");
 
 // POST create a new appointment
 // Params: patientId, doctorId, date, status
