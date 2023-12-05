@@ -709,17 +709,45 @@ const updateMedicalHistory = async (req, res) => {
   const medicalHistory = req.files;
   console.log("MEDICAL HISTORY");
   console.log(medicalHistory);
+
   try {
     const newMedicalHistory = medicalHistory.map((file) =>
       getBucketName(req, file.originalname)
     );
+
+    // Use $push to add newMedicalHistory to the existing medicalHistory array
     const patient = await patientModel.findOneAndUpdate(
       { username },
-      { medicalHistory: newMedicalHistory }
+      { $push: { medicalHistory: { $each: newMedicalHistory } } },
+      { new: true } // Return the modified document
     );
+
     res
       .status(200)
       .json({ message: "Medical history updated successfully", patient });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+const deleteMedicalHistory = async (req, res) => {
+  const { username } = req.user;
+  const { deletedItem } = req.body; // Assuming you pass the item to delete in the request body
+
+  try {
+    const patient = await patientModel.findOneAndUpdate(
+      { username },
+      { $pull: { medicalHistory: deletedItem } },
+      { new: true } // Return the modified document
+    );
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Medical history item deleted successfully", patient });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -774,4 +802,5 @@ module.exports = {
   resetPassword,
   getHealthRecords,
   changePassword,
+  deleteMedicalHistory,
 };

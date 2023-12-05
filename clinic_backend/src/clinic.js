@@ -27,7 +27,7 @@ router.use("/stripe", stripeRoutes);
 
 router.use(commonRoutes);
 
-router.use("/adminAPI", adminRoutes);
+router.use("/admin", adminRoutes);
 router.use("/prescriptionAPI", prescriptionsRoutes);
 router.use("/dropdown", dropdownRoutes);
 

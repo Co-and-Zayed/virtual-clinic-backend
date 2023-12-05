@@ -30,6 +30,28 @@ const loginAdmin = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { password } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized Access",
+    });
+  }
+
+  const admin = await adminModel.findOne({ username: user.username });
+
+  admin.password = password;
+  await admin.save();
+
+  return res.json({
+    success: true,
+    message: "Password Reset",
+  });
+};
+
 const deletePatient = async (req, res) => {
   const { email } = req.body;
   try {
@@ -77,24 +99,38 @@ const deleteAdmin = async (req, res) => {
 };
 
 const createAdmin = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
-  if (!username || !password) {
+  if (!username || !password || !email) {
     return res.status(400).json({
       message: "Please provide all required fields",
     });
   }
 
-  const user = new adminModel({
+  const user = new userModel({
+    name: username,
     username: username,
+    email: email,
+    type: "ADMIN",
+  });
+
+  const admin = new adminModel({
+    username: username,
+    email: email,
     password: password,
   });
 
   try {
-    const newUser = await user.save();
-    res.status(201).json(newUser);
+    await user.save();
   } catch (err) {
-    res.json({ message: err.message, status: 409 });
+    return res.json({ message: err.message, status: 409, collection: "user" });
+  }
+
+  try {
+    await admin.save();
+    return res.status(201).json(user);
+  } catch (err) {
+    return res.json({ message: err.message, status: 409, collection: "admin" });
   }
 };
 
@@ -217,4 +253,5 @@ module.exports = {
   rejectDoctor,
   sendContract,
   changePassword,
+  resetPassword,
 };

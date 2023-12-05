@@ -20,7 +20,10 @@ const {
   rejectDoctor,
   sendContract,
   changePassword,
+  resetPassword,
 } = require("./adminController");
+
+router.post("/resetPassword", authenticateToken("ADMIN"), resetPassword);
 
 // POST: Creates a new access token and refresh token for the user
 router.post("/loginAdmin", authenticateToken("ADMIN"), loginAdmin);

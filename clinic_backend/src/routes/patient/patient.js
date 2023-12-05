@@ -18,6 +18,7 @@ const {
   unsubscribeFromPackageforFamily,
   payWithWallet,
   updateMedicalHistory,
+  deleteMedicalHistory,
   resetPassword,
   getHealthRecords,
   changePassword,
@@ -127,6 +128,12 @@ router.post(
   authenticateToken("PATIENT"),
   uploadS3.array("files", 20),
   updateMedicalHistory
+);
+
+router.post(
+  "/deleteMedicalHistory",
+  authenticateToken("PATIENT"),
+  deleteMedicalHistory
 );
 
 // Reset Password

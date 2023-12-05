@@ -17,13 +17,21 @@ const { authenticateToken } = require("../../../../routes/auth/authController");
 
 // Medicine Routes
 router.get("/getMedicines", authenticateToken(), getMedicines);
+
 router.post(
   "/createMedicine",
   authenticateToken("PHARMACIST"),
   uploadS3.array("files", 20),
   createMedicine
 );
-router.post("/editMedicine/:id", editMedicine);
+
+router.post(
+  "/editMedicine/:id",
+  authenticateToken("PHARMACIST"),
+  uploadS3.array("files", 20),
+  editMedicine
+);
+
 router.post(
   "/updateMedicineImage/:id",
   uploadS3.array("files", 20),

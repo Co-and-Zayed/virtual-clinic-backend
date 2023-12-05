@@ -6,6 +6,7 @@ const {
   acceptContract,
   rejectContract,
 } = require("./pharmacistController");
+
 const { resetPassword } = require("./pharmacistController");
 // After regestration accept or reject contract
 router.get(

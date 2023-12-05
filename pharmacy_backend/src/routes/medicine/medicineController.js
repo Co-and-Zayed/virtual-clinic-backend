@@ -42,14 +42,6 @@ const createMedicine = async (req, res) => {
   console.log("USER", user);
   console.log("NEW MEDICINE FILES", req.files);
 
-  // Filter out the null values from the body
-  // const filteredBody = Object.keys(req.body).reduce((acc, curr) => {
-  //   if (req.body[curr] !== null) {
-  //     acc[curr] = req.body[curr];
-  //   }
-  //   return acc;
-  // }, {});
-
   try {
     console.log("BALABIZO 1");
     const picture = getBucketName(req, req.files[0].originalname);
@@ -85,6 +77,64 @@ const createMedicine = async (req, res) => {
     console.log("BALABIZO 3");
 
     res.status(201).json(medicine);
+  } catch (error) {
+    res.status(409).json({ message: error.message });
+  }
+};
+
+const updateMedicineImage = async (req, res) => {
+  const { id } = req.params;
+  console.log("UPDATING IMAGE");
+  console.log(id);
+  console.log(req.files);
+  const picture = getBucketName(req, req.files[0].originalname);
+  try {
+    const updatedMedicine = await Medicine.findByIdAndUpdate(
+      id,
+      { picture },
+      {
+        new: true,
+      }
+    );
+
+    // res.status(200).json(updatedMedicine);
+  } catch (error) {
+    // res.status(409).json({ message: error.message });
+  }
+};
+
+const editMedicine = async (req, res) => {
+  const { id } = req.params;
+  const params = req.body;
+
+  if (params) {
+    params.otherActiveIngredients = params?.otherActiveIngredients?.split(",");
+    params.medicinalUse = params?.medicinalUse?.split(",");
+    params.availableQuantity = parseInt(params?.availableQuantity);
+  }
+
+  console.log("EDIT MEDICINE");
+  console.log(params);
+  console.log(req.files);
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ message: "Medicine not found" });
+  }
+
+  try {
+    const updatedMedicine = await Medicine.findByIdAndUpdate(id, params, {
+      new: true,
+    });
+
+    console.log("YAANY EH: ", params?.picture === "false");
+    if (params?.picture === "null") {
+      console.log("PICTURE HAS CHANGED");
+      await updateMedicineImage(req, res);
+    } else {
+      console.log("PICTURE HAS NOT CHANGED");
+    }
+
+    res.status(200).json(updatedMedicine);
   } catch (error) {
     res.status(409).json({ message: error.message });
   }
@@ -164,54 +214,6 @@ const getMedicinalUses = async (req, res) => {
   }
 };
 
-const updateMedicineImage = async (req, res) => {
-  const { id } = req.params;
-  console.log("UPDATING IMAGE");
-  console.log(id);
-  console.log(req.files);
-  const picture = getBucketName(req, req.files[0].originalname);
-  try {
-    const updatedMedicine = await Medicine.findByIdAndUpdate(
-      id,
-      { picture },
-      {
-        new: true,
-      }
-    );
-
-    res.status(200).json(updatedMedicine);
-  } catch (error) {
-    res.status(409).json({ message: error.message });
-  }
-};
-
-const editMedicine = async (req, res) => {
-  const { id } = req.params;
-
-  // const filteredBody = Object.keys(req.body).reduce((acc, curr) => {
-  //   if (req.body[curr] !== null) {
-  //     acc[curr] = req.body[curr];
-  //   }
-  //   return acc;
-  // }, {});
-  const params = req.body;
-  console.log("EDIT MEDICINE");
-  console.log(params);
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ message: "Medicine not found" });
-  }
-
-  try {
-    const updatedMedicine = await Medicine.findByIdAndUpdate(id, params, {
-      new: true,
-    });
-
-    res.status(200).json(updatedMedicine);
-  } catch (error) {
-    res.status(409).json({ message: error.message });
-  }
-};
-
 const deleteMedicine = async (req, res) => {
   const { id } = req.params;
 
@@ -252,10 +254,21 @@ const getMedicineById = async (req, res) => {
       return;
     }
 
-    console.log("MEDICINE");
-    console.log(medicine);
+    // Check if the medicine is out of stock
+    if (medicine.availableQuantity === 0) {
+      const similarAvailableMedicines = await Medicine.find({
+        mainActiveIngredient: medicine.mainActiveIngredient,
+        availableQuantity: { $gt: 0 },
+      });
 
-    res.status(200).json(medicine);
+      res.status(200).json({
+        medicine: medicine,
+        similarAvailableMedicines,
+      });
+    } else {
+      res.status(200).json({ medicine: medicine });
+    }
+    // res.status(200).json(medicine);
   } catch (error) {
     res.status(409).json({ message: error.message });
   }

@@ -30,6 +30,28 @@ const loginAdmin = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { password } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized Access",
+    });
+  }
+
+  const admin = await adminModel.findOne({ username: user.username });
+
+  admin.password = password;
+  await admin.save();
+
+  return res.json({
+    success: true,
+    message: "Password Reset",
+  });
+};
+
 const deletePatient = async (req, res) => {
   const { username } = req.body;
   var deleted = [];
@@ -82,9 +104,9 @@ const deleteAdmin = async (req, res) => {
 };
 
 const createAdmin = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
-  if (!username || !password) {
+  if (!username || !password || !email) {
     return res.status(400).json({
       message: "Please provide all required fields",
     });
@@ -92,6 +114,7 @@ const createAdmin = async (req, res) => {
 
   const admin = new adminModel({
     username: username,
+    email: email,
     password: password,
   });
 
@@ -204,4 +227,5 @@ module.exports = {
   acceptPharmacist,
   rejectPharmacist,
   sendContract,
+  resetPassword,
 };

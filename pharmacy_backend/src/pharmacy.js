@@ -20,7 +20,7 @@ router.use("/patient", patientRoutes);
 router.use("/patient", cartRoutes);
 router.use("/userAPI", userRoutes);
 router.use("/authAPI", authRoutes);
-router.use("/adminAPI", adminRoutes);
+router.use("/admin", adminRoutes);
 router.use("/dropdown", dropdownRoutes);
 router.use(medicineRoutes);
 router.use(salesRoutes);
